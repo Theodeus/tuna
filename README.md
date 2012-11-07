@@ -1,4 +1,4 @@
-tuna.js is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@dinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request! 
+<p><strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@dinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request! </p>
 
 tuna
 ====
