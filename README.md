@@ -27,22 +27,25 @@ Usage:
 
 You create a new tuna node as such:
 
+<pre>
 var chorus = new TUNA.Chorus({
                  rate: 0.5,
                  depth: 0.5,
                  feedback: 0.5,
                  delay: 0.5
              });
-
+</pre>
 You can then connect the tuna node to native Web Audio nodes by doing:
-
+<pre>
 nativeNode.connect(chorus.input);
 chorus.connect(gainNode);
-
+</pre>
 or to other tuna nodes by doing:
-
-
-
+<pre>
+tunaNode.connect(chorus.input);
+chorus.connect(anotherTunaNode.input);
+</pre>
+Ie. all tuna nodes are connected TO by using the nodes input property, but connecting the tuna node FROM works as ordinary native AudioNodes.
 
 Each tuna node (or effect) inherits from the same prototype. This gives the nodes some common methods:
 <ul>
