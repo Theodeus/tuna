@@ -38,10 +38,9 @@ You create a new tuna node as such:
 
 <pre>
 var chorus = new tuna.Chorus({
-                 rate: 0.5,
-                 depth: 0.5,
-                 feedback: 0.5,
-                 delay: 0.5,
+                 rate: 1.5,
+                 feedback: 0.2,
+                 delay: 0.0045,
                  bypass: 0
              });
 </pre>
@@ -67,7 +66,7 @@ var chorus = new tuna.Chorus({
                  rate: 1.5,         //0.01 to 8+
                  feedback: 0.2,     //0 to 1+
                  delay: 0.0045,     //0 to 1
-                 bypass: 0          //the value 1 starts the effect as bypassed
+                 bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
              });
 </pre>
 
@@ -141,6 +140,38 @@ var filter = new tuna.Filter({
                  gain: 0,               //-40 to 40
                  bypass: 1,             //0 to 1+
                  filterType: 0,         //0 to 7, corresponds to the filter types in the native filter node: lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass in that order
+                 bypass: 0
+             });
+</pre>
+
+A cabinet/speaker emulator.
+<pre>
+var cabinet = new tuna.Cabinet({
+                  makeupGain: 1,                                 //0 to 20
+                  impulsePath: "impulses/impulse_guitar.wav",    //path to your speaker impulse
+                  bypass: 0
+              });
+</pre>
+
+A basic tremolo.
+<pre>
+var tremolo = new tuna.Tremolo({
+                  intensity: 0.3,    //0 to 1
+                  rate: 0.1,         //0.001 to 8
+                  stereoPhase: 0,    //0 to 180
+                  bypass: 0
+              });
+</pre>
+
+A wahwah with an auto wah option.
+<pre>
+var wahwah = new tuna.WahWah({
+                 automode: true,                //true/false
+                 baseModulationFrequency: 0.5,  //0 to 1
+                 excursionOctaves: 2,           //1 to 6
+                 sweep: 0.2,                    //0 to 1
+                 resonance: 10,                 //1 to 100
+                 sensitivity: 0.5,              //-1 to 1
                  bypass: 0
              });
 </pre>
