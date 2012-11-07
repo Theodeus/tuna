@@ -26,8 +26,8 @@ Usage:
 Start by creating a new Tuna object like so:
 
 <pre>
-    var context = new webkitAudioContext();
-    var tuna = new Tuna(context);
+var context = new webkitAudioContext();
+var tuna = new Tuna(context);
 </pre>
 
 You need to pass the audio context you're using in your application. Tuna will be using it to create it's effects.
@@ -165,7 +165,7 @@ A wahwah with an auto wah option.
 <pre>
 var wahwah = new tuna.WahWah({
                  automode: true,                //true/false
-                 baseModulationFrequency: 0.5,  //0 to 1
+                 baseFrequency: 0.5,            //0 to 1
                  excursionOctaves: 2,           //1 to 6
                  sweep: 0.2,                    //0 to 1
                  resonance: 10,                 //1 to 100
