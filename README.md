@@ -1,9 +1,9 @@
-<p><strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request! </p>
+<strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request!
 
 tuna
 ====
 
-An audio effects library for the Web Audio API.
+An audio effects library for the Web Audio API. Created by <a href="http://www.dinahmoe.com">DinahMoe</a>
 
 <img src="https://i.chzbgr.com/completestore/12/9/4/rjttPiC7WE6S4Bi22aYp1A2.jpg" alt="tuna, tuna, tuna"/>
 
@@ -21,8 +21,6 @@ Equalizer (variable number of bands)<br />
 Tremolo<br />
 Phaser<br />
 WahWah<br />
-
-Created by www.dinahmoe.com
 
 Usage:
 ====
@@ -75,22 +73,58 @@ The nodes:
 A basic chorus effect.
 <pre>
 var chorus = new tuna.Chorus({
-                 rate: 0.5,
-                 depth: 0.5,
-                 feedback: 0.5,
-                 delay: 0.5,
+                 rate: 1.5,         //0.01 to 8+
+                 feedback: 0.2,     //0 to 1+
+                 delay: 0.0045,     //0 to 1
                  bypass: 0          //the value 1 starts the effect as bypassed
              });
 </pre>
 
 A delay effect with feedback and a highpass filter applied to the delayed signal.
 <pre>
-var delay = new tuna.Delay({
-                 feedback: 0.45,    //how much should the delayed signal be feed back into the delay loop?
-                 delayTime: 150,    //how many milliseconds should the wet signal be delayed?
-                 wetLevel: 0.25,    //how much of the delayed signal should be audible?
-                 dryLevel: 1,       //how much of the original signal should be audible?
-                 cutoff: 20,        //cutoff frequency of the built in highpass-filter
+var delay =  new tuna.Delay({
+                 feedback: 0.45,    //0 to 1+
+                 delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
+                 wetLevel: 0.25,    //0 to 1+
+                 dryLevel: 1,       //0 to 1+
+                 cutoff: 20,        //cutoff frequency of the built in highpass-filter. 20 to 22000
                  bypass: 0
              });
+</pre>
+
+A basic phaser effect.
+<pre>
+var phaser = new tuna.Phaser({
+                 rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
+                 depth: 0.3,                    //0 to 1
+                 feedback: 0.2,                 //0 to 1+
+                 stereoPhase: 30,               //0 to 180
+                 baseModulationFrequency: 700,  //500 to 1500
+                 bypass: 0
+             });
+</pre>
+
+A basic overdrive effect.
+<pre>
+var overdrive =  new tuna.Overdrive({
+                     outputGain: 0.5,         //0 to 1+
+                     drive: 0.7,              //0 to 1
+                     curveAmount: 1,          //0 to 1
+                     algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+                     bypass: 0
+                 });
+</pre>
+
+A compressor with the option to use automatic makeup gain.
+<pre>
+var compressor = new tuna.Compressor({
+                     threshold: 0.5,    //-100 to 0
+                     makeupGain: 1,     //0 and up
+                     attack: 1,         //0 to 1000
+                     release: 0,        //0 to 3000
+                     ratio: 4,          //1 to 20
+                     knee: 5,           //0 to 40
+                     automakeup: true,  //true/false
+                     bypass: 0
+                 });
 </pre>
