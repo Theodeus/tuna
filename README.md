@@ -22,6 +22,26 @@ www.dinahmoe.com
 
 Usage:
 ====
+
+You create a new tuna node as such:
+
+var chorus = new TUNA.Chorus({
+                 rate: 0.5,
+                 depth: 0.5,
+                 feedback: 0.5,
+                 delay: 0.5
+             });
+
+You can then connect the tuna node to native Web Audio nodes by doing:
+
+nativeNode.connect(chorus.input);
+chorus.connect(gainNode);
+
+or to other tuna nodes by doing:
+
+
+
+
 Each tuna node (or effect) inherits from the same prototype. This gives the nodes some common methods:
 <ul>
     <li>connect(targetNode) - simulates the connect method of the native AudioNode in Web Audio. targetNode is a native audioNode, or the input property of a tuna node</li>
