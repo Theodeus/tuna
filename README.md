@@ -3,6 +3,8 @@ tuna
 
 An audio effects library for the Web Audio API.
 
+<img src="https://i.chzbgr.com/completestore/12/9/4/rjttPiC7WE6S4Bi22aYp1A2.jpg" alt="tuna, tuna, tuna"/>
+
 Effect list<br />
 ====
 Overdrive (6 different algorithms)<br />
