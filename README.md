@@ -73,14 +73,14 @@ var chorus = new tuna.Chorus({
 
 A delay effect with feedback and a highpass filter applied to the delayed signal.
 <pre>
-var delay =  new tuna.Delay({
-                 feedback: 0.45,    //0 to 1+
-                 delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
-                 wetLevel: 0.25,    //0 to 1+
-                 dryLevel: 1,       //0 to 1+
-                 cutoff: 20,        //cutoff frequency of the built in highpass-filter. 20 to 22000
-                 bypass: 0
-             });
+var delay = new tuna.Delay({
+                feedback: 0.45,    //0 to 1+
+                delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
+                wetLevel: 0.25,    //0 to 1+
+                dryLevel: 1,       //0 to 1+
+                cutoff: 20,        //cutoff frequency of the built in highpass-filter. 20 to 22050
+                bypass: 0
+            });
 </pre>
 
 A basic phaser effect.
@@ -97,13 +97,13 @@ var phaser = new tuna.Phaser({
 
 A basic overdrive effect.
 <pre>
-var overdrive =  new tuna.Overdrive({
-                     outputGain: 0.5,         //0 to 1+
-                     drive: 0.7,              //0 to 1
-                     curveAmount: 1,          //0 to 1
-                     algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
-                     bypass: 0
-                 });
+var overdrive = new tuna.Overdrive({
+                    outputGain: 0.5,         //0 to 1+
+                    drive: 0.7,              //0 to 1
+                    curveAmount: 1,          //0 to 1
+                    algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
+                    bypass: 0
+                });
 </pre>
 
 A compressor with the option to use automatic makeup gain.
@@ -118,4 +118,29 @@ var compressor = new tuna.Compressor({
                      automakeup: true,  //true/false
                      bypass: 0
                  });
+</pre>
+
+A convolver with high- and lowcut.
+<pre>
+var convolver = new tuna.Convolver({
+                    highCut: 22050,         //20 to 22050
+                    lowCut: 20,             //20 to 22050
+                    dryLevel: 1,            //0 to 1+
+                    wetLevel: 1,            //0 to 1+
+                    level: 1,               //0 to 1+, adjusts total output of both wet and dry
+                    impulse: "impulse.wav", //the path to your impulse response
+                    bypass: 0
+                });
+</pre>
+
+A basic filter.
+<pre>
+var filter = new tuna.Filter({
+                 frequency: 20,         //20 to 22050
+                 Q: 1,                  //0.001 to 100
+                 gain: 0,               //-40 to 40
+                 bypass: 1,             //0 to 1+
+                 filterType: 0,         //0 to 7, corresponds to the filter types in the native filter node: lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass in that order
+                 bypass: 0
+             });
 </pre>
