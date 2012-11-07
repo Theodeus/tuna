@@ -6,7 +6,7 @@ An audio effects library for the Web Audio API.
 Usage: blah blah
 
 Effect list:
-Overdrive (5 different algorithms)
+Overdrive (5 different algorithms)<br />
 Filter
 Cabinet
 Chorus
