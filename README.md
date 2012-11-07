@@ -7,18 +7,20 @@ An audio effects library for the Web Audio API. Created by <a href="http://www.d
 
 <img src="https://i.chzbgr.com/completestore/12/9/4/rjttPiC7WE6S4Bi22aYp1A2.jpg" alt="tuna, tuna, tuna"/>
 
-Effect list<br />
+Effect list:
 ====
-Overdrive (6 different algorithms)<br />
-Filter<br />
-Cabinet<br />
-Chorus<br />
-Delay<br />
-Convolver (Reverb)<br />
-Compressor<br />
-Tremolo<br />
-Phaser<br />
-WahWah<br />
+<ul>
+    <li>Overdrive (6 different algorithms)</li>
+    <li>Filter</li>
+    <li>Cabinet</li>
+    <li>Chorus</li>
+    <li>Delay</li>
+    <li>Convolver (Reverb)</li>
+    <li>Compressor</li>
+    <li>Tremolo</li>
+    <li>Phaser</li>
+    <li>WahWah</li>
+</ul>
 
 Usage:
 ====
@@ -30,7 +32,7 @@ var context = new webkitAudioContext();
 var tuna = new Tuna(context);
 </pre>
 
-You need to pass the audio context you're using in your application. Tuna will be using it to create it's effects.
+You need to pass the audio context you're using in your application. Tuna will be using it to create its effects.
 
 You create a new tuna node as such:
 
