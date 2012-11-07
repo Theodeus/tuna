@@ -3,10 +3,11 @@ tuna
 
 An audio effects library for the Web Audio API.
 
-Usage: blah blah
+Usage:
 ====
+blah blah ipsum
 
-Effect list:<br />
+Effect list<br />
 ====
 Overdrive (5 different algorithms)<br />
 Filter<br />
