@@ -119,7 +119,7 @@ var compressor = new tuna.Compressor({
                  });
 </pre>
 
-A convolver with high- and lowcut.
+A convolver with high- and lowcut. You can find a lot of impulse resonses <a href="http://chromium.googlecode.com/svn/trunk/samples/audio/impulse-responses/">here</a>
 <pre>
 var convolver = new tuna.Convolver({
                     highCut: 22050,                         //20 to 22050
