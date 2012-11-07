@@ -5,7 +5,7 @@ An audio effects library for the Web Audio API.
 
 Usage: blah blah
 
-Effect list:
+Effect list:<br />
 Overdrive (5 different algorithms)<br />
 Filter<br />
 Cabinet<br />
