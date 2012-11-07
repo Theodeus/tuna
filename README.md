@@ -1,3 +1,5 @@
+tuna.js is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@dinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request! 
+
 tuna
 ====
 
@@ -20,7 +22,7 @@ Tremolo<br />
 Phaser<br />
 WahWah<br />
 
-www.dinahmoe.com
+Created by www.dinahmoe.com
 
 Usage:
 ====
@@ -38,14 +40,14 @@ var chorus = new TUNA.Chorus({
 You can then connect the tuna node to native Web Audio nodes by doing:
 <pre>
 nativeNode.connect(chorus.input);
-chorus.connect(gainNode);
+chorus.connect(anotherNativeNode);
 </pre>
 or to other tuna nodes by doing:
 <pre>
 tunaNode.connect(chorus.input);
 chorus.connect(anotherTunaNode.input);
 </pre>
-Ie. all tuna nodes are connected TO by using the nodes input property, but connecting the tuna node FROM works as ordinary native AudioNodes.
+All tuna nodes are connected TO by using the nodes input property, but connecting FROM the tuna node works as it does with ordinary native AudioNodes.
 
 Each tuna node (or effect) inherits from the same prototype. This gives the nodes some common methods:
 <ul>
@@ -56,3 +58,36 @@ Each tuna node (or effect) inherits from the same prototype. This gives the node
     <li>setAutomatableProperty(property, value, duration, actionTime) - allows smooth value changes (automatiation, or tweening). property is a string with the name of the property to automate, value is the value to automate to, duration is how long the automation is in milliseconds, actionTime is the time when the automation should start based on the audioContext time</li>
     <li>verify - makes sure the property that is being set is valid</li>
 </ul>
+
+The nodes:
+====
+
+<pre>
+var chorus = new TUNA.Chorus({
+                 rate: 0.5,
+                 depth: 0.5,
+                 feedback: 0.5,
+                 delay: 0.5,
+                 active: 1 //the value 0 starts the effect as bypassed
+             });
+</pre>
+
+<pre>
+var delay = new TUNA.Delay({
+                 feedback: 0.5,
+                 delayTime: 0.7,
+                 wetLevel: 0.25,
+                 dryLevel: 1,
+                 cutoff: 22000
+             });
+</pre>
+
+<pre>
+var delay = new TUNA.Delay({
+                 feedback: 0.5,
+                 delayTime: 0.7,
+                 wetLevel: 0.25,
+                 dryLevel: 1,
+                 cutoff: 22000
+             });
+</pre>
