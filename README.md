@@ -1,4 +1,4 @@
-<p><strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@dinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request! </p>
+<p><strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request! </p>
 
 tuna
 ====
@@ -27,14 +27,24 @@ Created by www.dinahmoe.com
 Usage:
 ====
 
+Start by creating a new Tuna object like so:
+
+<pre>
+    var context = new webkitAudioContext();
+    var tuna = new Tuna(context);
+</pre>
+
+You need to pass the audio context you're using in your application. Tuna will be using it to create it's effects.
+
 You create a new tuna node as such:
 
 <pre>
-var chorus = new TUNA.Chorus({
+var chorus = new tuna.Chorus({
                  rate: 0.5,
                  depth: 0.5,
                  feedback: 0.5,
-                 delay: 0.5
+                 delay: 0.5,
+                 bypass: 0
              });
 </pre>
 You can then connect the tuna node to native Web Audio nodes by doing:
@@ -62,32 +72,25 @@ Each tuna node (or effect) inherits from the same prototype. This gives the node
 The nodes:
 ====
 
+A basic chorus effect.
 <pre>
-var chorus = new TUNA.Chorus({
+var chorus = new tuna.Chorus({
                  rate: 0.5,
                  depth: 0.5,
                  feedback: 0.5,
                  delay: 0.5,
-                 active: 1 //the value 0 starts the effect as bypassed
+                 bypass: 0          //the value 1 starts the effect as bypassed
              });
 </pre>
 
+A delay effect with feedback and a highpass filter applied to the delayed signal.
 <pre>
-var delay = new TUNA.Delay({
-                 feedback: 0.5,
-                 delayTime: 0.7,
-                 wetLevel: 0.25,
-                 dryLevel: 1,
-                 cutoff: 22000
-             });
-</pre>
-
-<pre>
-var delay = new TUNA.Delay({
-                 feedback: 0.5,
-                 delayTime: 0.7,
-                 wetLevel: 0.25,
-                 dryLevel: 1,
-                 cutoff: 22000
+var delay = new tuna.Delay({
+                 feedback: 0.45,    //how much should the delayed signal be feed back into the delay loop?
+                 delayTime: 150,    //how many milliseconds should the wet signal be delayed?
+                 wetLevel: 0.25,    //how much of the delayed signal should be audible?
+                 dryLevel: 1,       //how much of the original signal should be audible?
+                 cutoff: 20,        //cutoff frequency of the built in highpass-filter
+                 bypass: 0
              });
 </pre>
