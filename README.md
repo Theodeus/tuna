@@ -7,16 +7,16 @@ Usage: blah blah
 
 Effect list:
 Overdrive (5 different algorithms)<br />
-Filter
-Cabinet
-Chorus
-Delay
-PingPongDelay
-Convolver (Reverb)
-Compressor
-Equalizer (variable number of bands)
-Tremolo
-Phaser
-WahWah
+Filter<br />
+Cabinet<br />
+Chorus<br />
+Delay<br />
+PingPongDelay<br />
+Convolver (Reverb)<br />
+Compressor<br />
+Equalizer (variable number of bands)<br />
+Tremolo<br />
+Phaser<br />
+WahWah<br />
 
 www.dinahmoe.com
