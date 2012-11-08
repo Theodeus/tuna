@@ -651,9 +651,9 @@
         name: {value: "Overdrive"},
         defaults: {
             value: {
-                drive: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
+                drive: {value: 0.1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 outputGain: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
-                curveAmount: {value: 0.65, min: 0, max: 1, automatable: false, type: FLOAT},
+                curveAmount: {value: 0.50, min: 0, max: 1, automatable: false, type: FLOAT},
                 algorithmIndex: {value: 0, automatable: false, type: INT}
             }
         },  
