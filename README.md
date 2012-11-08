@@ -1,5 +1,7 @@
 <strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request!
 
+<p style="color=red">tuna is currently very alpha, we'll reach beta during the coming weeks!</p>
+
 tuna
 ====
 
