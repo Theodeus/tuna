@@ -6,7 +6,7 @@ webkitAudioContext &&
         tuna = new Tuna(context), 
         player = document.getElementById('player'),
         sourceNode = context.createMediaElementSource(player),
-        names = ["Compressor","Filter","Cabinet","Chorus","Convolver","Delay","Overdrive",/*"Phaser","Tremolo","WahWah"*/],
+        names = ["Compressor","Cabinet","Chorus","Convolver","Delay","Overdrive","Phaser","Tremolo","WahWah", "Filter"],
         proto = "prototype",
         tabs = Object.create(null),
         effects = Object.create(null),
@@ -193,6 +193,7 @@ webkitAudioContext &&
         ctx.lineWidth = 3;
         for (var i = 0, ii = names.length; i < ii; i++) {
             name = names[i];
+            console.log("creating", name);
             effects[name] = new tuna[name]();
             if (i) {
                 effects[names[i - 1]].connect(effects[names[i]].input);
@@ -208,7 +209,7 @@ webkitAudioContext &&
         deactivateAll();
     }
     init();
-    sourceNode.connect(effects[names[0]].input);  
+    sourceNode.connect(effects[names[0]].input);
 });
 CanvasRenderingContext2D.prototype.line = function(x1, y1, x2, y2) {
      this.lineCap = 'round';

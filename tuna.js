@@ -25,6 +25,7 @@
                 context = window.webkitAudioContext && (new window.webkitAudioContext());
             }
             userContext = context;
+            window.ctx = userContext;
             userInstance = this;
         },
         version = "0.1",
@@ -35,6 +36,9 @@
             activate: {
                 writable: true, 
                 value: function (doActivate) {
+                    if(this.name === "Filter"){
+                        console.log("FILT");
+                    }
                     if (doActivate) {
                         console.log("activating: " + this.name)
                         this.input.disconnect();
@@ -50,7 +54,7 @@
             bypass: {
                 get: function () {return this._bypass},
                 set: function (value) {
-                    if (this._lastBypassValue === value) {return}
+                    if (this._lastBypassValue === value) {console.log("not performing bypass");return}
                     this._bypass = value;
                     this.activate(!value);
                     this._lastBypassValue = value;
@@ -190,9 +194,9 @@
             value: {
                 frequency: {value: 500, min: 20, max: 22050, automatable: true, type: FLOAT},
                 Q: {value: 1, min: 0.001, max: 100, automatable: true, type: FLOAT}, 
-                gain: {value: 0, min: -40, max: 40, automatable: true, type: FLOAT},
+                gain: {value: 1, min: -40, max: 40, automatable: true, type: FLOAT},
                 bypass: {value: true, automatable: false, type: BOOLEAN},
-                filterType: {value: 1, automatable: false, type: INT}
+                filterType: {value: 0, automatable: false, type: INT}
             }
         }, 
         filterType: {
@@ -223,7 +227,7 @@
                 this.filter.frequency.value = value;
             }
         }
-    }); 
+    });
     Tuna.prototype.Cabinet = function (properties) {
         if (!properties) {
             properties = this.getDefaults();
@@ -240,7 +244,7 @@
 
         this.makeupGain = properties.makeupGain || this.defaults.makeupGain;
         this.bypass = false;
-    }
+    };
     Tuna.prototype.Cabinet.prototype = Object.create(Super, {
         name: {value: "Cabinet"},
         defaults: {
@@ -797,25 +801,25 @@
         this.bypass = false;
     };
     Tuna.prototype.Phaser.prototype = Object.create (Super, {
-        name: {value: "Phaser"}, 
+        name: {value: "Phaser"},
         stage: {value: 4},
         defaults: {
             value: {
-                frequency: {value: 1, min: 0, max: 8, automatable: false, type: FLOAT},
-                rate: {value: 0.3, min: 0, max: 8, automatable: false, type: FLOAT},
+                frequency: {value: 5, min: 0, max: 8, automatable: false, type: FLOAT},
+                rate: {value: 8, min: 0, max: 8, automatable: false, type: FLOAT},
                 depth: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
                 feedback: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT},
                 stereoPhase: {value: 30, min: 0, max: 180, automatable: false, type: FLOAT},
-                baseModulationFrequency: {value: 700, min: 500, max: 1500, automatable: false, type: FLOAT}
+                baseModulationFrequency: {value: 1500, min: 500, max: 1500, automatable: false, type: FLOAT}
             }
-        },   
+        },
         callback: {
             value: function(filters, value) {
                 for (var stage = 0; stage < 4; stage++) {
                     filters[stage].frequency.value = value;
                 }
             }
-        }, 
+        },
         depth: {
             get: function () {return this._depth},
             set: function(value) {
@@ -823,7 +827,7 @@
                 this.lfoL.oscillation = this._baseModulationFrequency * this._depth;
                 this.lfoR.oscillation = this._baseModulationFrequency * this._depth;
             }
-        }, 
+        },
         rate: {
             get: function () {return this._rate},
             set: function(value) {
@@ -899,7 +903,7 @@
                 frequency: {value: 1.5, min: 0.1, max: 11, automatable: false, type: FLOAT}, 
                 intensity: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
                 stereoPhase: {value: 0, min: 0, max: 180, automatable: false, type: FLOAT}, 
-                rate: {value: 0.1, min: 0.1, max: 11, automatable: false, type: FLOAT}
+                rate: {value: 5, min: 0.1, max: 11, automatable: false, type: FLOAT}
             }
         },  
         intensity: {
@@ -1219,6 +1223,7 @@
             }
         },
         activate: {
+            //OSKAR: what's this?
             value: function (doActivate) {
                 if(!doActivate) {
                     this.output.disconnect(userContext.destination);
