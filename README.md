@@ -1,4 +1,4 @@
-OBS. tuna.js is currently very much alpha, we'll reach beta during the coming weeks!
+OBS. tuna.js is currently very much beta.
 
 Latest news
 ====
