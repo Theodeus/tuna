@@ -1170,7 +1170,7 @@
         this.offset = properties.offset || this.defaults.offset.value;
         this.oscillation = properties.oscillation || this.defaults.oscillation.value;
         this.phase = properties.phase || this.defaults.phase.value;
-        this.target = properties.target || {};
+        this.target = properties.target || (console.error("tuna.js: missing lfo target param."), {});
         this.output.onaudioprocess = this.callback(properties.callback || function () {});
         this.bypass = false;
     }
