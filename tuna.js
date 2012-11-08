@@ -363,7 +363,7 @@
 
         this.compNode.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
-
+        
         this.automakeup = properties.automakeup || this.defaults.automakeup.value;
         this.makeupGain = properties.makeupGain || this.defaults.makeupGain.value;
         this.threshold = properties.threshold || this.defaults.threshold.value;
@@ -581,7 +581,7 @@
         name: {value: "Delay"},
         defaults: {
             value: {
-                delayTime: {value: 30, min: 20, max: 10000, automatable: false, type: FLOAT},
+                delayTime: {value: 30, min: 20, max: 1000, automatable: false, type: FLOAT},
                 feedback: {value: 0.45, min: 0, max: 0.9, automatable: true, type: FLOAT},
                 cutoff: {value: 20, min: 20, max: 20000, automatable: true, type: FLOAT},
                 wetLevel: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT},
@@ -800,11 +800,10 @@
         stage: {value: 4},
         defaults: {
             value: {
-                frequency: {value: 1, min: 0, max: 8, automatable: false, type: FLOAT},
-                rate: {value: 0.3, min: 0, max: 8, automatable: false, type: FLOAT},
-                depth: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
-                feedback: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT},
-                stereoPhase: {value: 30, min: 0, max: 180, automatable: false, type: FLOAT},
+                rate: {value: 0.1, min: 0, max: 8, automatable: false, type: FLOAT},
+                depth: {value: 0.6, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                feedback: {value: 0.7, min: 0, max: 1, automatable: false, type: FLOAT},
+                stereoPhase: {value: 40, min: 0, max: 180, automatable: false, type: FLOAT},
                 baseModulationFrequency: {value: 700, min: 500, max: 1500, automatable: false, type: FLOAT}
             }
         },   
@@ -895,7 +894,6 @@
         name: {value: "Tremolo"},
         defaults: {
             value: {
-                frequency: {value: 1.5, min: 0.1, max: 11, automatable: false, type: FLOAT}, 
                 intensity: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
                 stereoPhase: {value: 0, min: 0, max: 180, automatable: false, type: FLOAT}, 
                 rate: {value: 5, min: 0.1, max: 11, automatable: false, type: FLOAT}

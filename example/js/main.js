@@ -6,7 +6,7 @@ webkitAudioContext &&
         tuna = new Tuna(context), 
         player = document.getElementById('player'),
         sourceNode = context.createMediaElementSource(player),
-        names = [/*"Filter","Cabinet","Chorus","Convolver","Delay",*/"WahWah", /*"Tremolo", "Phaser",*/"Overdrive", /*"Compressor"*/],
+        names = ["Filter","Cabinet","Chorus","Convolver","Delay","WahWah", "Tremolo", "Phaser","Overdrive", "Compressor"],
         proto = "prototype",
         tabs = Object.create(null),
         effects = Object.create(null),
@@ -15,8 +15,9 @@ webkitAudioContext &&
         slice = TAU / 12,
         knobRadius = 20,
         movingKnob = false,
-        activeEffect,
+        fxInterface,
         knobNames,
+        masterGain,
         ctx;
     function Tab (parent, name) {
         var tab = document.createElement("div"),
@@ -30,8 +31,9 @@ webkitAudioContext &&
         parent.appendChild(tab);
         return tab;
     }
-    function CheckBox (x, y, name, index) {
-        this.active = false;
+    function CheckBox (x, y, name, index, parent) {
+        this.active = parent[name];
+        this.parentName = parent.name;
         this.x = x;
         this.y = y;
         this.name = name;
@@ -51,8 +53,12 @@ webkitAudioContext &&
             }
         }
     });
-    function Knob (x, y, name, index) {
-        this.theta = 0;
+    function Knob (x, y, name, index, parent) {
+        this.parent = parent;
+        this.param = parent[name] === undefined ? parent["_" + name] : parent[name];
+        var value = this.param["value"] === undefined ? this.param : this.param.value;
+        this.range = parent.defaults[name].max - parent.defaults[name].min;
+        this.theta = (value / this.range) * slice * 10;
         this.x = x + 20; 
         this.y = y + 20;
         this.name = name;
@@ -67,7 +73,6 @@ webkitAudioContext &&
             value: function (y) {
                 var x2 = this.x + this.r * Math.cos(this.theta + slice * 4),
                     y2 = this.y + this.r * Math.sin(this.theta + slice * 4);
-                
                 ctx.circle(this.x, this.y, this.r, "#EEE", "#444");
                 ctx.line(this.x, this.y, x2, y2);
             }
@@ -84,14 +89,15 @@ webkitAudioContext &&
         }
         i = 0;
         for (var def in Tuna[proto][name][proto].defaults) {
+            if (def === "bypass") {continue}
             prop = Tuna[proto][name][proto].defaults[def];
             switch (prop.type) {
                 case "boolean":
-                    this.controls[def] = new CheckBox(offset, 10, def, i);
+                    this.controls[def] = new CheckBox(offset, 10, def, i, effects[name]);
                     this.controlsByIndex.push(this.controls[def]);
                     break;
                 case "float":
-                    this.controls[def] = new Knob(offset, 10, def, i);
+                    this.controls[def] = new Knob(offset, 10, def, i, effects[name]);
                     this.controlsByIndex.push(this.controls[def]);
                     break;
                 case "int":
@@ -132,8 +138,12 @@ webkitAudioContext &&
         movingKnob = false;
     }
     function move (e) {
+        if (e.srcElement.id === "player") {
+            masterGain.gain.value = e.srcElement.volume;
+        }
         if (!movingKnob) {return}
-        var y = e.pageY;
+        var y = e.pageY, 
+            normalized = 0;
         activeKnob.theta += (mouse.lastY - y > 0 ? 0.15 : -0.15);
 
         if (activeKnob.theta > activeKnob.upperLimit) {
@@ -142,7 +152,14 @@ webkitAudioContext &&
         if (activeKnob.theta < 0) {
             activeKnob.theta = 0;
         }
-        activeEffect.drawControls(y);
+        normalized = Math.pow(activeKnob.theta / (slice * 10), 2);
+        if (activeKnob.param["value"] !== undefined) {
+            activeKnob.param.value = normalized * activeKnob.range;
+        } else {
+            activeKnob.parent[activeKnob.name] = normalized * activeKnob.range;
+        }
+        
+        fxInterface.drawControls(y);
         mouse.lastY = y;
     }
     function tabDown (e) {
@@ -151,10 +168,10 @@ webkitAudioContext &&
             document.getElementById(tabDown.previous).classList.remove("activeTab");
         }
         el.classList.add("activeTab");
-        activeEffect = el.id.replace("_tab", "");
+        fxInterface = el.id.replace("_tab", "");
         deactivateAll();
-        effects[activeEffect].bypass = false;
-        activeEffect = new Interface(activeEffect);
+        effects[fxInterface].bypass = false;
+        fxInterface = new Interface(fxInterface);
         tabDown.previous = el.id;
     }
     function deactivateAll () {
@@ -164,15 +181,17 @@ webkitAudioContext &&
     }
     function interfaceDown (e) {
         var effectIndex = ~~(((e.layerX - 20)  / 780) * 8);
-        if (activeEffect.controlsByIndex[effectIndex]) {
-            switch (activeEffect.controlsByIndex[effectIndex].type) {
+        if (fxInterface.controlsByIndex[effectIndex]) {
+            switch (fxInterface.controlsByIndex[effectIndex].type) {
                 case "Knob":
-                    activeKnob = activeEffect.controlsByIndex[effectIndex];
+                    activeKnob = fxInterface.controlsByIndex[effectIndex];
                     movingKnob = true;
                     break;
                 case "CheckBox":
-                    //activeEffect.controlsByIndex[effectIndex].active = !activeEffect.controlsByIndex[effectIndex].active;
-                    activeEffect.controlsByIndex[effectIndex].draw();
+                    var box = fxInterface.controlsByIndex[effectIndex];
+                    box.active = !box.active;
+                    box.draw();
+                    effects[box.parentName][box.name] = box.active; 
                     break;
             }
         }
@@ -185,7 +204,6 @@ webkitAudioContext &&
             inter = document.getElementById("interface"),
             interface_canvas = document.getElementById("interface_canvas"),
             temp = inter.getBoundingClientRect();
-        window.ef = effects
         knobNames = document.getElementsByClassName("name");
         interface_canvas.width = 800;
         interface_canvas.height = 55;
@@ -199,10 +217,19 @@ webkitAudioContext &&
             }
             tabs[name] = Tab(tabsEl, name);
         }
-        effects[name].connect(context.destination);
+        var brickWall = new tuna.Compressor({
+            threshold: -10,
+            ratio: 50,
+            attack: 0
+        }); 
+        masterGain = context.createGainNode();
+        effects[name].connect(brickWall.input);
+        brickWall.connect(masterGain);
+        masterGain.connect(context.destination);
         document.addEventListener("mousedown", down);
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
+        deactivateAll();
     }
     init();
     sourceNode.connect(effects[names[0]].input);  
