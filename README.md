@@ -21,7 +21,7 @@ Effect list:
     <li>Convolver (Reverb)</li>
     <li>Compressor</li>
     <li>WahWah</li>
-    
+    <br />
     Coming soon:
     <li>Tremolo</li>
     <li>Phaser</li>
