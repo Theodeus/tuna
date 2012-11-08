@@ -1,6 +1,8 @@
-<strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request!
-
 OBS. tuna.js is currently very much alpha, we'll reach beta during the coming weeks!
+
+Latest news
+====
+<strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request!
 
 tuna
 ====
@@ -24,7 +26,7 @@ Effect list:
     <li>WahWah</li>
 </ul>
 
-Usage:
+Usage
 ====
 
 Start by creating a new Tuna object like so:
@@ -59,7 +61,7 @@ chorus.connect(anotherTunaNode.input);
 All tuna nodes are connected TO by using the nodes input property, but connecting FROM the tuna node works as it does with ordinary native AudioNodes.
 
 
-The nodes:
+The nodes
 ====
 
 A basic chorus effect.
