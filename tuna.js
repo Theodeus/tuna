@@ -581,7 +581,7 @@
         name: {value: "Delay"},
         defaults: {
             value: {
-                delayTime: {value: 30, min: 20, max: 10000, automatable: false, type: FLOAT},
+                delayTime: {value: 150, min: 20, max: 10000, automatable: false, type: FLOAT},
                 feedback: {value: 0.45, min: 0, max: 0.9, automatable: true, type: FLOAT},
                 cutoff: {value: 20, min: 20, max: 20000, automatable: true, type: FLOAT},
                 wetLevel: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT},
@@ -804,7 +804,8 @@
                 depth: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
                 feedback: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT},
                 stereoPhase: {value: 30, min: 0, max: 180, automatable: false, type: FLOAT},
-                baseModulationFrequency: {value: 700, min: 500, max: 1500, automatable: false, type: FLOAT}
+                baseModulationFrequency: {value: 700, min: 500, max: 1500, automatable: false, type: FLOAT},
+                bypass: {value: false, type:BOOLEAN, automatable:false}
             }
         },   
         callback: {
