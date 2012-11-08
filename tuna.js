@@ -25,7 +25,6 @@
                 context = window.webkitAudioContext && (new window.webkitAudioContext());
             }
             userContext = context;
-            window.ctx = userContext;
             userInstance = this;
         },
         version = "0.1",
@@ -36,16 +35,13 @@
             activate: {
                 writable: true, 
                 value: function (doActivate) {
-                    if(this.name === "Filter"){
-                        console.log("FILT");
-                    }
                     if (doActivate) {
-                        console.log("activating: " + this.name)
+                        //console.log("activating: " + this.name)
                         this.input.disconnect();
                         this.input.connect(this.activateNode);
                         this.activateCallback && this.activateCallback(doActivate);
                     } else {
-                        console.log("deactiving: " + this.name)
+                        //console.log("deactiving: " + this.name)
                         this.input.disconnect();
                         this.input.connect(this.output);
                     }
@@ -54,7 +50,7 @@
             bypass: {
                 get: function () {return this._bypass},
                 set: function (value) {
-                    if (this._lastBypassValue === value) {console.log("not performing bypass");return}
+                    if (this._lastBypassValue === value) {return}
                     this._bypass = value;
                     this.activate(!value);
                     this._lastBypassValue = value;
