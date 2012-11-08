@@ -581,7 +581,7 @@
         name: {value: "Delay"},
         defaults: {
             value: {
-                delayTime: {value: 30, min: 20, max: 10000, automatable: false, type: FLOAT},
+                delayTime: {value: 150, min: 20, max: 10000, automatable: false, type: FLOAT},
                 feedback: {value: 0.45, min: 0, max: 0.9, automatable: true, type: FLOAT},
                 cutoff: {value: 20, min: 20, max: 20000, automatable: true, type: FLOAT},
                 wetLevel: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT},
@@ -651,10 +651,11 @@
         name: {value: "Overdrive"},
         defaults: {
             value: {
-                drive: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
+                drive: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 outputGain: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
-                curveAmount: {value: 1, min: 0, max: 1, automatable: false, type: FLOAT},
-                algorithmIndex: {value: 0, automatable: false, type: INT}
+                curveAmount: {value: 0.6, min: 0, max: 1, automatable: false, type: FLOAT},
+                algorithmIndex: {value: 0, automatable: false, type: INT},
+                bypass: {value: true, automatable: false, type: BOOLEAN}
             }
         },  
         k_nSamples: {value: 8192},  

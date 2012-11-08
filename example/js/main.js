@@ -204,7 +204,8 @@ webkitAudioContext &&
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
         tabDown.previous = "Compressor_tab";
-        document.getElementById("Compressor_tab").classList.add("activeTab"); 
+        document.getElementById("Compressor_tab").classList.add("activeTab");
+        deactivateAll();
     }
     init();
     sourceNode.connect(effects[names[0]].input);  
