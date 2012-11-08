@@ -900,7 +900,7 @@
                 frequency: {value: 1.5, min: 0.1, max: 11, automatable: false, type: FLOAT}, 
                 intensity: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
                 stereoPhase: {value: 0, min: 0, max: 180, automatable: false, type: FLOAT}, 
-                rate: {value: 0.1, min: 0.1, max: 11, automatable: false, type: FLOAT}
+                rate: {value: 5, min: 0.1, max: 11, automatable: false, type: FLOAT}
             }
         },  
         intensity: {
