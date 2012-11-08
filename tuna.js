@@ -653,7 +653,7 @@
             value: {
                 drive: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 outputGain: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
-                curveAmount: {value: 0.6, min: 0, max: 1, automatable: false, type: FLOAT},
+                curveAmount: {value: 0.65, min: 0, max: 1, automatable: false, type: FLOAT},
                 algorithmIndex: {value: 0, automatable: false, type: INT},
                 bypass: {value: true, automatable: false, type: BOOLEAN}
             }
@@ -690,6 +690,7 @@
         waveshaperAlgorithms: {
             value: [
                 function (amount, n_samples, ws_table) {
+                    amount = Math.min(amount, 0.999);
                     var k = 2 * amount / (1 - amount), i, x;
                     for (i = 0; i < n_samples; i++) {
                         x = i * 2 / n_samples - 1;
