@@ -36,12 +36,10 @@
                 writable: true, 
                 value: function (doActivate) {
                     if (doActivate) {
-                        console.log("activating: " + this.name, this.activateNode)
                         this.input.disconnect();
                         this.input.connect(this.activateNode);
-                        //this.activateCallback && this.activateCallback(doActivate);
+                        this.activateCallback && this.activateCallback(doActivate);
                     } else {
-                        console.log("deactiving: " + this.name, this.output)
                         this.input.disconnect();
                         this.input.connect(this.output);
                     }
@@ -968,7 +966,7 @@
         name: {value: "WahWah"}, 
         defaults: {
             value: {
-                automode: {value: false, automatable: false, type: BOOLEAN},
+                automode: {value: true, automatable: false, type: BOOLEAN},
                 baseFrequency: {value: 0.5, min: 0, max: 1, automatable: false, type: FLOAT},
                 excursionOctaves: {value: 2, min: 1, max: 6, automatable: false, type: FLOAT}, 
                 sweep: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT}, 
