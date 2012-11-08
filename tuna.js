@@ -175,7 +175,7 @@
                 Q: {value: 1, min: 0.001, max: 100, automatable: true, type: FLOAT}, 
                 gain: {value: 0, min: -40, max: 40, automatable: true, type: FLOAT},
                 bypass: {value: true, automatable: false, type: BOOLEAN},
-                type: {value: 0, automatable: false, type: INT}
+                filterType: {value: 0, automatable: false, type: INT}
             }
         }, 
         filterType: {
