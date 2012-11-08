@@ -25,6 +25,7 @@
             }
             userContext = context;
         },
+        version = "0.1",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
         pipe = function (param, val) {param.value = val}, 
@@ -47,6 +48,11 @@
                     this.output.connect(target);
                 }
             },
+            disconnect: {
+                value: function () {
+                    this.output.disconnect();
+                }
+            },
             connectInOrder: {
                 value: function (nodeArray) {
                     var i = nodeArray.length - 1;
@@ -60,6 +66,15 @@
                             nodeArray[i].connect(nodeArray[i + 1]);
                         }
                     }
+                }
+            },
+            getDefaults: {
+                value: function () {
+                    var result = {};
+                    for (var key in this.defaults) {
+                        result[key] = this.defaults[key].value;
+                    }
+                    return result;
                 }
             },
             automate: {
@@ -88,7 +103,11 @@
                     }
                 } 
             }
-        });
+        }), 
+        FLOAT = "float",
+        BOOLEAN = "boolean",
+        STRING = "string",
+        INT = "int";
 
     function dbToWAVolume (db) {
         return Math.max(0, Math.round(100 * Math.pow(2, db / 6)) / 100);   
@@ -133,29 +152,29 @@
     function tanh (n) {
         return (Math.exp(n) - Math.exp(-n)) / (Math.exp(n) + Math.exp(-n));
     }
-//---------------------------------------------------------------------------------//
-//-------------------------------AudioNode Subclasses------------------------------//
-//---------------------------------------------------------------------------------//
     Tuna.prototype.Filter = function (properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.filter = this.activateNode = userContext.createBiquadFilter();
         this.output = userContext.createGainNode();
 
         this.filter.connect(this.output);
         
-        this.frequency = properties.frequency;
-        this.Q = properties.resonance;
-        this.filterType = properties.filterType;
-        this.gain = properties.gain;
+        this.frequency = properties.frequency || this.defaults.frequency.value;
+        this.Q = properties.resonance || this.defaults.Q.value;
+        this.filterType = properties.filterType || this.defaults.filterType.value;
+        this.gain = properties.gain || this.defaults.gain.value;
     };
     Tuna.prototype.Filter.prototype = Object.create(Super, {
         name: {value: "Filter"},
         defaults: {
             value: {
-                frequency: {value: 20, min: 20, max: 22050, automatable: true, type: _FLOAT},
-                Q: {value: 1, min: 0.001, max: 100, automatable: true, type: _FLOAT}, 
-                gain: {value: 0, min: -40, max: 40, automatable: true, type: _FLOAT},
-                bypass: {value: true, automatable: false, type: _BOOLEAN},
+                frequency: {value: 20, min: 20, max: 22050, automatable: true, type: FLOAT},
+                Q: {value: 1, min: 0.001, max: 100, automatable: true, type: FLOAT}, 
+                gain: {value: 0, min: -40, max: 40, automatable: true, type: FLOAT},
+                bypass: {value: true, automatable: false, type: BOOLEAN},
                 type: {value: 0, automatable: false, type: INT}
             }
         }, 
@@ -187,9 +206,11 @@
                 this.filter.frequency.value = value;
             }
         }
-    });
-//---------------------------------------------------------------------------------//
+    }); 
     Tuna.prototype.Cabinet = function (properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
         this.convolver = this.newConvolver(properties.impulsePath);
@@ -200,16 +221,16 @@
         this.convolver.output.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.makeupGain = properties.makeupGain;
+        this.makeupGain = properties.makeupGain || this.defaults.makeupGain;
         this.convolver.activate(true);
     }
     Tuna.prototype.Cabinet.prototype = Object.create(Super, {
         name: {value: "Cabinet"},
         defaults: {
             value: {
-                makeupGain: {value: 1, min: 0, max: 20, automatable: true, type: _FLOAT},
-                impulsePath: {value: "impulse.wav", automatable: false, type: STRING}
-                bypass: {value: true, automatable: false, type: _BOOLEAN}
+                makeupGain: {value: 1, min: 0, max: 20, automatable: true, type: FLOAT},
+                impulsePath: {value: "impulse.wav", automatable: false, type: STRING},
+                bypass: {value: true, automatable: false, type: BOOLEAN}
             }
         },
         makeupGain: {
@@ -225,8 +246,10 @@
             }
         }
     });
-//---------------------------------------------------------------------------------//
     Tuna.prototype.Chorus = function (properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.attenuator = this.activateNode = userContext.createGainNode();
         this.splitter = userContext.createChannelSplitter(2);
@@ -253,10 +276,10 @@
         this.delayR.connect(this.merger, 0, 1);
         this.merger.connect(this.output);
         
-        this.feedback = properties.feedback;
-        this.rate = properties.rate;
-        this.delay = properties.delay;
-        this.depth = properties.depth;
+        this.feedback = properties.feedback || this.defaults.feedback.value;
+        this.rate = properties.rate || this.defaults.rate.value;
+        this.delay = properties.delay || this.defaults.delay.value;
+        this.depth = properties.depth || this.defaults.depth.value;
         this.lfoR.phase = Math.PI / 2;
         this.attenuator.gain.value = 0.6934; // 1 / (10 ^ (((20 * log10(3)) / 3) / 20))
 
@@ -267,18 +290,18 @@
         name: {value: "Chorus"}, 
         defaults: {
             value: {
-                feedback: {value: 0.4, min: 0, max: 1, automatable: false, type: _FLOAT}, 
-                delay: {value: 0.0045, min: 0, max: 1, automatable: false, type: _FLOAT},
-                depth: {value: 0.7, min: 0, max: 1, automatable: false, type: _FLOAT},
-                rate: {value: 1.5, min: 0, max: 8, automatable: false, type: _FLOAT}, 
-                bypass: {value: true, automatable: false, type: _BOOLEAN}
+                feedback: {value: 0.4, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                delay: {value: 0.0045, min: 0, max: 1, automatable: false, type: FLOAT},
+                depth: {value: 0.7, min: 0, max: 1, automatable: false, type: FLOAT},
+                rate: {value: 1.5, min: 0, max: 8, automatable: false, type: FLOAT}, 
+                bypass: {value: true, automatable: false, type: BOOLEAN}
             }
         },
         delay: {
             enumerable: true,
             get: function () {return this._delay},
             set: function (value) {
-                this._delay = 0.0002 * Math.pow(10, value) * 2);
+                this._delay = 0.0002 * (Math.pow(10, value) * 2);
                 this.lfoL.offset = this._delay; 
                 this.lfoR.offset = this._delay;
                 this._depth = this._depth;
@@ -312,8 +335,10 @@
             }
         }
     });
-//---------------------------------------------------------------------------------// 
     Tuna.prototype.Compressor = function (properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.compNode = this.activateNode = userContext.createDynamicsCompressor();
         this.makeupNode = userContext.createGainNode();
@@ -322,26 +347,26 @@
         this.compNode.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.automakeup = properties.automakeup;
-        this.makeupGain = properties.makeupGain;
-        this.threshold = properties.threshold;
-        this.release = properties.release;
-        this.attack = properties.attack;
-        this.ratio = properties.ratio;
-        this.knee = properties.knee;
+        this.automakeup = properties.automakeup || this.defaults.automakeup.value;
+        this.makeupGain = properties.makeupGain || this.defaults.makeupGain.value;
+        this.threshold = properties.threshold || this.defaults.threshold.value;
+        this.release = properties.release || this.defaults.release.value;
+        this.attack = properties.attack || this.defaults.attack.value;
+        this.ratio = properties.ratio || this.defaults.ratio.value;
+        this.knee = properties.knee || this.defaults.knee.value;
     };
     Tuna.prototype.Compressor.prototype = Object.create(Super, {
         name: {value: "Compressor"},
         defaults: {
             value: {
-                threshold: {value: -20, min: -80, max: 0, automatable: true, type: _FLOAT},
-                release: {value: 250, min: 10, max: 2000, automatable: true, type: _FLOAT},
-                makeupGain: {value: 1, min: 1, max: 100, automatable: true, type: _FLOAT},
-                attack: {value: 1, min: 0, max: 1000, automatable: true, type: _FLOAT},
-                ratio: {value: 4, min: 1, max: 50, automatable: true, type: _FLOAT},
-                knee: {value: 5, min: 0, max: 40, automatable: true, type: _FLOAT}, 
-                automakeup: {value: false, automatable: false, type: _BOOLEAN},
-                bypass: {value: true, automatable: false, type: _BOOLEAN}
+                threshold: {value: -20, min: -80, max: 0, automatable: true, type: FLOAT},
+                release: {value: 250, min: 10, max: 2000, automatable: true, type: FLOAT},
+                makeupGain: {value: 1, min: 1, max: 100, automatable: true, type: FLOAT},
+                attack: {value: 1, min: 0, max: 1000, automatable: true, type: FLOAT},
+                ratio: {value: 4, min: 1, max: 50, automatable: true, type: FLOAT},
+                knee: {value: 5, min: 0, max: 40, automatable: true, type: FLOAT}, 
+                automakeup: {value: false, automatable: false, type: BOOLEAN},
+                bypass: {value: true, automatable: false, type: BOOLEAN}
             }
         },
         computeMakeup: {
@@ -405,8 +430,10 @@
             }
         }
     });
-//---------------------------------------------------------------------------------//
     Tuna.prototype.Convolver = function (properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
         this.convolver = userContext.createConvolver();
@@ -424,12 +451,12 @@
         this.wet.connect(this.output);
         this.dry.connect(this.output);
 
-        this.dryLevel = properties.dryLevel;
-        this.wetLevel = properties.wetLevel;
-        this.highCut = properties.highCut;
-        this.buffer = properties.impulse;
-        this.lowCut = properties.lowCut;
-        this.level = properties.level;
+        this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
+        this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
+        this.highCut = properties.highCut|| this.defaults.highCut.value;
+        this.buffer = properties.impulse || this.defaults.impulse.value;
+        this.lowCut = properties.lowCut || this.defaults.lowCut.value;
+        this.level = properties.level || this.defaults.level.value;
         this.filterHigh.type = 0; 
         this.filterLow.type = 1;
     };
@@ -437,11 +464,11 @@
         name: {value: "Convolver"},
         defaults: {
             value: {
-                highCut: {value: 22050, min: 20, max: 22050, automatable: true, type: _FLOAT},
-                lowCut: {value: 20, min: 20, max: 22050, automatable: true, type: _FLOAT}, 
-                dryLevel: {value: 1, min: 0, max: 1, automatable: true, type: _FLOAT}, 
-                wetLevel: {value: 1, min: 0, max: 1, automatable: true, type: _FLOAT}, 
-                level: {value: 1, min: 0, max: 1, automatable: true, type: _FLOAT}
+                highCut: {value: 22050, min: 20, max: 22050, automatable: true, type: FLOAT},
+                lowCut: {value: 20, min: 20, max: 22050, automatable: true, type: FLOAT}, 
+                dryLevel: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT}, 
+                wetLevel: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT}, 
+                level: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT}
             }
         }, 
         lowCut: {
@@ -501,9 +528,10 @@
             }
         }
     });
-//---------------------------------------------------------------------------------//
     Tuna.prototype.Delay = function(properties) {
-        //Instantiate AudioNodes
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
         this.dry = userContext.createGainNode();
@@ -513,7 +541,6 @@
         this.feedbackNode = userContext.createGainNode();
         this.output = userContext.createGainNode();
        
-        //Connect the AudioNodes
         this.activateNode.connect(this.delay);
         this.activateNode.connect(this.dry)
         this.delay.connect(this.feedbackNode);
@@ -523,30 +550,29 @@
         this.wet.connect(this.output);
         this.dry.connect(this.output);
 
-        //Set properties
-        this.delayTime = properties.delayTime;
-        this.feedback = properties.feedback;
-        this.wetLevel = properties.wetLevel;
-        this.dryLevel = properties.dryLevel;
-        this.cutoff = properties.cutoff;
+        this.delayTime = properties.delayTime || this.defaults.delayTime.value;
+        this.feedback = properties.feedback || this.defaults.feedback.value;
+        this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
+        this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
+        this.cutoff = properties.cutoff || this.defaults.cutoff.value;
         this.filter.type = 1;
     };
     Tuna.prototype.Delay.prototype = Object.create(Super, {
         name: {value: "Delay"},
         defaults: {
             value: {
-                delayTime: {value: 30, min: 20, max: 10000, automatable: false, type: _FLOAT},
-                feedback: {value: 0.45, min: 0, max: 0.9, automatable: true, type: _FLOAT},
-                cutoff: {value: 20, min: 20, max: 20000, automatable: true, type: _FLOAT},
-                wetLevel: {value: 0.5, min: 0, max: 1, automatable: true, type: _FLOAT},
-                dryLevel: {value: 1, min: 0, max: 1, automatable: true, type: _FLOAT},
+                delayTime: {value: 30, min: 20, max: 10000, automatable: false, type: FLOAT},
+                feedback: {value: 0.45, min: 0, max: 0.9, automatable: true, type: FLOAT},
+                cutoff: {value: 20, min: 20, max: 20000, automatable: true, type: FLOAT},
+                wetLevel: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT},
+                dryLevel: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT},
             }
         }, 
         delayTime: {
             enumerable: true,
             get: function () {return this.delay.delayTime}, 
             set: function (value) {
-                this.delay.delayTime = ~~(value / 1000);
+                this.delay.delayTime.value = value / 1000;
             }
         }, 
         wetLevel: {
@@ -578,70 +604,10 @@
             }
         }
     });
-//---------------------------------------------------------------------------------//
-    /*Tuna.Equalizer = (function () {
-        var propertyNames = ["frequency", "gain", "Q", "type"];
-        function Equalizer (properties) {
-            
-            this._defaults = DMAF.Descriptors.type.audioNode.equalizer;
-            this.nbands = properties.bands.length;
-            
-            for(var i = 0, ii = this._nbands; i < ii; i++) {
-                //addBand.call(this, i);
-            }
-
-            this.input = userContext.createGainNode();
-            this.output = userContext.createGainNode();
-            //this.activateNode = this.bands[0];
-            this.activateNode = userContext.createGainNode();    
-            return;
-            //Connect the AudioNodes
-            this.connectInOrder(this.bands);
-            this.bands[this.nbands - 1].connect(this.output);
-
-            //Set properties for each band
-            for(i = 0; i < this._nbands; i++) {
-                for(var j = 0, jj = propertyNames.length; j < jj; j++) {
-                    var current = "band" + i + ":" + propertyNames[j];
-                    this[current] = properties[current];
-                }
-            }
-        };
-        //Using mixin pattern here pretty heavily...This is a bit tricky.
-        //EQ is kind of the odd one out as far as nodes go. 
-        //I think this is the best way to handle it as now the params of the EQ
-        //Can be treated like any other audioNode parameter. 
-        function addBandParam(i, param) {
-            var access = "band" + i + ":" + param;
-            Object.defineProperty(this, access, {
-                enumerable: true, 
-                get: function () {return this.bands[i][param]}, 
-                set: function (value) {
-                    if(param === "type") {
-                        this.bands[i][param] = this.verify(param, value);
-                    } else {
-                        this.bands[i][param].value = this.verify(param, value);
-                    }
-                }
-            });
-            this.defaults[access] = this._defaults[param];
-        }
-        function addBand (i) {
-            this.bands[i] = userContext.createBiquadFilter();
-            addBandParam.apply(this, [i, "frequency"]);
-            addBandParam.apply(this, [i, "type"]);
-            addBandParam.apply(this, [i, "gain"]);
-            addBandParam.apply(this, [i, "Q"]);
-        }
-        return Equalizer;
-    })();
-    Tuna.Equalizer.prototype = Object.create(Super, {
-        name: {value: "Equalizer"}, 
-        propertySearch: {value: /:bypass|:type|:frequency|:gain|:q/i}
-    });*/
-//---------------------------------------------------------------------------------//
     Tuna.prototype.Overdrive = function(properties) {
-        //Instantiate AudioNodes
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
         this.inputDrive = userContext.createGainNode();
@@ -649,27 +615,25 @@
         this.outputDrive = userContext.createGainNode();
         this.output = userContext.createGainNode();
 
-        //Connect AudioNodes
         this.activateNode.connect(this.inputDrive);
         this.inputDrive.connect(this.waveshaper);
         this.waveshaper.connect(this.outputDrive);
         this.outputDrive.connect(this.output);
 
-        //Set Properties
         this.ws_table = new Float32Array(this.k_nSamples);
-        this.drive = properties.drive; 
-        this.outputGain = properties.outputGain;
-        this.curveAmount = properties.curveAmount;
-        this.algorithm = properties.algorithmIndex;
+        this.drive = properties.drive || this.defaults.drive.value; 
+        this.outputGain = properties.outputGain || this.defaults.outputGain.value;
+        this.curveAmount = properties.curveAmount || this.defaults.curveAmount.value;
+        this.algorithm = properties.algorithmIndex || this.defaults.algorithmIndex.value;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
         name: {value: "Overdrive"},
         defaults: {
             value: {
-                drive: {value: 0.5, min: 0, max: 1, automatable: true, type: _FLOAT, scaled: true}, 
-                outputGain: {value: 1, min: 0, max: 1, automatable: true, type: _FLOAT, scaled: true}, 
-                curveAmount: {value: 1, min: 0, max: 1, automatable: false, type: _FLOAT},
-                algorithmIndex: {value: 0, automatable: false, type: _INT}
+                drive: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
+                outputGain: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
+                curveAmount: {value: 1, min: 0, max: 1, automatable: false, type: FLOAT},
+                algorithmIndex: {value: 0, automatable: false, type: INT}
             }
         },  
         k_nSamples: {value: 8192},  
@@ -762,134 +726,10 @@
             ]
         }
     });
-//---------------------------------------------------------------------------------//
-    /*Tuna.PingPongDelay = function(properties) {
-        this.input = userContext.createGainNode();
-        this.activateNode = userContext.createGainNode();
-        this.dry = userContext.createGainNode();
-        this.splitter = userContext.createChannelSplitter(2);
-        this.toMono = userContext.createGainNode();
-        this.wet = userContext.createGainNode();
-        this.feedbackNode = userContext.createGainNode();
-        this.delayL = new Tuna.Delay(properties);
-        this.delayR = new Tuna.Delay(properties);
-        this.merger = userContext.createChannelMerger();
-        this.output = userContext.createGainNode();
-        this.activateNode = this.dry;
-        
-        this.activateNode.connect(this.dry);
-        this.activateNode.connect(this.splitter);
-        this.splitter.connect(this.toMono, 0, 0);
-        this.splitter.connect(this.toMono, 1, 0);
-        this.toMono.connect(this.wet);
-        this.wet.connect(this.delayL.delay);
-        this.feedbackNode.connect(this.delayL.delay);
-        this.delayL.delay.connect(this.delayR.delay);
-        this.delayR.delay.connect(this.feedbackNode);
-        this.delayL.delay.connect(this.merger, 0, 0);
-        this.delayR.delay.connect(this.merger, 0, 1);
-        this.dry.connect(this.output);
-        this.merger.connect(this.output);
-
-        //Set Properties
-        this.delayL.feedback = 0;
-        this.delayR.feedback = 0;
-        this.delayL.wetLevel = 1;
-        this.delayR.wetLevel = 1;
-        this.delayL.dryLevel = 0;
-        this.delayR.dryLevel = 0;
-
-        this.defaults = DMAF.Descriptors.type.audioNode.pingPongDelay;
-        this.cutoff = properties.cutoff;
-        this.tempoSync = properties.tempoSync;
-        if (this.tempoSync) {
-            this.subdivision = properties.subdivision;
-        } 
-        this.delayTime = properties.delayTime;
-        this.feedback = properties.feedback;
-        this.wetLevel = properties.wetLevel;
-        this.dryLevel = properties.dryLevel;
-    };
-    Tuna.PingPongDelay.prototype = Object.create(Super, {
-        name: {value: "PingPongDelay"},
-        tempoSync: {
-            get: function () {return this._tempoSync},
-            set: function (value) {
-                var player = DMAF.ProcessorManager.getActiveInstance(value);
-                if (player) {
-                    this.tempo = player.tempo;
-                } else {
-                    this.tempo = 120;
-                }
-                this._tempoSync = this.verify("tempoSync", value);
-                this.delayL.tempoSync = this._tempoSync;
-                this.delayR.tempoSync = this._tempoSync;
-            }
-        }, 
-        tempo: {
-            get: function () {return this._tempo}, 
-            set: function (value) {
-                this._tempo = value;
-                this.delayL.tempo = value;
-                this.delayR.tempo = value;
-            }
-        },
-        subdivision: {
-            get: function () {return this._subdivision},
-            set: function (value) {
-                this._subdivision = this.verify("subdivision", value);
-                this.delayL.subdivision = this._subdivision;
-                this.delayR.subdivision = this._subdivision;
-            }
-        },
-        delayTime: {
-            enumerable: true,
-            get: function () {return this._delayTime}, 
-            set: function (value) {
-                if (this._tempoSync) {
-                    this._delayTime = this.verify("delayTime",  60 * delayConstants[this.subdivision] / this.tempo)
-                    this.delayL.delayTime = this._delayTime;
-                    this.delayR.delayTime = this._delayTime;
-                } else {
-                    this._delayTime = this.verify("delayTime", value) / 1000;
-                    this.delayL.delayTime = value;
-                    this.delayR.delayTime = value;
-                }
-            }
-        }, 
-        wetLevel: {
-            enumerable: true,
-            get: function () {return this.wet.gain}, 
-            set: function (value) {
-                this.wet.gain.value = this.verify("wetLevel", value);
-            }
-        }, 
-        dryLevel: {
-            enumerable: true, 
-            get: function () {return this.dry.gain}, 
-            set: function (value) {
-                this.dry.gain.value = this.verify("dryLevel", value);
-            }
-        }, 
-        feedback: {
-            enumerable: true, 
-            get: function () {return this.feedbackNode.gain}, 
-            set: function (value) {
-                this.feedbackNode.gain.value = this.verify("feedback", value);
-            }
-        }, 
-        cutoff: {
-            enumerable: true, 
-            get: function () {return this.filter.frequency},
-            set: function (value) {
-                this.delayL.filter.frequency.value = this.verify("cutoff", value);
-                this.delayR.filter.frequency.value = this.verify("cutoff", value);
-            }
-        }
-    });*/
-//---------------------------------------------------------------------------------//
     Tuna.prototype.Phaser = function(properties) {
-        //Instantiate AudioNodes
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.splitter = this.activateNode = userContext.createChannelSplitter(2);
         this.filtersL = [];
@@ -902,7 +742,6 @@
         this.lfoL = new Tuna.LFO({target: this.filtersL, callback: this.callback});
         this.lfoR = new Tuna.LFO({target: this.filtersR, callback: this.callback});
 
-        //Instantiate Left and Right Filter AudioNode Arrays
         var i = this.stage;
         while(i--) {
             this.filtersL[i] = userContext.createBiquadFilter();
@@ -910,7 +749,6 @@
             this.filtersL[i].type = 7;
             this.filtersR[i].type = 7;
         };
-        //Connect Nodes
         this.input.connect(this.splitter);
         this.input.connect(this.output);
         this.splitter.connect(this.filtersL[0], 0, 0);
@@ -925,14 +763,12 @@
         this.feedbackGainNodeR.connect(this.filtersR[0]);
         this.merger.connect(this.output);
         
-        //Set Values
-        this.rate = properties.rate;
-        this.baseModulationFrequency = properties.baseModulationFrequency;
-        this.depth = properties.depth;
-        this.feedback = properties.feedback;
-        this.stereoPhase = properties.stereoPhase;
+        this.rate = properties.rate || this.defaults.rate.value;
+        this.baseModulationFrequency = properties.baseModulationFrequency || this.defaults.baseModulationFrequency.value;
+        this.depth = properties.depth || this.defaults.depth.value;
+        this.feedback = properties.feedback || this.defaults.feedback.value;
+        this.stereoPhase = properties.stereoPhase || this.defaults.stereoPhase.value;
 
-        //Activate LFOs
         this.lfoL.activate(true);
         this.lfoR.activate(true);
     };
@@ -941,12 +777,12 @@
         stage: {value: 4},
         defaults: {
             value: {
-                frequency: {value: 1, min: 0, max: 8, automatable: false, type: _FLOAT},
-                rate: {value: 0.3, min: 0, max: 8, automatable: false, type: _FLOAT},
-                depth: {value: 0.3, min: 0, max: 1, automatable: false, type: _FLOAT}, 
-                feedback: {value: 0.2, min: 0, max: 1, automatable: false, type: _FLOAT},
-                stereoPhase: {value: 30, min: 0, max: 180, automatable: false, type: _FLOAT},
-                baseModulationFrequency: {value: 700, min: 500, max: 1500, automatable: false, type: _FLOAT}
+                frequency: {value: 1, min: 0, max: 8, automatable: false, type: FLOAT},
+                rate: {value: 0.3, min: 0, max: 8, automatable: false, type: FLOAT},
+                depth: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                feedback: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT},
+                stereoPhase: {value: 30, min: 0, max: 180, automatable: false, type: FLOAT},
+                baseModulationFrequency: {value: 700, min: 500, max: 1500, automatable: false, type: FLOAT}
             }
         },   
         callback: {
@@ -1000,9 +836,10 @@
             }
         }
     });
-//---------------------------------------------------------------------------------//
     Tuna.prototype.Tremolo = function(actionProperties) {
-        //Instantiate AudioNodes
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode()
         this.splitter = this.activateNode = userContext.createChannelSplitter(2),
         this.amplitudeL = userContext.createGainNode(),
@@ -1012,7 +849,6 @@
         this.lfoL = new Tuna.LFO({target: this.amplitudeL.gain, callback: pipe});
         this.lfoR = new Tuna.LFO({target: this.amplitudeR.gain, callback: pipe});
 
-        //Connect AudioNodes
         this.input.connect(this.splitter);
         this.splitter.connect(this.amplitudeL, 0);
         this.splitter.connect(this.amplitudeR, 1);
@@ -1020,17 +856,14 @@
         this.amplitudeR.connect(this.merger, 0, 1);
         this.merger.connect(this.output);
 
-        //Set Values
-        this.rate = actionProperties.rate;
-        this.intensity = actionProperties.intensity;
-        this.stereoPhase = actionProperties.stereoPhase;
+        this.rate = actionProperties.rate || this.defaults.rate.value;
+        this.intensity = actionProperties.intensity || this.defaults.intensity.value;
+        this.stereoPhase = actionProperties.stereoPhase || this.defaults.stereoPhase.value;
 
-        //Set LFO Values
         this.lfoL.offset = 1 - (this.intensity / 2);
         this.lfoR.offset = 1 - (this.intensity / 2);
         this.lfoL.phase = this.stereoPhase * Math.PI / 180;  
 
-        //Activate LFOs
         this.lfoL.activate(true);
         this.lfoR.activate(true);
     };
@@ -1038,10 +871,10 @@
         name: {value: "Tremolo"},
         defaults: {
             value: {
-                frequency: {value: 1.5, min: 0.1, max: 11, automatable: false, type: _FLOAT}, 
-                intensity: {value: 0.3, min: 0, max: 1, automatable: false, type: _FLOAT}, 
-                stereoPhase: {value: 0, min: 0, max: 180, automatable: false, type: _FLOAT}, 
-                rate: {value: 0.1, min: 0.1, max: 11, automatable: false, type: _FLOAT}
+                frequency: {value: 1.5, min: 0.1, max: 11, automatable: false, type: FLOAT}, 
+                intensity: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                stereoPhase: {value: 0, min: 0, max: 180, automatable: false, type: FLOAT}, 
+                rate: {value: 0.1, min: 0.1, max: 11, automatable: false, type: FLOAT}
             }
         },  
         intensity: {
@@ -1064,7 +897,7 @@
                 this.lfoR.frequency = this._rate;
             }
         },
-        steroPhase: {
+        stereoPhase: {
             enumerable: true,
             get: function () {return this._rate},
             set: function (value) {
@@ -1076,7 +909,9 @@
         },
     });
     Tuna.prototype.WahWah = function (properties) {
-        //Instantiate AudioNodes
+        if (!properties) {
+            properties = this.getDefaults();
+        }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
         this.envelopeFollower = new Tuna.EnvelopeFollower({target: this, callback: function (context, value) {
@@ -1093,12 +928,12 @@
 
         //Set Properties
         this.init();
-        this.automode = properties.enableAutoMode;
-        this.resonance = properties.resonance;
-        this.sensitivity = properties.sensitivity;
-        this.baseFrequency = properties.baseFrequency;
-        this.excursionOctaves = properties.excursionOctaves;
-        this.sweep = properties.sweep;
+        this.automode = properties.enableAutoMode || this.defaults.automode.value;
+        this.resonance = properties.resonance || this.defaults.resonance.value;
+        this.sensitivity = properties.sensitivity || this.defaults.sensitivity.value;
+        this.baseFrequency = properties.baseFrequency || this.defaults.baseFrequency.value;
+        this.excursionOctaves = properties.excursionOctaves || this.defaults.excursionOctaves.value;
+        this.sweep = properties.sweep || this.defaults.sweep.value;
 
         this.envelopeFollower.activate(true);
     };
@@ -1106,11 +941,11 @@
         name: {value: "WahWah"}, 
         defaults: {
             value: {
-                baseFrequency: {value: 0.5, min: 0, max: 1, automatable: false, type: _FLOAT},
-                excursionOctaves: {value: 2, min: 1, max: 6, automatable: false, type: _FLOAT}, 
-                sweep: {value: 0.2, min: 0, max: 1, automatable: false, type: _FLOAT}, 
-                resonance: {value: 10, min: 1, max: 100, automatable: false, type: _FLOAT}, 
-                sensitivity: {value: 0.5, min: -1, max: 1, automatable: false, type: _FLOAT}
+                baseFrequency: {value: 0.5, min: 0, max: 1, automatable: false, type: FLOAT},
+                excursionOctaves: {value: 2, min: 1, max: 6, automatable: false, type: FLOAT}, 
+                sweep: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                resonance: {value: 10, min: 1, max: 100, automatable: false, type: FLOAT}, 
+                sensitivity: {value: 0.5, min: -1, max: 1, automatable: false, type: FLOAT}
             }
         }, 
         activateCallback: {
@@ -1190,25 +1025,27 @@
             }
         }
     });
-//---------------------------------------------------------------------------------//
     Tuna.prototype.EnvelopeFollower = function (properties) {
-        this.input = userContext.createGainNode(),
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+        this.input = userContext.createGainNode();
         this.jsNode = this.output = userContext.createJavaScriptNode(this.buffersize, 1, 1);
 
         this.input.connect(this.output);
 
-        this.attackTime = properties.attackTime;
-        this.releaseTime = properties.releaseTime;
+        this.attackTime = properties.attackTime || this.defaults.attackTime.value;
+        this.releaseTime = properties.releaseTime || this.defaults.releaseTime.value;
         this._envelope = 0;
-        this.target = properties.target;
-        this.callback = properties.callback;  
+        this.target = properties.target || {};
+        this.callback = properties.callback || function () {}; 
     };
     Tuna.prototype.EnvelopeFollower.prototype = Object.create(Super, {
         name: {value: "EnvelopeFollower"},
         defaults: {
             value: {
-                attackTime: {value: 0.003, min: 0, max: 0.5, automatable: false, type: _FLOAT}, 
-                releaseTime: {value: 0.5, min: 0.5, max: 1, automatable: false, type: _FLOAT}
+                attackTime: {value: 0.003, min: 0, max: 0.5, automatable: false, type: FLOAT}, 
+                releaseTime: {value: 0.5, min: 0.5, max: 1, automatable: false, type: FLOAT}
             }
         },  
         buffersize: {value: 256}, 
@@ -1301,7 +1138,6 @@
             }
         }
     });
-//---------------------------------------------------------------------------------//
     Tuna.prototype.LFO = function (properties) {
         //Instantiate AudioNode
         this.output = userContext.createJavaScriptNode(256, 1, 1);
@@ -1321,10 +1157,10 @@
         sampleRate: {value: 44100},
         defaults: {
                 value: {
-                    frequency: {value: 1, min: 0, max: 20, automatable: false, type: _FLOAT}, 
-                    offset: {value: 0.85, min: 0, max: 22049, automatable: false, type: _FLOAT},
-                    oscillation: {value: 0.3, min: -22050, max: 22050, automatable: false, type: _FLOAT},
-                    phase: {value: 0, min: 0, max: 2 * Math.PI, automatable: false, type: _FLOAT}
+                    frequency: {value: 1, min: 0, max: 20, automatable: false, type: FLOAT}, 
+                    offset: {value: 0.85, min: 0, max: 22049, automatable: false, type: FLOAT},
+                    oscillation: {value: 0.3, min: -22050, max: 22050, automatable: false, type: FLOAT},
+                    phase: {value: 0, min: 0, max: 2 * Math.PI, automatable: false, type: FLOAT}
                 }
             }, 
         frequency: {
@@ -1381,4 +1217,8 @@
             }
         }
     });
+    Tuna.toString = Tuna.prototype.toString = function () {
+        return "You are running Tuna version " + version + " by Dinahmoe!";
+    };
+    (typeof define != "undefined" ? (define("Tuna", [], function () {return Tuna})) : window.Tuna = Tuna)
 })(this);
