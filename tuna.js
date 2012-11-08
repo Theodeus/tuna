@@ -18,12 +18,14 @@
 
  (function (window) {
     var userContext,
+        userInstance,
         Tuna = function (context) {
             if (!context) {
                 console.log("tuna.js: Missing audio context! Creating a new context for you.");
                 context = window.webkitAudioContext && (new window.webkitAudioContext());
             }
             userContext = context;
+            userInstance = this;
         },
         version = "0.1",
         set = "setValueAtTime",
@@ -34,7 +36,6 @@
                 writable: true, 
                 value: function (doActivate) {
                     this.input.disconnect();
-                    this._activated = doActivate;
                     if (doActivate) {
                         this.input.connect(this.activateNode);
                         this.activateCallback && this.activateCallback(doActivate);
@@ -42,6 +43,13 @@
                         this.input.connect(this.output);
                     }
                 }  
+            },
+            bypass: {
+                get: function () {return this._bypass},
+                set: function (value) {
+                    this._bypass = value;
+                    this.activate(!value);
+                }
             },
             connect: {
                 value: function (target) {
@@ -117,9 +125,9 @@
         // +   original by: Onno Marsman
         // +      input by: Brett Zamir (http://brett-zamir.me)
         // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-        var tmp, 
-            tmp2, 
-            p = 0,
+        // *     example 1: fmod(5.7, 1.3);
+        // *     returns 1: 0.5
+        var tmp, tmp2, p = 0,
             pY = 0,
             l = 0.0,
             l2 = 0.0;
@@ -132,11 +140,14 @@
         if (pY > p) {
             p = pY;
         }
+
         tmp2 = (x % y);
+
         if (p < -100 || p > 20) {
             // toFixed will give an out of bound error so we fix it like this:
             l = Math.round(Math.log(tmp2) / Math.log(10));
             l2 = Math.pow(10, l);
+
             return (tmp2 / l2).toFixed(l - p) * l2;
         } else {
             return parseFloat(tmp2.toFixed(-p));
@@ -166,16 +177,17 @@
         this.Q = properties.resonance || this.defaults.Q.value;
         this.filterType = properties.filterType || this.defaults.filterType.value;
         this.gain = properties.gain || this.defaults.gain.value;
+        this.bypass = false;
     };
     Tuna.prototype.Filter.prototype = Object.create(Super, {
         name: {value: "Filter"},
         defaults: {
             value: {
-                frequency: {value: 20, min: 20, max: 22050, automatable: true, type: FLOAT},
+                frequency: {value: 500, min: 20, max: 22050, automatable: true, type: FLOAT},
                 Q: {value: 1, min: 0.001, max: 100, automatable: true, type: FLOAT}, 
                 gain: {value: 0, min: -40, max: 40, automatable: true, type: FLOAT},
                 bypass: {value: true, automatable: false, type: BOOLEAN},
-                filterType: {value: 0, automatable: false, type: INT}
+                filterType: {value: 1, automatable: false, type: INT}
             }
         }, 
         filterType: {
@@ -213,7 +225,7 @@
         }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
-        this.convolver = this.newConvolver(properties.impulsePath);
+        this.convolver = this.newConvolver(properties.impulsePath || "../impulses/impulse_guitar.wav");
         this.makeupNode = userContext.createGainNode();
         this.output = userContext.createGainNode();
 
@@ -222,15 +234,14 @@
         this.makeupNode.connect(this.output);
 
         this.makeupGain = properties.makeupGain || this.defaults.makeupGain;
-        this.convolver.activate(true);
+        this.bypass = false;
     }
     Tuna.prototype.Cabinet.prototype = Object.create(Super, {
         name: {value: "Cabinet"},
         defaults: {
             value: {
                 makeupGain: {value: 1, min: 0, max: 20, automatable: true, type: FLOAT},
-                impulsePath: {value: "impulse.wav", automatable: false, type: STRING},
-                bypass: {value: true, automatable: false, type: BOOLEAN}
+                bypass: {value: false, automatable: false, type: BOOLEAN}
             }
         },
         makeupGain: {
@@ -242,7 +253,7 @@
         }, 
         newConvolver: {
             value: function (impulsePath) {
-                return new Tuna.Convolver({impulse: impulsePath, dryLevel: 0, wetLevel: 1});
+                return new userInstance.Convolver({impulse: impulsePath, dryLevel: 0, wetLevel: 1});
             }
         }
     });
@@ -260,8 +271,8 @@
         this.merger = userContext.createChannelMerger(2);
         this.output = userContext.createGainNode();
 
-        this.lfoL = new Tuna.LFO({target: this.delayL.delayTime, callback: pipe});
-        this.lfoR = new Tuna.LFO({target: this.delayR.delayTime, callback: pipe});
+        this.lfoL = new userInstance.LFO({target: this.delayL.delayTime, callback: pipe});
+        this.lfoR = new userInstance.LFO({target: this.delayR.delayTime, callback: pipe});
 
         this.input.connect(this.attenuator);
         this.attenuator.connect(this.output);
@@ -285,6 +296,7 @@
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
+        this.bypass = false;
     };
     Tuna.prototype.Chorus.prototype = Object.create(Super, {
         name: {value: "Chorus"}, 
@@ -354,6 +366,7 @@
         this.attack = properties.attack || this.defaults.attack.value;
         this.ratio = properties.ratio || this.defaults.ratio.value;
         this.knee = properties.knee || this.defaults.knee.value;
+        this.bypass = false;
     };
     Tuna.prototype.Compressor.prototype = Object.create(Super, {
         name: {value: "Compressor"},
@@ -454,11 +467,12 @@
         this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
         this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
         this.highCut = properties.highCut|| this.defaults.highCut.value;
-        this.buffer = properties.impulse || this.defaults.impulse.value;
+        this.buffer = properties.impulse || "../impulses/ir_rev_short.wav";
         this.lowCut = properties.lowCut || this.defaults.lowCut.value;
         this.level = properties.level || this.defaults.level.value;
         this.filterHigh.type = 0; 
         this.filterLow.type = 1;
+        this.bypass = false;
     };
     Tuna.prototype.Convolver.prototype = Object.create(Super, {
         name: {value: "Convolver"},
@@ -556,6 +570,7 @@
         this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
         this.filter.type = 1;
+        this.bypass = false;
     };
     Tuna.prototype.Delay.prototype = Object.create(Super, {
         name: {value: "Delay"},
@@ -625,6 +640,7 @@
         this.outputGain = properties.outputGain || this.defaults.outputGain.value;
         this.curveAmount = properties.curveAmount || this.defaults.curveAmount.value;
         this.algorithm = properties.algorithmIndex || this.defaults.algorithmIndex.value;
+        this.bypass = false;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
         name: {value: "Overdrive"},
@@ -739,8 +755,8 @@
         this.merger = userContext.createChannelMerger(2);
         this.filteredSignal = userContext.createGainNode();
         this.output = userContext.createGainNode();
-        this.lfoL = new Tuna.LFO({target: this.filtersL, callback: this.callback});
-        this.lfoR = new Tuna.LFO({target: this.filtersR, callback: this.callback});
+        this.lfoL = new userInstance.LFO({target: this.filtersL, callback: this.callback});
+        this.lfoR = new userInstance.LFO({target: this.filtersR, callback: this.callback});
 
         var i = this.stage;
         while(i--) {
@@ -771,6 +787,7 @@
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
+        this.bypass = false;
     };
     Tuna.prototype.Phaser.prototype = Object.create (Super, {
         name: {value: "Phaser"}, 
@@ -836,7 +853,7 @@
             }
         }
     });
-    Tuna.prototype.Tremolo = function(actionProperties) {
+    Tuna.prototype.Tremolo = function(properties) {
         if (!properties) {
             properties = this.getDefaults();
         }
@@ -846,8 +863,8 @@
         this.amplitudeR = userContext.createGainNode(),
         this.merger = userContext.createChannelMerger(2),
         this.output = userContext.createGainNode();
-        this.lfoL = new Tuna.LFO({target: this.amplitudeL.gain, callback: pipe});
-        this.lfoR = new Tuna.LFO({target: this.amplitudeR.gain, callback: pipe});
+        this.lfoL = new userInstance.LFO({target: this.amplitudeL.gain, callback: pipe});
+        this.lfoR = new userInstance.LFO({target: this.amplitudeR.gain, callback: pipe});
 
         this.input.connect(this.splitter);
         this.splitter.connect(this.amplitudeL, 0);
@@ -856,9 +873,9 @@
         this.amplitudeR.connect(this.merger, 0, 1);
         this.merger.connect(this.output);
 
-        this.rate = actionProperties.rate || this.defaults.rate.value;
-        this.intensity = actionProperties.intensity || this.defaults.intensity.value;
-        this.stereoPhase = actionProperties.stereoPhase || this.defaults.stereoPhase.value;
+        this.rate = properties.rate || this.defaults.rate.value;
+        this.intensity = properties.intensity || this.defaults.intensity.value;
+        this.stereoPhase = properties.stereoPhase || this.defaults.stereoPhase.value;
 
         this.lfoL.offset = 1 - (this.intensity / 2);
         this.lfoR.offset = 1 - (this.intensity / 2);
@@ -866,6 +883,7 @@
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
+        this.bypass = false;
     };
     Tuna.prototype.Tremolo.prototype = Object.create(Super, {
         name: {value: "Tremolo"},
@@ -914,7 +932,7 @@
         }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
-        this.envelopeFollower = new Tuna.EnvelopeFollower({target: this, callback: function (context, value) {
+        this.envelopeFollower = new userInstance.EnvelopeFollower({target: this, callback: function (context, value) {
             context.sweep = value;
         }});
         this.filterBp = userContext.createBiquadFilter();
@@ -936,11 +954,13 @@
         this.sweep = properties.sweep || this.defaults.sweep.value;
 
         this.envelopeFollower.activate(true);
+        this.bypass = false;
     };
     Tuna.prototype.WahWah.prototype = Object.create(Super, {
         name: {value: "WahWah"}, 
         defaults: {
             value: {
+                automode: {value: false, automatable: false, type: BOOLEAN},
                 baseFrequency: {value: 0.5, min: 0, max: 1, automatable: false, type: FLOAT},
                 excursionOctaves: {value: 2, min: 1, max: 6, automatable: false, type: FLOAT}, 
                 sweep: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT}, 
@@ -1080,11 +1100,7 @@
         target: {
             get: function () {return this._target}, 
             set: function (value) {
-                if (target.setValueAtTime) {
-                    this._target = value;
-                } else {
-                    console.error("tuna.js: " + this.name + ": Target must be an AudioParam interface!");
-                }
+                this._target = value;
             }
         }, 
         activate: {
@@ -1144,12 +1160,13 @@
         this.activateNode = userContext.destination; 
 
         //Set Properties
-        this.frequency = properties.frequency;
-        this.offset = properties.offset;
-        this.oscillation = properties.oscillation;
-        this.phase = properties.phase;
-        this.target = properties.target;
-        this.output.onaudioprocess = this.callback(properties.callback);
+        this.frequency = properties.frequency || this.defaults.frequency.value;
+        this.offset = properties.offset || this.defaults.offset.value;
+        this.oscillation = properties.oscillation || this.defaults.oscillation.value;
+        this.phase = properties.phase || this.defaults.phase.value;
+        this.target = properties.target || {};
+        this.output.onaudioprocess = this.callback(properties.callback || function () {});
+        this.bypass = false;
     }
     Tuna.prototype.LFO.prototype = Object.create(Super, {
         name: {value: "LFO"}, 
@@ -1196,7 +1213,6 @@
         },
         activate: {
             value: function (doActivate) {
-                this._activated = doActivate;
                 if(!doActivate) {
                     this.output.disconnect(userContext.destination);
                 } else {

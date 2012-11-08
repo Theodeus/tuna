@@ -6,7 +6,7 @@ webkitAudioContext &&
         tuna = new Tuna(context), 
         player = document.getElementById('player'),
         sourceNode = context.createMediaElementSource(player),
-        names = ["Filter","Cabinet","Chorus","Compressor","Convolver","Delay","Overdrive","Phaser","Tremolo","WahWah"],
+        names = ["Filter","Cabinet",/*"Chorus","Compressor","Convolver","Delay","Overdrive","Phaser","Tremolo","WahWah"*/],
         proto = "prototype",
         tabs = Object.create(null),
         effects = Object.create(null),
@@ -152,8 +152,15 @@ webkitAudioContext &&
         }
         el.classList.add("activeTab");
         activeEffect = el.id.replace("_tab", "");
+        deactivateAll();
+        effects[activeEffect].bypass = false;
         activeEffect = new Interface(activeEffect);
         tabDown.previous = el.id;
+    }
+    function deactivateAll () {
+        for (var i = 0, ii = names.length; i < ii; i++) {
+            effects[names[i]].bypass = true;
+        }
     }
     function interfaceDown (e) {
         var effectIndex = ~~(((e.layerX - 20)  / 780) * 8);
@@ -184,13 +191,15 @@ webkitAudioContext &&
         interface_canvas.height = 55;
         ctx = interface_canvas.getContext("2d");
         ctx.lineWidth = 3;
-        
         for (var i = 0, ii = names.length; i < ii; i++) {
             name = names[i];
-            //effects[name] = new Tuna[name]();
+            effects[name] = new tuna[name]();
+            if (i) {
+                effects[names[i - 1]].connect(effects[names[i]].input)
+            }
             tabs[name] = Tab(tabsEl, name);
         }
-        
+        effects[name].connect(context.destination);
         document.addEventListener("mousedown", down);
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
@@ -198,7 +207,7 @@ webkitAudioContext &&
         document.getElementById("Filter_tab").classList.add("activeTab");
     }
     init();
-    sourceNode.connect(context.destination);    
+    sourceNode.connect(effects[names[0]].input);  
 });
 CanvasRenderingContext2D.prototype.line = function(x1, y1, x2, y2) {
      this.lineCap = 'round';
