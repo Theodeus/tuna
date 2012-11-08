@@ -651,9 +651,9 @@
         name: {value: "Overdrive"},
         defaults: {
             value: {
-                drive: {value: 0.1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
+                drive: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 outputGain: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
-                curveAmount: {value: 0.50, min: 0, max: 1, automatable: false, type: FLOAT},
+                curveAmount: {value: 0.725, min: 0, max: 1, automatable: false, type: FLOAT},
                 algorithmIndex: {value: 0, automatable: false, type: INT}
             }
         },  
@@ -959,6 +959,7 @@
         this.excursionOctaves = properties.excursionOctaves || this.defaults.excursionOctaves.value;
         this.sweep = properties.sweep || this.defaults.sweep.value;
 
+        this.activateNode.gain.value = 2;
         this.envelopeFollower.activate(true);
         this.bypass = false;
     };
@@ -1039,7 +1040,7 @@
         }, 
         init: {
             value: function () {
-                this.output.gain.value = 5;
+                this.output.gain.value = 1;
                 this.filterPeaking.type = 5;
                 this.filterBp.type = 2;
                 this.filterPeaking.frequency.value = 100;
