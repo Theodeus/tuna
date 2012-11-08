@@ -887,6 +887,359 @@
             }
         }
     });
+    Tuna.prototype.Chorus = function (properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+        this.input = userContext.createGainNode();
+        this.attenuator = this.activateNode = userContext.createGainNode();
+        this.splitter = userContext.createChannelSplitter(2);
+        this.delayL = userContext.createDelayNode();
+        this.delayR = userContext.createDelayNode();
+        this.feedbackGainNodeLR = userContext.createGainNode();
+        this.feedbackGainNodeRL = userContext.createGainNode();
+        this.merger = userContext.createChannelMerger(2);
+        this.output = userContext.createGainNode();
+
+        this.lfoL = new userInstance.LFO({target: this.delayL.delayTime, callback: pipe});
+        this.lfoR = new userInstance.LFO({target: this.delayR.delayTime, callback: pipe});
+
+        this.input.connect(this.attenuator);
+        this.attenuator.connect(this.output);
+        this.attenuator.connect(this.splitter);
+        this.splitter.connect(this.delayL, 0);
+        this.splitter.connect(this.delayR, 1);
+        this.delayL.connect(this.feedbackGainNodeLR);
+        this.delayR.connect(this.feedbackGainNodeRL);
+        this.feedbackGainNodeLR.connect(this.delayR);
+        this.feedbackGainNodeRL.connect(this.delayL);
+        this.delayL.connect(this.merger, 0, 0);
+        this.delayR.connect(this.merger, 0, 1);
+        this.merger.connect(this.output);
+        
+        this.feedback = properties.feedback || this.defaults.feedback.value;
+        this.rate = properties.rate || this.defaults.rate.value;
+        this.delay = properties.delay || this.defaults.delay.value;
+        this.depth = properties.depth || this.defaults.depth.value;
+        this.lfoR.phase = Math.PI / 2;
+        this.attenuator.gain.value = 0.6934; // 1 / (10 ^ (((20 * log10(3)) / 3) / 20))
+
+        this.lfoL.activate(true);
+        this.lfoR.activate(true);
+        this.bypass = false;
+    };
+    Tuna.prototype.Chorus.prototype = Object.create(Super, {
+        name: {value: "Chorus"}, 
+        defaults: {
+            value: {
+                feedback: {value: 0.4, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                delay: {value: 0.0045, min: 0, max: 1, automatable: false, type: FLOAT},
+                depth: {value: 0.7, min: 0, max: 1, automatable: false, type: FLOAT},
+                rate: {value: 1.5, min: 0, max: 8, automatable: false, type: FLOAT}, 
+                bypass: {value: true, automatable: false, type: BOOLEAN}
+            }
+        },
+        delay: {
+            enumerable: true,
+            get: function () {return this._delay},
+            set: function (value) {
+                this._delay = 0.0002 * (Math.pow(10, value) * 2);
+                this.lfoL.offset = this._delay; 
+                this.lfoR.offset = this._delay;
+                this._depth = this._depth;
+            }
+        },
+        depth: {
+            enumerable: true,
+            get: function () {return this._depth},
+            set: function (value) {
+                this._depth = value;
+                this.lfoL.oscillation = this._depth * this._delay;
+                this.lfoR.oscillation = this._depth * this._delay;
+            }
+        },
+        feedback: {
+            enumerable: true,
+            get: function () {return this._feedback}, 
+            set: function (value) {
+                this._feedback = value;
+                this.feedbackGainNodeLR.gain.value = this._feedback;
+                this.feedbackGainNodeRL.gain.value = this._feedback;
+            }
+        },  
+        rate: {
+            enumerable: true,
+            get: function () {return this._rate},
+            set: function (value) {
+                this._rate = value;
+                this.lfoL._frequency = this._rate;
+                this.lfoR._frequency = this._rate;
+            }
+        }
+    });
+    Tuna.prototype.Phaser = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+        this.input = userContext.createGainNode();
+        this.splitter = this.activateNode = userContext.createChannelSplitter(2);
+        this.filtersL = [];
+        this.filtersR = [];
+        this.feedbackGainNodeL = userContext.createGainNode();
+        this.feedbackGainNodeR = userContext.createGainNode();
+        this.merger = userContext.createChannelMerger(2);
+        this.filteredSignal = userContext.createGainNode();
+        this.output = userContext.createGainNode();
+        this.lfoL = new userInstance.LFO({target: this.filtersL, callback: this.callback});
+        this.lfoR = new userInstance.LFO({target: this.filtersR, callback: this.callback});
+
+        var i = this.stage;
+        while(i--) {
+            this.filtersL[i] = userContext.createBiquadFilter();
+            this.filtersR[i] = userContext.createBiquadFilter();
+            this.filtersL[i].type = 7;
+            this.filtersR[i].type = 7;
+        };
+        this.input.connect(this.splitter);
+        this.input.connect(this.output);
+        this.splitter.connect(this.filtersL[0], 0, 0);
+        this.splitter.connect(this.filtersR[0], 1, 0);
+        this.connectInOrder(this.filtersL);
+        this.connectInOrder(this.filtersR);
+        this.filtersL[this.stage - 1].connect(this.feedbackGainNodeL);
+        this.filtersL[this.stage - 1].connect(this.merger, 0, 0);
+        this.filtersR[this.stage - 1].connect(this.feedbackGainNodeR);
+        this.filtersR[this.stage - 1].connect(this.merger, 0, 1);
+        this.feedbackGainNodeL.connect(this.filtersL[0]);
+        this.feedbackGainNodeR.connect(this.filtersR[0]);
+        this.merger.connect(this.output);
+        
+        this.rate = properties.rate || this.defaults.rate.value;
+        this.baseModulationFrequency = properties.baseModulationFrequency || this.defaults.baseModulationFrequency.value;
+        this.depth = properties.depth || this.defaults.depth.value;
+        this.feedback = properties.feedback || this.defaults.feedback.value;
+        this.stereoPhase = properties.stereoPhase || this.defaults.stereoPhase.value;
+
+        this.lfoL.activate(true);
+        this.lfoR.activate(true);
+        this.bypass = false;
+    };
+    Tuna.prototype.Phaser.prototype = Object.create (Super, {
+        name: {value: "Phaser"}, 
+        stage: {value: 4},
+        defaults: {
+            value: {
+                frequency: {value: 1, min: 0, max: 8, automatable: false, type: FLOAT},
+                rate: {value: 0.3, min: 0, max: 8, automatable: false, type: FLOAT},
+                depth: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                feedback: {value: 0.2, min: 0, max: 1, automatable: false, type: FLOAT},
+                stereoPhase: {value: 30, min: 0, max: 180, automatable: false, type: FLOAT},
+                baseModulationFrequency: {value: 700, min: 500, max: 1500, automatable: false, type: FLOAT}
+            }
+        },   
+        callback: {
+            value: function(filters, value) {
+                for (var stage = 0; stage < 4; stage++) {
+                    filters[stage].frequency.value = value;
+                }
+            }
+        }, 
+        depth: {
+            get: function () {return this._depth},
+            set: function(value) {
+                this._depth = value;
+                this.lfoL.oscillation = this._baseModulationFrequency * this._depth;
+                this.lfoR.oscillation = this._baseModulationFrequency * this._depth;
+            }
+        }, 
+        rate: {
+            get: function () {return this._rate},
+            set: function(value) {
+                this._rate = value;
+                this.lfoL.frequency = this._rate;
+                this.lfoR.frequency = this._rate;
+            }
+        }, 
+        baseModulationFrequency: {
+            enumerable: true, 
+            get: function () {return this._baseModulationFrequency},
+            set: function (value) {
+                this._baseModulationFrequency = value;
+                this.lfoL.offset = this._baseModulationFrequency;
+                this.lfoR.offset = this._baseModulationFrequency;
+                this._depth = this._depth;
+            }
+        }, 
+        feedback: {
+            get: function () {return this._feedback}, 
+            set: function (value) {
+                this._feedback = value;
+                this.feedbackGainNodeL.gain.value = this._feedback;
+                this.feedbackGainNodeR.gain.value = this._feedback;
+            }
+        }, 
+        stereoPhase: {
+            get: function () {return this._stereoPhase}, 
+            set: function (value) {
+                this._stereoPhase = value;
+                var newPhase = this.lfoL._phase + this._stereoPhase * Math.PI / 180;
+                newPhase = fmod(newPhase, 2 * Math.PI);
+                this.lfoR._phase = newPhase;
+            }
+        }
+    });
+    Tuna.prototype.Tremolo = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+        this.input = userContext.createGainNode()
+        this.splitter = this.activateNode = userContext.createChannelSplitter(2),
+        this.amplitudeL = userContext.createGainNode(),
+        this.amplitudeR = userContext.createGainNode(),
+        this.merger = userContext.createChannelMerger(2),
+        this.output = userContext.createGainNode();
+        this.lfoL = new userInstance.LFO({target: this.amplitudeL.gain, callback: pipe});
+        this.lfoR = new userInstance.LFO({target: this.amplitudeR.gain, callback: pipe});
+
+        this.input.connect(this.splitter);
+        this.splitter.connect(this.amplitudeL, 0);
+        this.splitter.connect(this.amplitudeR, 1);
+        this.amplitudeL.connect(this.merger, 0, 0);
+        this.amplitudeR.connect(this.merger, 0, 1);
+        this.merger.connect(this.output);
+
+        this.rate = properties.rate || this.defaults.rate.value;
+        this.intensity = properties.intensity || this.defaults.intensity.value;
+        this.stereoPhase = properties.stereoPhase || this.defaults.stereoPhase.value;
+
+        this.lfoL.offset = 1 - (this.intensity / 2);
+        this.lfoR.offset = 1 - (this.intensity / 2);
+        this.lfoL.phase = this.stereoPhase * Math.PI / 180;  
+
+        this.lfoL.activate(true);
+        this.lfoR.activate(true);
+        this.bypass = false;
+    };
+    Tuna.prototype.Tremolo.prototype = Object.create(Super, {
+        name: {value: "Tremolo"},
+        defaults: {
+            value: {
+                frequency: {value: 1.5, min: 0.1, max: 11, automatable: false, type: FLOAT}, 
+                intensity: {value: 0.3, min: 0, max: 1, automatable: false, type: FLOAT}, 
+                stereoPhase: {value: 0, min: 0, max: 180, automatable: false, type: FLOAT}, 
+                rate: {value: 0.1, min: 0.1, max: 11, automatable: false, type: FLOAT}
+            }
+        },  
+        intensity: {
+            enumerable: true,
+            get: function () {return this._intensity},
+            set: function (value) {
+                this._intensity = value;
+                this.lfoL.offset = this._intensity / 2;
+                this.lfoR.offset = this._intensity / 2;
+                this.lfoL.oscillation = this._intensity;
+                this.lfoR.oscillation = this._intensity;
+            }
+        }, 
+        rate: {
+            enumerable: true,
+            get: function () {return this._rate},
+            set: function (value) {
+                this._rate = value;
+                this.lfoL.frequency = this._rate;
+                this.lfoR.frequency = this._rate;
+            }
+        },
+        stereoPhase: {
+            enumerable: true,
+            get: function () {return this._rate},
+            set: function (value) {
+                this._stereoPhase = value;
+                var newPhase = this.lfoL._phase + this._stereoPhase * Math.PI / 180;
+                newPhase = fmod(newPhase, 2 * Math.PI);
+                this.lfoR.phase = newPhase;
+            }
+        },
+    });
+    Tuna.prototype.LFO = function (properties) {
+        //Instantiate AudioNode
+        this.output = userContext.createJavaScriptNode(256, 1, 1);
+        this.activateNode = userContext.destination; 
+
+        //Set Properties
+        this.frequency = properties.frequency || this.defaults.frequency.value;
+        this.offset = properties.offset || this.defaults.offset.value;
+        this.oscillation = properties.oscillation || this.defaults.oscillation.value;
+        this.phase = properties.phase || this.defaults.phase.value;
+        this.target = properties.target || {};
+        this.output.onaudioprocess = this.callback(properties.callback || function () {});
+        this.bypass = false;
+    }
+    Tuna.prototype.LFO.prototype = Object.create(Super, {
+        name: {value: "LFO"}, 
+        bufferSize: {value: 256},
+        sampleRate: {value: 44100},
+        defaults: {
+                value: {
+                    frequency: {value: 1, min: 0, max: 20, automatable: false, type: FLOAT}, 
+                    offset: {value: 0.85, min: 0, max: 22049, automatable: false, type: FLOAT},
+                    oscillation: {value: 0.3, min: -22050, max: 22050, automatable: false, type: FLOAT},
+                    phase: {value: 0, min: 0, max: 2 * Math.PI, automatable: false, type: FLOAT}
+                }
+            }, 
+        frequency: {
+            get: function () {return this._frequency},
+            set: function (value) {
+                this._frequency = value;
+                this._phaseInc = 2 * Math.PI * this._frequency * this.bufferSize / this.sampleRate;
+            }
+        }, 
+        offset: {
+            get: function () {return this._offset},
+            set: function (value) {
+                this._offset = value;
+            }
+        }, 
+        oscillation: {
+            get: function () {return this._oscillation},
+            set: function (value) {
+                this._oscillation = value;
+            }
+        },
+        phase: {
+            get: function () {return this._phase},
+            set: function (value) {
+                this._phase = value;
+            }
+        },
+        target: {
+            get: function () {return this._target}, 
+            set: function (value) {
+                this._target = value;
+            }
+        },
+        activate: {
+            value: function (doActivate) {
+                if(!doActivate) {
+                    this.output.disconnect(userContext.destination);
+                } else {
+                    this.output.connect(userContext.destination);
+                }
+            }
+        }, 
+        callback: {
+            value: function (callback) {
+                var that = this;
+                return function () {
+                    that._phase += that._phaseInc;
+                    if (that._phase > 2 * Math.PI) {
+                        that._phase = 0;
+                    }
+                    callback(that._target, that._offset + that._oscillation * Math.sin(that._phase));
+                }
+            }
+        }
+    });
     Tuna.toString = Tuna.prototype.toString = function () {
         return "You are running Tuna version " + version + " by Dinahmoe!";
     };
