@@ -6,7 +6,7 @@ webkitAudioContext &&
         tuna = new Tuna(context), 
         player = document.getElementById('player'),
         sourceNode = context.createMediaElementSource(player),
-        names = ["Compressor","Filter","Cabinet","Chorus",/*"Compressor","Convolver","Delay","Overdrive","Phaser","Tremolo","WahWah"*/],
+        names = ["Compressor","Filter","Cabinet","Chorus","Convolver","Delay","Overdrive",/*"Phaser","Tremolo","WahWah"*/],
         proto = "prototype",
         tabs = Object.create(null),
         effects = Object.create(null),
@@ -171,7 +171,7 @@ webkitAudioContext &&
                     movingKnob = true;
                     break;
                 case "CheckBox":
-                    activeEffect.controlsByIndex[effectIndex].active = !activeEffect.controlsByIndex[effectIndex].active;
+                    //activeEffect.controlsByIndex[effectIndex].active = !activeEffect.controlsByIndex[effectIndex].active;
                     activeEffect.controlsByIndex[effectIndex].draw();
                     break;
             }
@@ -185,7 +185,7 @@ webkitAudioContext &&
             inter = document.getElementById("interface"),
             interface_canvas = document.getElementById("interface_canvas"),
             temp = inter.getBoundingClientRect();
-
+        window.ef = effects
         knobNames = document.getElementsByClassName("name");
         interface_canvas.width = 800;
         interface_canvas.height = 55;
@@ -204,8 +204,7 @@ webkitAudioContext &&
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
         tabDown.previous = "Compressor_tab";
-        document.getElementById("Compressor_tab").classList.add("activeTab");
-        deactivateAll();
+        document.getElementById("Compressor_tab").classList.add("activeTab"); 
     }
     init();
     sourceNode.connect(effects[names[0]].input);  

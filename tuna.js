@@ -36,10 +36,12 @@
                 writable: true, 
                 value: function (doActivate) {
                     if (doActivate) {
+                        console.log("activating: " + this.name)
                         this.input.disconnect();
                         this.input.connect(this.activateNode);
                         this.activateCallback && this.activateCallback(doActivate);
                     } else {
+                        console.log("deactiving: " + this.name)
                         this.input.disconnect();
                         this.input.connect(this.output);
                     }
