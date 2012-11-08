@@ -17,13 +17,16 @@ Effect list:
     <li>Overdrive (6 different algorithms)</li>
     <li>Filter</li>
     <li>Cabinet</li>
-    <li>Chorus</li>
     <li>Delay</li>
     <li>Convolver (Reverb)</li>
     <li>Compressor</li>
+    <li>WahWah</li>
+    
+    Coming soon:
     <li>Tremolo</li>
     <li>Phaser</li>
-    <li>WahWah</li>
+    <li>Chorus</li>
+    <li>And then some...</li>
 </ul>
 
 Usage
