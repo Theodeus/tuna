@@ -95,9 +95,13 @@ webkitAudioContext &&
                     this.controlsByIndex.push(this.controls[def]);
                     break;
                 case "int":
+                    this.controlsByIndex.push({draw: function (){}});
                     break;
                 case "string":
+                    this.controlsByIndex.push({draw: function (){}});
                     break;
+                default: 
+                    this.controlsByIndex.push({draw: function (){}});
             }
             offset += 90;
             knobNames[i] && (knobNames[i].innerText = def);
@@ -107,6 +111,7 @@ webkitAudioContext &&
     Interface.prototype = Object.create(null, {
         drawControls: {
             value: function (y) {
+                ctx.clear();
                 for (var i = 0, ii = this.controlsByIndex.length; i < ii; i++) {
                     this.controlsByIndex[i].draw();
                 }
@@ -129,7 +134,7 @@ webkitAudioContext &&
     function move (e) {
         if (!movingKnob) {return}
         var y = e.pageY;
-        activeKnob.theta += (mouse.lastY - y > 0 ? 0.2 : -0.2);
+        activeKnob.theta += (mouse.lastY - y > 0 ? 0.15 : -0.15);
 
         if (activeKnob.theta > activeKnob.upperLimit) {
             activeKnob.theta = activeKnob.upperLimit;
