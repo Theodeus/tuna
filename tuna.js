@@ -654,7 +654,7 @@
                 drive: {value: 0.5, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 outputGain: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 curveAmount: {value: 1, min: 0, max: 1, automatable: false, type: FLOAT},
-                algorithmIndex: {value: 0, automatable: false, type: INT}
+                algorithmIndex: {value: 4, automatable: false, type: INT}
             }
         },  
         k_nSamples: {value: 8192},  
