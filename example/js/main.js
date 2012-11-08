@@ -30,12 +30,34 @@ webkitAudioContext &&
         parent.appendChild(tab);
         return tab;
     }
+    function CheckBox (x, y, name, index) {
+        this.active = false;
+        this.x = x;
+        this.y = y;
+        this.name = name;
+        this.index = index;
+        this.type = "CheckBox";
+        this.draw();
+    }
+    CheckBox.prototype = Object.create(null, {
+        width: {value: knobRadius * 2},
+        draw: {
+            value: function () {
+                ctx.rectangle(this.x, this.y, this.width, this.width, "#444");
+                if (this.active) {
+                    ctx.line(this.x, this.y, this.x + this.width, this.y + this.width);
+                    ctx.line(this.x, this.y + this.width, this.x + this.width, this.y);
+                }
+            }
+        }
+    });
     function Knob (x, y, name, index) {
         this.theta = 0;
         this.x = x + 20; 
         this.y = y + 20;
         this.name = name;
         this.index = index;
+        this.type = "Knob";
         this.draw();
     }
     Knob.prototype = Object.create(null, {
@@ -65,22 +87,32 @@ webkitAudioContext &&
             prop = Tuna[proto][name][proto].defaults[def];
             switch (prop.type) {
                 case "boolean":
+                    this.controls[def] = new CheckBox(offset, 10, def, i);
+                    this.controlsByIndex.push(this.controls[def]);
                     break;
                 case "float":
                     this.controls[def] = new Knob(offset, 10, def, i);
                     this.controlsByIndex.push(this.controls[def]);
-                    offset += 90;
                     break;
                 case "int":
                     break;
                 case "string":
                     break;
             }
-            
+            offset += 90;
             knobNames[i] && (knobNames[i].innerText = def);
             i++;
         }
     }
+    Interface.prototype = Object.create(null, {
+        drawControls: {
+            value: function (y) {
+                for (var i = 0, ii = this.controlsByIndex.length; i < ii; i++) {
+                    this.controlsByIndex[i].draw();
+                }
+            }
+        }
+    });
     function down (e) {
         if (e.srcElement.classList.contains("tabAnchor")) {
             tabDown(e);
@@ -105,7 +137,7 @@ webkitAudioContext &&
         if (activeKnob.theta < 0) {
             activeKnob.theta = 0;
         }
-        activeEffect.drawControls();
+        activeEffect.drawControls(y);
         mouse.lastY = y;
     }
     function tabDown (e) {
@@ -119,10 +151,18 @@ webkitAudioContext &&
         tabDown.previous = el.id;
     }
     function interfaceDown (e) {
-        var effectIndex = ~~(((e.layerX - 10)  / 790) * 8);
+        var effectIndex = ~~(((e.layerX - 20)  / 780) * 8);
         if (activeEffect.controlsByIndex[effectIndex]) {
-            activeKnob = activeEffect.controlsByIndex[effectIndex];
-            movingKnob = true;
+            switch (activeEffect.controlsByIndex[effectIndex].type) {
+                case "Knob":
+                    activeKnob = activeEffect.controlsByIndex[effectIndex];
+                    movingKnob = true;
+                    break;
+                case "CheckBox":
+                    activeEffect.controlsByIndex[effectIndex].active = !activeEffect.controlsByIndex[effectIndex].active;
+                    activeEffect.controlsByIndex[effectIndex].draw();
+                    break;
+            }
         }
         mouse.startY = e.pageY; 
         mouse.lastY = e.pageY;
@@ -185,6 +225,7 @@ CanvasRenderingContext2D.prototype.rectangle = function(x, y, w, h, fill) {
     if (fill) {
         this.fillStyle = fill;
         this.fill();
+        this.stroke();
     } else {
         this.stroke();
     }
