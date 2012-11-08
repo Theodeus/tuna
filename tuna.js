@@ -35,11 +35,12 @@
             activate: {
                 writable: true, 
                 value: function (doActivate) {
-                    this.input.disconnect();
                     if (doActivate) {
+                        this.input.disconnect();
                         this.input.connect(this.activateNode);
                         this.activateCallback && this.activateCallback(doActivate);
                     } else {
+                        this.input.disconnect();
                         this.input.connect(this.output);
                     }
                 }  
@@ -47,8 +48,10 @@
             bypass: {
                 get: function () {return this._bypass},
                 set: function (value) {
+                    if (this._lastBypassValue === value) {return}
                     this._bypass = value;
                     this.activate(!value);
+                    this._lastBypassValue = value;
                 }
             },
             connect: {

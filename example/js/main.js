@@ -6,7 +6,7 @@ webkitAudioContext &&
         tuna = new Tuna(context), 
         player = document.getElementById('player'),
         sourceNode = context.createMediaElementSource(player),
-        names = ["Filter","Cabinet",/*"Chorus","Compressor","Convolver","Delay","Overdrive","Phaser","Tremolo","WahWah"*/],
+        names = ["Compressor","Filter","Cabinet","Chorus",/*"Compressor","Convolver","Delay","Overdrive","Phaser","Tremolo","WahWah"*/],
         proto = "prototype",
         tabs = Object.create(null),
         effects = Object.create(null),
@@ -195,7 +195,7 @@ webkitAudioContext &&
             name = names[i];
             effects[name] = new tuna[name]();
             if (i) {
-                effects[names[i - 1]].connect(effects[names[i]].input)
+                effects[names[i - 1]].connect(effects[names[i]].input);
             }
             tabs[name] = Tab(tabsEl, name);
         }
@@ -203,8 +203,9 @@ webkitAudioContext &&
         document.addEventListener("mousedown", down);
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
-        tabDown.previous = "Filter_tab";
-        document.getElementById("Filter_tab").classList.add("activeTab");
+        tabDown.previous = "Compressor_tab";
+        document.getElementById("Compressor_tab").classList.add("activeTab");
+        deactivateAll();
     }
     init();
     sourceNode.connect(effects[names[0]].input);  
