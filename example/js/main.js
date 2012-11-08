@@ -6,7 +6,7 @@ webkitAudioContext &&
         tuna = new Tuna(context), 
         player = document.getElementById('player'),
         sourceNode = context.createMediaElementSource(player),
-        names = ["Compressor","Filter","Cabinet","Chorus","Convolver","Delay","Overdrive",/*"Phaser","Tremolo","WahWah"*/],
+        names = ["Compressor","Filter","Cabinet","Chorus","Convolver","Delay","Overdrive","WahWah"],
         proto = "prototype",
         tabs = Object.create(null),
         effects = Object.create(null),
