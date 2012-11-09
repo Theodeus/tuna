@@ -1,5 +1,8 @@
 "useStrict";
 //http://freesound.org/people/TexasMusicForge/sounds/2684/
+
+//@author chris coniglio || chris@dinahmoe.com
+
 webkitAudioContext && 
 (this.onload = function () {
     var context = new webkitAudioContext(),
@@ -31,6 +34,39 @@ webkitAudioContext &&
         parent.appendChild(tab);
         return tab;
     }
+    function Picker (x, y, name, index, parent) {
+        this.parent = parent;
+        this.name = name;
+        this.downLeft = false;
+        this.downRight = false;
+        this.min = this.parent.defaults[this.name].min;
+        this.max = this.parent.defaults[this.name].max;
+        this.x = x;
+        this.y = y;
+        this.index = index;
+        this.type = "Picker";
+        this.draw();
+    }
+    Picker.prototype = Object.create(null, {
+        w: {value: knobRadius * 2},
+        draw: {
+            value: function () {
+                ctx.triangle(
+                    {x: this.x, y: this.y + this.w * .5}, 
+                    {x: this.x + this.w * .5 - 5, y: this.y},
+                    {x: this.x + this.w * .5 - 5, y: this.y + this.w},
+                    this.downRight ? "#FFF" : "#444"
+                );
+
+                ctx.triangle(
+                    {x: this.x + this.w, y: this.y + this.w * .5}, 
+                    {x: this.x + this.w * .5 + 5, y: this.y},
+                    {x: this.x + this.w * .5 + 5, y: this.y + this.w},
+                    this.downLeft ? "#FFF" : "#444"
+                );
+            }
+        }
+    });
     function CheckBox (x, y, name, index, parent) {
         this.active = parent[name];
         this.parentName = parent.name;
@@ -101,12 +137,15 @@ webkitAudioContext &&
                     this.controlsByIndex.push(this.controls[def]);
                     break;
                 case "int":
-                    this.controlsByIndex.push({draw: function (){}});
+                    this.controls[def] = new Picker(offset, 10, def, i, effects[name]);
+                    this.controlsByIndex.push(this.controls[def]);
                     break;
                 case "string":
+                    console.log("string__"+def);
                     this.controlsByIndex.push({draw: function (){}});
                     break;
-                default: 
+                default:
+                    console.log("default__"+def); 
                     this.controlsByIndex.push({draw: function (){}});
             }
             offset += 90;
@@ -136,6 +175,11 @@ webkitAudioContext &&
     } 
     function up (e) {
         movingKnob = false;
+        if (!fxInterface) {return}
+        for (var k in fxInterface.controls) if(fxInterface.controls[k].type === "Picker") {
+            fxInterface.controls[k].downLeft = fxInterface.controls[k].downRight = false;
+        }
+        fxInterface.drawControls();
     }
     function move (e) {
         if (e.srcElement.id === "player") {
@@ -152,7 +196,7 @@ webkitAudioContext &&
         if (activeKnob.theta < 0) {
             activeKnob.theta = 0;
         }
-        normalized = Math.pow(activeKnob.theta / (slice * 10), 2);
+        normalized = Math.pow(activeKnob.theta / (slice * 10), 1.6);
         if (activeKnob.param["value"] !== undefined) {
             activeKnob.param.value = normalized * activeKnob.range;
         } else {
@@ -190,11 +234,27 @@ webkitAudioContext &&
                 case "CheckBox":
                     var box = fxInterface.controlsByIndex[effectIndex];
                     box.active = !box.active;
-                    box.draw();
                     effects[box.parentName][box.name] = box.active; 
+                    break;
+                case "Picker":
+                    var pick = fxInterface.controlsByIndex[effectIndex],
+                        x = e.layerX - 20, 
+                        LR = e.layerX > pick.x + pick.w * .5,
+                        value = effects[pick.parent.name][pick.name];
+                    if (LR) {
+                        pick.downLeft = true;
+                        value--;
+                        value < pick.min && (value = pick.max);
+                    } else {
+                        value++;
+                        value > pick.max && (value = pick.min);
+                        pick.downRight = true;
+                    }
+                    effects[pick.parent.name][pick.name] = value;
                     break;
             }
         }
+        fxInterface.drawControls();
         mouse.startY = e.pageY; 
         mouse.lastY = e.pageY;
     }
@@ -232,6 +292,10 @@ webkitAudioContext &&
         deactivateAll();
     }
     init();
+    var startOn = document.getElementById("Filter_tab");
+    down({
+        srcElement: startOn
+    });
     sourceNode.connect(effects[names[0]].input);  
 });
 CanvasRenderingContext2D.prototype.line = function(x1, y1, x2, y2) {
@@ -279,9 +343,8 @@ CanvasRenderingContext2D.prototype.triangle = function(p1, p2, p3, fill) {
     if (fill) {
         this.fillStyle = fill;
         this.fill();
-    } else {
-        this.stroke();
     }
+    this.stroke();
 };
 CanvasRenderingContext2D.prototype.clear = function() {
     this.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
