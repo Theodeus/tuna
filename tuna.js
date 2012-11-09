@@ -173,9 +173,11 @@
             properties = this.getDefaults();
         }
         this.input = userContext.createGainNode();
-        this.filter = this.activateNode = userContext.createBiquadFilter();
+        this.activateNode = userContext.createGainNode();
+        this.filter = userContext.createBiquadFilter();
         this.output = userContext.createGainNode();
 
+        this.activateNode.connect(this.filter);
         this.filter.connect(this.output);
         
         this.frequency = properties.frequency || this.defaults.frequency.value;
@@ -190,9 +192,9 @@
             value: {
                 frequency: {value: 500, min: 20, max: 22050, automatable: true, type: FLOAT},
                 Q: {value: 1, min: 0.001, max: 100, automatable: true, type: FLOAT}, 
-                gain: {value: 1, min: -40, max: 40, automatable: true, type: FLOAT},
+                gain: {value: 0, min: -40, max: 40, automatable: true, type: FLOAT},
                 bypass: {value: true, automatable: false, type: BOOLEAN},
-                filterType: {value: 0, automatable: false, type: INT}
+                filterType: {value: 1, automatable: false, type: INT}
             }
         }, 
         filterType: {
@@ -686,6 +688,7 @@
         this.excursionOctaves = properties.excursionOctaves || this.defaults.excursionOctaves.value;
         this.sweep = properties.sweep || this.defaults.sweep.value;
 
+        this.activateNode.gain.value = 2;
         this.envelopeFollower.activate(true);
         this.bypass = false;
     };
@@ -766,7 +769,7 @@
         }, 
         init: {
             value: function () {
-                this.output.gain.value = 5;
+                this.output.gain.value = 1;
                 this.filterPeaking.type = 5;
                 this.filterBp.type = 2;
                 this.filterPeaking.frequency.value = 100;
