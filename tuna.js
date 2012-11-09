@@ -192,12 +192,12 @@
                 Q: {value: 1, min: 0.001, max: 100, automatable: true, type: FLOAT}, 
                 gain: {value: 0, min: -40, max: 40, automatable: true, type: FLOAT},
                 bypass: {value: true, automatable: false, type: BOOLEAN},
-                filterType: {value: 1, automatable: false, type: INT}
+                filterType: {value: 1, min: 0, max: 7, automatable: false, type: INT}
             }
         }, 
         filterType: {
             enumerable: true, 
-            get: function () {return this._filterType},
+            get: function () {return this.filter.type},
             set: function (value) {
                 this.filter.type = value;
             }
@@ -363,7 +363,7 @@
 
         this.compNode.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
-        
+
         this.automakeup = properties.automakeup || this.defaults.automakeup.value;
         this.makeupGain = properties.makeupGain || this.defaults.makeupGain.value;
         this.threshold = properties.threshold || this.defaults.threshold.value;
@@ -654,7 +654,7 @@
                 drive: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 outputGain: {value: 1, min: 0, max: 1, automatable: true, type: FLOAT, scaled: true}, 
                 curveAmount: {value: 0.725, min: 0, max: 1, automatable: false, type: FLOAT},
-                algorithmIndex: {value: 0, automatable: false, type: INT}
+                algorithmIndex: {value: 0, min: 0, max: 5, automatable: false, type: INT}
             }
         },  
         k_nSamples: {value: 8192},  
