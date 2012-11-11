@@ -1,22 +1,20 @@
-body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal}ol,ul{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:text-top}sub{vertical-align:text-bottom}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit}input,textarea,select{*font-size:100%}legend{color:#000}a,img{outline:none;border:none}
-
 body {
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
+    -ms-user-select: none;
     -o-user-select: none;
     user-select: none;
     font-size: 12px;
     font-family: "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;  
-    padding: 0px 0 0px 0;
-    margin: 0;
     height: 100%;
     color: #7d7d7b;
     background: #EFEFEF;
     cursor:normal;
 }
 header {
-    padding: 25px 0 50px;
+    margin-top:25px;
+    margin-bottom:25px;
     position: relative;
     z-index: 2;
     width:355px;
@@ -27,7 +25,7 @@ h1 {
     color: #575757;
     font-family: "Droid Serif", Georgia, Times, "Times New Roman", serif;
     line-height: 1px;
-    font-style: bold;
+    text-decoration: bold;
 }
 h3 {
     color: #696969; 
@@ -43,41 +41,56 @@ h3 {
     margin-left:-95px;
     top:10px;
 }
-a {  
+a {
     color: #da9753; 
 }
 a:hover {
     color: #cb8139; 
 }
 section {
-    width:800px;
+    width:710px;
     position:relative;
     left:50%;
     margin-left:-400px;
 }
 audio {
-    width:800px;
+    width:710px;
     padding-bottom: 25px;
 }
 canvas {
     border-radius: 5px
 }
+#time {
+    width:30px;
+    height: 100%;
+    position: relative;
+    top: -9px;
+    margin-left: 12px;
+    margin-right: 12px;
+    /*background: #FFF;*/
+    font-family: arial, helvetica, sans-serif;
+    font-size: 14px;
+    color: #FFF;
+    display: inline-block;
+    font-weight: bold;
+}
 #effects {
     height: 480px;
-    background: #333;
+    background: #444;
     border-radius: 5px;
 }
 #tabs {
     width:100%;
-    background: #333;
+    background: #444;
     margin-bottom: 25px;
     border-radius: 5px;
 }
 #interface {
     width: 100%;
-    height: 200px;
-    background: #333;
+    height: 85px;
+    background: #444;
     border-radius: 5px;
+    color: #fff;
 }
 .tab {
     display:inline-block;
@@ -91,10 +104,9 @@ canvas {
 .name {
     width:70px;
     height:30px;
-    display:inline;
     float:left;
     padding:10px;
-    padding-top:0px;
+    padding-top:10px;
     text-align: center;
     color: #DDD;
     letter-spacing: 1px;
@@ -104,8 +116,4 @@ canvas {
 }
 .activeTab {
     color:#da9753; 
-}
-.interface {
-}
-.selected {
 }
