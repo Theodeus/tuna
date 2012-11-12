@@ -1,21 +1,50 @@
-"useStrict";
+//"useStrict";
 //http://freesound.org/people/TexasMusicForge/sounds/2684/
-//@author chris coniglio || chris@dinahmoe.com
-webkitAudioContext && (this.onload = function () {
-    var context = new webkitAudioContext(),
-        tuna = new Tuna(context),
-        player = document.getElementById('player'),
-        sourceNode = context.createMediaElementSource(player),
-        names = ["Filter", "Cabinet", "Chorus", "Convolver", "Delay", "WahWah", "Tremolo", "Phaser", "Overdrive", "Compressor"],
-        proto = "prototype",
-        tabs = Object.create(null),
+/*
+    tuna.js: demo
+    @author chris coniglio || chris@dinahmoe.com
+*/
+/*
+    Copyright (c) 2012 DinahMoe AB
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
+    modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software
+    is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+    DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+(function () {
+    if(!window.webkitAudioContext) {
+        window.addEventListener("load", function () {
+            var inter = document.getElementById("interface"),
+                player = document.getElementById("player");
+            player.style.display = "none";
+            inter.style.padding = "25px";
+            inter.style.width = "660px";
+            inter.style["font-size"] = "14px";
+            inter.innerHTML = "It looks like the browser you're using doesn't support the web audio API. <br /> <br /> Please download the latest version of Chrome at <a href='http://google.com/chrome'>google.com/chrome</a> and come back soon to check out this demo.";
+        });
+        return;
+    }
+    var names = ["Filter", "Cabinet", "Chorus", "Convolver", "Delay", "WahWah", "Tremolo", "Phaser", "Overdrive", "Compressor"],
+        context = new webkitAudioContext(),
         effects = Object.create(null),
-        mouse = {},
+        mouse = Object.create(null),
+        tuna = new Tuna(context),
+        proto = "prototype",
+        movingKnob = false,
         TAU = Math.PI * 2,
         slice = TAU / 12,
         knobRadius = 20,
-        movingKnob = false,
-        fxInterface, knobNames, masterGain, ctx;
+        fxInterface, knobNames, player, masterGain, ctx, fun = function () {};
+
+    //audio/2684__texasmusicforge__dandelion.mp3
 
     function Tab(parent, name) {
         var tab = document.createElement("div"),
@@ -23,24 +52,22 @@ webkitAudioContext && (this.onload = function () {
             text = document.createTextNode(name);
         tab.classList.add("tab");
         anch.setAttribute("id", name + "_tab");
-        anch.classList.add("tabAnchor");
+        anch.classList.add("tabanchor");
         anch.appendChild(text);
         tab.appendChild(anch);
         parent.appendChild(tab);
-        return tab;
     }
 
-    function Picker(x, y, name, index, parent) {
+    function Picker(x, y, name, parent) {
+        this.min = parent.defaults[name].min;
+        this.max = parent.defaults[name].max;
+        this.downRight = false;
+        this.downLeft = false;
+        this.type = "Picker";
         this.parent = parent;
         this.name = name;
-        this.downLeft = false;
-        this.downRight = false;
-        this.min = this.parent.defaults[this.name].min;
-        this.max = this.parent.defaults[this.name].max;
         this.x = x;
         this.y = y;
-        this.index = index;
-        this.type = "Picker";
         this.draw();
     }
     Picker.prototype = Object.create(null, {
@@ -51,37 +78,36 @@ webkitAudioContext && (this.onload = function () {
             value: function () {
                 ctx.triangle({
                     x: this.x,
-                    y: this.y + this.w * .5
+                    y: this.y + this.w * 0.5
                 }, {
-                    x: this.x + this.w * .5 - 5,
+                    x: this.x + this.w * 0.5 - 5,
                     y: this.y
                 }, {
-                    x: this.x + this.w * .5 - 5,
+                    x: this.x + this.w * 0.5 - 5,
                     y: this.y + this.w
                 }, this.downRight ? "#FFF" : "#444");
 
                 ctx.triangle({
                     x: this.x + this.w,
-                    y: this.y + this.w * .5
+                    y: this.y + this.w * 0.5
                 }, {
-                    x: this.x + this.w * .5 + 5,
+                    x: this.x + this.w * 0.5 + 5,
                     y: this.y
                 }, {
-                    x: this.x + this.w * .5 + 5,
+                    x: this.x + this.w * 0.5 + 5,
                     y: this.y + this.w
                 }, this.downLeft ? "#FFF" : "#444");
             }
         }
     });
 
-    function CheckBox(x, y, name, index, parent) {
-        this.active = parent[name];
+    function CheckBox(x, y, name, parent) {
         this.parentName = parent.name;
+        this.active = parent[name];
+        this.type = "CheckBox";
+        this.name = name;
         this.x = x;
         this.y = y;
-        this.name = name;
-        this.index = index;
-        this.type = "CheckBox";
         this.draw();
     }
     CheckBox.prototype = Object.create(null, {
@@ -99,7 +125,7 @@ webkitAudioContext && (this.onload = function () {
         }
     });
 
-    function Knob(x, y, name, index, parent) {
+    function Knob(x, y, name, parent) {
         this.parent = parent;
         this.param = parent[name] === undefined ? parent["_" + name] : parent[name];
         var value = this.param["value"] === undefined ? this.param : this.param.value;
@@ -108,7 +134,6 @@ webkitAudioContext && (this.onload = function () {
         this.x = x + 20;
         this.y = y + 20;
         this.name = name;
-        this.index = index;
         this.type = "Knob";
         this.draw();
     }
@@ -130,8 +155,12 @@ webkitAudioContext && (this.onload = function () {
     });
 
     function Interface(name) {
-        var prop, offset = 45;
+        var el = document.getElementById("interface_canvas"),
+            offset = 45,
+            prop;
+
         ctx.clear();
+        this.offset = el.getBoundingClientRect();
         this.controls = {};
         this.controlsByIndex = [];
         for(var i = 0, ii = knobNames.length; i < ii; i++) {
@@ -145,32 +174,30 @@ webkitAudioContext && (this.onload = function () {
             prop = Tuna[proto][name][proto].defaults[def];
             switch(prop.type) {
             case "boolean":
-                this.controls[def] = new CheckBox(offset, 10, def, i, effects[name]);
+                this.controls[def] = new CheckBox(offset, 10, def, effects[name]);
                 this.controlsByIndex.push(this.controls[def]);
                 break;
             case "float":
-                this.controls[def] = new Knob(offset, 10, def, i, effects[name]);
+                this.controls[def] = new Knob(offset, 10, def, effects[name]);
                 this.controlsByIndex.push(this.controls[def]);
                 break;
             case "int":
-                this.controls[def] = new Picker(offset, 10, def, i, effects[name]);
+                this.controls[def] = new Picker(offset, 10, def, effects[name]);
                 this.controlsByIndex.push(this.controls[def]);
                 break;
             case "string":
-                console.log("string__" + def);
                 this.controlsByIndex.push({
-                    draw: function () {}
+                    draw: fun
                 });
                 break;
             default:
-                console.log("default__" + def);
                 this.controlsByIndex.push({
-                    draw: function () {}
+                    draw: fun
                 });
             }
-            offset += 90;
-            knobNames[i] && (knobNames[i].innerText = def);
+            knobNames[i].innerText = def;
             i++;
+            offset += 90;
         }
     }
     Interface.prototype = Object.create(null, {
@@ -185,7 +212,7 @@ webkitAudioContext && (this.onload = function () {
     });
 
     function down(e) {
-        if(e.srcElement.classList.contains("tabAnchor")) {
+        if(e.srcElement.classList.contains("tabanchor")) {
             tabDown(e);
             return;
         }
@@ -198,7 +225,7 @@ webkitAudioContext && (this.onload = function () {
     function up(e) {
         movingKnob = false;
         if(!fxInterface) {
-            return
+            return;
         }
         for(var k in fxInterface.controls) if(fxInterface.controls[k].type === "Picker") {
             fxInterface.controls[k].downLeft = fxInterface.controls[k].downRight = false;
@@ -211,7 +238,7 @@ webkitAudioContext && (this.onload = function () {
             masterGain.gain.value = e.srcElement.volume;
         }
         if(!movingKnob) {
-            return
+            return;
         }
         var y = e.pageY,
             normalized = 0;
@@ -223,7 +250,7 @@ webkitAudioContext && (this.onload = function () {
         if(activeKnob.theta < 0) {
             activeKnob.theta = 0;
         }
-        normalized = Math.pow(activeKnob.theta / (slice * 10), 1.6);
+        normalized = activeKnob.theta / (slice * 10);
         if(activeKnob.param["value"] !== undefined) {
             activeKnob.param.value = normalized * activeKnob.range;
         } else {
@@ -237,14 +264,14 @@ webkitAudioContext && (this.onload = function () {
     function tabDown(e) {
         var el = e.srcElement;
         if(tabDown.previous) {
-            document.getElementById(tabDown.previous).classList.remove("activeTab");
+            document.getElementById(tabDown.previous).classList.remove("activetab");
         }
-        el.classList.add("activeTab");
+        el.classList.add("activetab");
         fxInterface = el.id.replace("_tab", "");
         deactivateAll();
         effects[fxInterface].bypass = false;
         fxInterface = new Interface(fxInterface);
-        tabDown.previous = el.id;
+        tabDown.previous = el.id + "";
     }
 
     function deactivateAll() {
@@ -254,7 +281,8 @@ webkitAudioContext && (this.onload = function () {
     }
 
     function interfaceDown(e) {
-        var effectIndex = ~~ (((e.layerX - 20) / 780) * 8);
+        var adjX = e.pageX - fxInterface.offset.left,
+            effectIndex = ~~ (((adjX - 20) / 780) * 8);
         if(fxInterface.controlsByIndex[effectIndex]) {
             switch(fxInterface.controlsByIndex[effectIndex].type) {
             case "Knob":
@@ -268,16 +296,20 @@ webkitAudioContext && (this.onload = function () {
                 break;
             case "Picker":
                 var pick = fxInterface.controlsByIndex[effectIndex],
-                    x = e.layerX - 20,
-                    LR = e.layerX > pick.x + pick.w * .5,
-                    value = effects[pick.parent.name][pick.name];
+                    value = effects[pick.parent.name][pick.name],
+                    LR = adjX > pick.x + pick.w * 0.5,
+                    x = adjX - 20;
                 if(LR) {
-                    pick.downLeft = true;
                     value--;
-                    value < pick.min && (value = pick.max);
+                    if(value < pick.min) {
+                        value = pick.max;
+                    }
+                    pick.downLeft = true;
                 } else {
                     value++;
-                    value > pick.max && (value = pick.min);
+                    if(value > pick.max) {
+                        value = pick.min;
+                    }
                     pick.downRight = true;
                 }
                 effects[pick.parent.name][pick.name] = value;
@@ -290,44 +322,69 @@ webkitAudioContext && (this.onload = function () {
     }
 
     function init() {
-        var name, tabsEl = document.getElementById("tabs"),
+        var interface_canvas = document.getElementById("interface_canvas"),
             inter = document.getElementById("interface"),
-            interface_canvas = document.getElementById("interface_canvas"),
-            temp = inter.getBoundingClientRect();
+            tabsEl = document.getElementById("tabs"),
+            temp = inter.getBoundingClientRect(),
+            brickWall = new tuna.Compressor({
+                threshold: -10,
+                ratio: 50,
+                attack: 0
+            }),
+            name;
+
         knobNames = document.getElementsByClassName("name");
         interface_canvas.width = 800;
         interface_canvas.height = 55;
         ctx = interface_canvas.getContext("2d");
         ctx.lineWidth = 3;
+
         for(var i = 0, ii = names.length; i < ii; i++) {
             name = names[i];
             effects[name] = new tuna[name]();
             if(i) {
                 effects[names[i - 1]].connect(effects[names[i]].input);
             }
-            tabs[name] = Tab(tabsEl, name);
+            Tab(tabsEl, name);
         }
-        var brickWall = new tuna.Compressor({
-            threshold: -10,
-            ratio: 50,
-            attack: 0
-        });
+        player = document.getElementById("player");
+        sourceNode = context.createMediaElementSource(player);
         masterGain = context.createGainNode();
+        sourceNode.connect(effects[names[0]].input);
         effects[name].connect(brickWall.input);
         brickWall.connect(masterGain);
         masterGain.connect(context.destination);
+        deactivateAll();
+        down({
+            srcElement: document.getElementById("Filter_tab")
+        });
+
         document.addEventListener("mousedown", down);
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
-        deactivateAll();
     }
-    init();
-    var startOn = document.getElementById("Filter_tab");
-    down({
-        srcElement: startOn
+
+    function pleaseFixSafariBugs() {
+        var inter = document.getElementById("interface"),
+            player = document.getElementById("player");
+        player.style.display = "none";
+        inter.style.padding = "25px";
+        inter.style.width = "660px";
+        inter.style["font-size"] = "14px";
+        inter.innerHTML = "This demo uses the html5 audio tag and currently only works with google chrome. <br /><br />" + " Unfortunately, the createMediaElementSource method of the Web Audio API is currently broken in Safari." + " You can find the latest version of chrome at <a href='http://google.com/chrome'>google.com/chrome</a>.<br /><br />" + " You can use Tuna with oscillator and bufferSource nodes in Safari, but for now, use with the audio tag isn't working correctly is broken for all Web Audio API nodes.";
+    }
+    window.addEventListener("load", function () {
+        var findChrome = /Chrome/,
+            isChrome = findChrome.test(window.navigator.userAgent);
+        if(isChrome) {
+            init();
+        } else {
+            pleaseFixSafariBugs();
+        }
+
     });
-    sourceNode.connect(effects[names[0]].input);
-})
+})();
+
 CanvasRenderingContext2D.prototype.line = function (x1, y1, x2, y2) {
     this.lineCap = 'round';
     this.beginPath();
