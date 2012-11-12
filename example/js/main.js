@@ -304,10 +304,12 @@
         }
         timeout = setTimeout(timeoutStop, source.buffer.duration * 1000);
     }
+
     function timeoutStop () {
         playing = false;
         drawPlay();
     }
+
     function stop () {
         if (!source) {
             return;
@@ -402,13 +404,31 @@
 
     function drawStop() {
         var fill = "#444";
-        
         playCtx.clear();
         playCtx.strokeStyle = fill;
         playCtx.circle(50, 50, 45, 45);
         playCtx.rectangle(22, 22, 56, 56, fill);
     }
-
+    function drawLoading() {
+        var fill = "#444",
+            dots = drawLoading.dot,
+            dotString = "";
+        playCtx.clear();
+        playCtx.strokeStyle = fill;
+        playCtx.circle(50, 50, 45, 45);
+        while (dots--) {
+            dotString += ".";
+        }
+        playCtx.font = '14pt Droid Sans';
+        playCtx.fillStyle = '#444';
+        playCtx.fillText("loading" + dotString, 12, 57);
+        drawLoading.dot++;
+        if (drawLoading.dot == 4) {
+            drawLoading.dot = 1;
+        }
+        timeout = setTimeout(drawLoading, 400);
+    }
+    drawLoading.dot = 1;
     function loadBuffer () {
         request = new XMLHttpRequest();
         request._path = "audio/2684__texasmusicforge__dandelion.mp3";
@@ -422,13 +442,13 @@
         context.decodeAudioData(this.response, function (buffer) {
             if (!buffer) console.error('error decoding file data: ' + url);
             song = buffer;
+            clearTimeout(timeout);
             init();
         });
     }
 
     function init() {
         var interface_canvas = document.getElementById("interface_canvas"),
-            playBtn = document.getElementById("play_stop"),
             inter = document.getElementById("interface"),
             tabsEl = document.getElementById("tabs"),
             temp = inter.getBoundingClientRect(),
@@ -438,16 +458,12 @@
                 attack: 0
             }),
             name;
-
+        inter.style.display = "block";
         knobNames = document.getElementsByClassName("name");
         interface_canvas.width = 800;
         interface_canvas.height = 55;
         ctx = interface_canvas.getContext("2d");
         ctx.lineWidth = 3;
-        playCtx = playBtn.getContext("2d");
-        playBtn.width = 100;
-        playBtn.height = 100;
-        playCtx.lineWidth = 5;
 
         for(var i = 0, ii = names.length; i < ii; i++) {
             name = names[i];
@@ -472,7 +488,16 @@
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
     }
-    window.addEventListener("load", loadBuffer);
+
+    window.addEventListener("load", function () {
+        var playBtn = document.getElementById("play_stop");
+        playCtx = playBtn.getContext("2d");
+        playBtn.width = 100;
+        playBtn.height = 100;
+        playCtx.lineWidth = 5;
+        drawLoading();
+        loadBuffer();
+    });
 })();
 
 CanvasRenderingContext2D.prototype.line = function (x1, y1, x2, y2) {
