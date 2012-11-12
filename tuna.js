@@ -487,7 +487,7 @@
             value: {
                 threshold: {
                     value: -20,
-                    min: -80,
+                    min: -60,
                     max: 0,
                     automatable: true,
                     type: FLOAT
@@ -897,7 +897,7 @@
         this.drive = properties.drive || this.defaults.drive.value;
         this.outputGain = properties.outputGain || this.defaults.outputGain.value;
         this.curveAmount = properties.curveAmount || this.defaults.curveAmount.value;
-        this.algorithm = properties.algorithmIndex || this.defaults.algorithmIndex.value;
+        this.algorithmIndex = properties.algorithmIndex || this.defaults.algorithmIndex.value;
         this.bypass = false;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
@@ -970,7 +970,7 @@
                 this._outputGain = dbToWAVolume(value);
             }
         },
-        algorithm: {
+        algorithmIndex: {
             get: function () {
                 return this._algorithmIndex;
             },

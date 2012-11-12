@@ -1,4 +1,5 @@
-//"useStrict";
+"useStrict";
+//Music from freesound.org user TexasMusicForge
 //http://freesound.org/people/TexasMusicForge/sounds/2684/
 /*
     tuna.js: demo
@@ -109,7 +110,7 @@
                     x: this.x + this.w * 0.5 + 5,
                     y: this.y + this.w
                 }, this.downLeft ? "#FFF" : "#444");
-                var value = "filterType" ? filterTypes[this.value] : this.value;
+                var value = this.name === "filterType" ? filterTypes[this.value] : this.value;
                 knobNames[this.index].innerHTML = "<strong>" + this.name + "</strong>" + "<br />" + value;
             }
         }
@@ -147,6 +148,7 @@
         this.param = parent[name] === undefined ? parent["_" + name] : parent[name];
         var value = this.param["value"] === undefined ? this.param : this.param.value;
         this.range = parent.defaults[name].max - parent.defaults[name].min;
+        this.offset = parent.defaults[name].min;
         this.theta = (value / this.range) * slice * 10;
         this.value = Math.floor(value * 100) / 100;
         this.x = x + 20;
@@ -273,11 +275,11 @@
         }
         normalized = activeKnob.theta / (slice * 10);
         if(activeKnob.param["value"] !== undefined) {
-            activeKnob.param.value = normalized * activeKnob.range;
+            activeKnob.param.value = activeKnob.offset + normalized * activeKnob.range;
         } else {
-            activeKnob.parent[activeKnob.name] = normalized * activeKnob.range;
+            activeKnob.parent[activeKnob.name] = activeKnob.offset + normalized * activeKnob.range;
         }
-        activeKnob.value = Math.floor(normalized * activeKnob.range * 100) / 100;
+        activeKnob.value = Math.floor((activeKnob.offset + normalized * activeKnob.range) * 100) / 100;
         fxInterface.drawControls(y);
         mouse.lastY = y;
     }
@@ -296,13 +298,13 @@
     function play () {
         source = context.createBufferSource();
         source.buffer = song;
+        source.loop = true;
         source.connect(effects[names[0]].input);
         if (source.start !== undefined) {
             source.start(0);
         } else {
             source.noteOn(0);
         }
-        timeout = setTimeout(timeoutStop, source.buffer.duration * 1000);
     }
 
     function timeoutStop () {
@@ -311,6 +313,7 @@
     }
 
     function stop () {
+        console.log('stop');
         if (!source) {
             return;
         }
@@ -319,7 +322,6 @@
         } else {
             source.noteOff(0);
         }
-        clearTimeout(timeout);
     }
 
     function tabDown(e) {
@@ -430,8 +432,10 @@
     }
     drawLoading.dot = 1;
     function loadBuffer () {
+        var iHateSafari = /Chrome/.test(window.navigator.userAgent),
+            format = iHateSafari ? ".ogg" : ".m4a";
         request = new XMLHttpRequest();
-        request._path = "audio/2684__texasmusicforge__dandelion.mp3";
+        request._path = "audio/cello" + format;
         request.open("GET", request._path, true);
         request.responseType = "arraybuffer";
         request.onload = xhrload;
@@ -440,10 +444,11 @@
 
     function xhrload () {
         context.decodeAudioData(this.response, function (buffer) {
-            if (!buffer) console.error('error decoding file data: ' + url);
             song = buffer;
             clearTimeout(timeout);
             init();
+        }, function (e) {
+            console.error('error decoding file data');
         });
     }
 
@@ -452,11 +457,6 @@
             inter = document.getElementById("interface"),
             tabsEl = document.getElementById("tabs"),
             temp = inter.getBoundingClientRect(),
-            brickWall = new tuna.Compressor({
-                threshold: -10,
-                ratio: 50,
-                attack: 0
-            }),
             name;
         inter.style.display = "block";
         knobNames = document.getElementsByClassName("name");
@@ -476,8 +476,7 @@
         drawPlay();
         
         masterGain = context.createGainNode();
-        effects[name].connect(brickWall.input);
-        brickWall.connect(masterGain);
+        effects[name].connect(masterGain);
         masterGain.connect(context.destination);
         deactivateAll();
         down({
