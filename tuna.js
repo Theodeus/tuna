@@ -773,10 +773,10 @@
 
         this.activateNode.connect(this.delay);
         this.activateNode.connect(this.dry);
-        this.delay.connect(this.feedbackNode);
-        this.feedbackNode.connect(this.delay);
         this.delay.connect(this.filter);
-        this.filter.connect(this.wet);
+        this.filter.connect(this.feedbackNode);
+        this.feedbackNode.connect(this.delay);
+        this.feedbackNode.connect(this.wet);
         this.wet.connect(this.output);
         this.dry.connect(this.output);
 
@@ -785,7 +785,7 @@
         this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
         this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
-        this.filter.type = 1;
+        this.filter.type = 0;
         this.bypass = false;
     };
     Tuna.prototype.Delay.prototype = Object.create(Super, {
@@ -809,7 +809,7 @@
                     type: FLOAT
                 },
                 cutoff: {
-                    value: 20,
+                    value: 20000,
                     min: 20,
                     max: 20000,
                     automatable: true,

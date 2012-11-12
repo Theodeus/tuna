@@ -40,11 +40,21 @@
         proto = "prototype",
         movingKnob = false,
         TAU = Math.PI * 2,
+        triforce = TAU / 3,
         slice = TAU / 12,
         knobRadius = 20,
-        fxInterface, knobNames, player, masterGain, ctx, fun = function () {};
-
-    //audio/2684__texasmusicforge__dandelion.mp3
+        playing = false,
+        fxInterface, timeout, songBuffer, source, knobNames, playCtx, ctx, fun = function () {},
+        filterTypes = [
+            "LOWPASS",
+            "HIGHPASS",
+            "BANDPASS",
+            "LOWSHELF",
+            "HIGHSHELF",
+            "PEAKING",
+            "NOTCH",
+            "ALLPASS"
+        ];
 
     function Tab(parent, name) {
         var tab = document.createElement("div"),
@@ -58,16 +68,18 @@
         parent.appendChild(tab);
     }
 
-    function Picker(x, y, name, parent) {
+    function Picker(x, y, name, parent, index) {
         this.min = parent.defaults[name].min;
         this.max = parent.defaults[name].max;
         this.downRight = false;
         this.downLeft = false;
         this.type = "Picker";
         this.parent = parent;
+        this.index = index;
         this.name = name;
         this.x = x;
         this.y = y;
+        this.value = this.parent[this.name];
         this.draw();
     }
     Picker.prototype = Object.create(null, {
@@ -97,14 +109,18 @@
                     x: this.x + this.w * 0.5 + 5,
                     y: this.y + this.w
                 }, this.downLeft ? "#FFF" : "#444");
+                var value = "filterType" ? filterTypes[this.value] : this.value;
+                knobNames[this.index].innerHTML = "<strong>" + this.name + "</strong>" + "<br />" + value;
             }
         }
     });
 
-    function CheckBox(x, y, name, parent) {
+    function CheckBox(x, y, name, parent, index) {
         this.parentName = parent.name;
         this.active = parent[name];
+        this.value = this.active;
         this.type = "CheckBox";
+        this.index = index;
         this.name = name;
         this.x = x;
         this.y = y;
@@ -121,18 +137,21 @@
                     ctx.line(this.x, this.y, this.x + this.width, this.y + this.width);
                     ctx.line(this.x, this.y + this.width, this.x + this.width, this.y);
                 }
+                knobNames[this.index].innerHTML = "<strong>" + this.name + "</strong>" + "<br />" + this.value;
             }
         }
     });
 
-    function Knob(x, y, name, parent) {
+    function Knob(x, y, name, parent, index) {
         this.parent = parent;
         this.param = parent[name] === undefined ? parent["_" + name] : parent[name];
         var value = this.param["value"] === undefined ? this.param : this.param.value;
         this.range = parent.defaults[name].max - parent.defaults[name].min;
         this.theta = (value / this.range) * slice * 10;
+        this.value = Math.floor(value * 100) / 100;
         this.x = x + 20;
         this.y = y + 20;
+        this.index = index;
         this.name = name;
         this.type = "Knob";
         this.draw();
@@ -150,6 +169,7 @@
                     y2 = this.y + this.r * Math.sin(this.theta + slice * 4);
                 ctx.circle(this.x, this.y, this.r, "#EEE", "#444");
                 ctx.line(this.x, this.y, x2, y2);
+                knobNames[this.index].innerHTML = "<strong>" + this.name + "</strong>" + "<br />" + this.value;
             }
         }
     });
@@ -164,7 +184,7 @@
         this.controls = {};
         this.controlsByIndex = [];
         for(var i = 0, ii = knobNames.length; i < ii; i++) {
-            knobNames[i].innerText = "";
+            knobNames[i].innerHTML = "";
         }
         i = 0;
         for(var def in Tuna[proto][name][proto].defaults) {
@@ -174,15 +194,15 @@
             prop = Tuna[proto][name][proto].defaults[def];
             switch(prop.type) {
             case "boolean":
-                this.controls[def] = new CheckBox(offset, 10, def, effects[name]);
+                this.controls[def] = new CheckBox(offset, 10, def, effects[name], i);
                 this.controlsByIndex.push(this.controls[def]);
                 break;
             case "float":
-                this.controls[def] = new Knob(offset, 10, def, effects[name]);
+                this.controls[def] = new Knob(offset, 10, def, effects[name], i);
                 this.controlsByIndex.push(this.controls[def]);
                 break;
             case "int":
-                this.controls[def] = new Picker(offset, 10, def, effects[name]);
+                this.controls[def] = new Picker(offset, 10, def, effects[name], i);
                 this.controlsByIndex.push(this.controls[def]);
                 break;
             case "string":
@@ -195,7 +215,6 @@
                     draw: fun
                 });
             }
-            knobNames[i].innerText = def;
             i++;
             offset += 90;
         }
@@ -220,6 +239,10 @@
             interfaceDown(e);
             return;
         }
+        if(e.srcElement.id === "play_stop") {
+            playDown();
+            return;
+        }
     }
 
     function up(e) {
@@ -234,14 +257,12 @@
     }
 
     function move(e) {
-        if(e.srcElement.id === "player") {
-            masterGain.gain.value = e.srcElement.volume;
-        }
         if(!movingKnob) {
             return;
         }
         var y = e.pageY,
-            normalized = 0;
+            normalized = 0,
+            value;
         activeKnob.theta += (mouse.lastY - y > 0 ? 0.15 : -0.15);
 
         if(activeKnob.theta > activeKnob.upperLimit) {
@@ -256,9 +277,47 @@
         } else {
             activeKnob.parent[activeKnob.name] = normalized * activeKnob.range;
         }
-
+        activeKnob.value = Math.floor(normalized * activeKnob.range * 100) / 100;
         fxInterface.drawControls(y);
         mouse.lastY = y;
+    }
+
+    function playDown() {
+        playing = !playing;
+        if (playing) {
+            drawStop();
+            play();
+        } else {
+            drawPlay();
+            stop();
+        }
+    }
+    
+    function play () {
+        source = context.createBufferSource();
+        source.buffer = song;
+        source.connect(effects[names[0]].input);
+        if (source.start !== undefined) {
+            source.start(0);
+        } else {
+            source.noteOn(0);
+        }
+        timeout = setTimeout(timeoutStop, source.buffer.duration * 1000);
+    }
+    function timeoutStop () {
+        playing = false;
+        drawPlay();
+    }
+    function stop () {
+        if (!source) {
+            return;
+        }
+        if (source.stop) {
+            source.stop(0);
+        } else {
+            source.noteOff(0);
+        }
+        clearTimeout(timeout);
     }
 
     function tabDown(e) {
@@ -293,6 +352,7 @@
                 var box = fxInterface.controlsByIndex[effectIndex];
                 box.active = !box.active;
                 effects[box.parentName][box.name] = box.active;
+                box.value = box.active;
                 break;
             case "Picker":
                 var pick = fxInterface.controlsByIndex[effectIndex],
@@ -300,19 +360,20 @@
                     LR = adjX > pick.x + pick.w * 0.5,
                     x = adjX - 20;
                 if(LR) {
-                    value--;
-                    if(value < pick.min) {
-                        value = pick.max;
-                    }
-                    pick.downLeft = true;
-                } else {
                     value++;
                     if(value > pick.max) {
                         value = pick.min;
                     }
+                    pick.downLeft = true;
+                } else {
+                    value--;
+                    if(value < pick.min) {
+                        value = pick.max;
+                    }
                     pick.downRight = true;
                 }
                 effects[pick.parent.name][pick.name] = value;
+                pick.value = value;
                 break;
             }
         }
@@ -321,8 +382,53 @@
         mouse.lastY = e.pageY;
     }
 
+    function drawPlay() {
+        var fill = "#444";
+        
+        playCtx.clear();
+        playCtx.strokeStyle = fill;
+        playCtx.circle(50, 50, 45, 45);
+        playCtx.triangle({
+            x: 50 + Math.cos(0) * 40,
+            y: 50 + Math.sin(0) * 40
+        }, {
+            x: 50 + Math.cos(triforce) * 40,
+            y: 50 + Math.sin(triforce) * 40
+        }, {
+            x: 50 + Math.cos(triforce * 2) * 40,
+            y: 50 + Math.sin(triforce * 2) * 40
+        }, fill);
+    }
+
+    function drawStop() {
+        var fill = "#444";
+        
+        playCtx.clear();
+        playCtx.strokeStyle = fill;
+        playCtx.circle(50, 50, 45, 45);
+        playCtx.rectangle(22, 22, 56, 56, fill);
+    }
+
+    function loadBuffer () {
+        request = new XMLHttpRequest();
+        request._path = "audio/2684__texasmusicforge__dandelion.mp3";
+        request.open("GET", request._path, true);
+        request.responseType = "arraybuffer";
+        request.onload = xhrload;
+        request.send();
+    }
+
+    function xhrload () {
+        context.decodeAudioData(this.response, function (buffer) {
+            if (!buffer) console.error('error decoding file data: ' + url);
+            song = buffer;
+            init();
+        });
+    }
+
     function init() {
         var interface_canvas = document.getElementById("interface_canvas"),
+            playBtn = document.getElementById("play_stop"),
             inter = document.getElementById("interface"),
             tabsEl = document.getElementById("tabs"),
             temp = inter.getBoundingClientRect(),
@@ -338,6 +444,10 @@
         interface_canvas.height = 55;
         ctx = interface_canvas.getContext("2d");
         ctx.lineWidth = 3;
+        playCtx = playBtn.getContext("2d");
+        playBtn.width = 100;
+        playBtn.height = 100;
+        playCtx.lineWidth = 5;
 
         for(var i = 0, ii = names.length; i < ii; i++) {
             name = names[i];
@@ -347,10 +457,9 @@
             }
             Tab(tabsEl, name);
         }
-        player = document.getElementById("player");
-        sourceNode = context.createMediaElementSource(player);
+        drawPlay();
+        
         masterGain = context.createGainNode();
-        sourceNode.connect(effects[names[0]].input);
         effects[name].connect(brickWall.input);
         brickWall.connect(masterGain);
         masterGain.connect(context.destination);
@@ -363,26 +472,7 @@
         document.addEventListener("mouseup", up);
         document.addEventListener("mousemove", move);
     }
-
-    function pleaseFixSafariBugs() {
-        var inter = document.getElementById("interface"),
-            player = document.getElementById("player");
-        player.style.display = "none";
-        inter.style.padding = "25px";
-        inter.style.width = "660px";
-        inter.style["font-size"] = "14px";
-        inter.innerHTML = "This demo uses the html5 audio tag and currently only works with google chrome. <br /><br />" + " Unfortunately, the createMediaElementSource method of the Web Audio API is currently broken in Safari." + " You can find the latest version of chrome at <a href='http://google.com/chrome'>google.com/chrome</a>.<br /><br />" + " You can use Tuna with oscillator and bufferSource nodes in Safari, but for now, use with the audio tag isn't working correctly is broken for all Web Audio API nodes.";
-    }
-    window.addEventListener("load", function () {
-        var findChrome = /Chrome/,
-            isChrome = findChrome.test(window.navigator.userAgent);
-        if(isChrome) {
-            init();
-        } else {
-            pleaseFixSafariBugs();
-        }
-
-    });
+    window.addEventListener("load", loadBuffer);
 })();
 
 CanvasRenderingContext2D.prototype.line = function (x1, y1, x2, y2) {
