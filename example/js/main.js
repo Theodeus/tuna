@@ -21,7 +21,7 @@
     OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 (function () {
-    if(!window.webkitAudioContext) {
+    if (!window.webkitAudioContext) {
         window.addEventListener("load", function () {
             var inter = document.getElementById("interface"),
                 player = document.getElementById("player");
@@ -46,16 +46,359 @@
         knobRadius = 20,
         playing = false,
         fxInterface, timeout, songBuffer, source, knobNames, playCtx, ctx, fun = function () {},
-        filterTypes = [
-            "LOWPASS",
-            "HIGHPASS",
-            "BANDPASS",
-            "LOWSHELF",
-            "HIGHSHELF",
-            "PEAKING",
-            "NOTCH",
-            "ALLPASS"
-        ];
+        filterTypes = ["LOWPASS", "HIGHPASS", "BANDPASS", "LOWSHELF", "HIGHSHELF", "PEAKING", "NOTCH", "ALLPASS"],
+        FLOAT = "float",
+        BOOLEAN = "boolean",
+        STRING = "string",
+        INT = "int",
+        demoDefaults = {
+            Filter: {
+                frequency: {
+                    value: 800,
+                    min: 20,
+                    max: 22050,
+                    automatable: true,
+                    type: FLOAT
+                },
+                Q: {
+                    value: 1,
+                    min: 0.001,
+                    max: 50,
+                    automatable: true,
+                    type: FLOAT
+                },
+                gain: {
+                    value: 0,
+                    min: -20,
+                    max: 20,
+                    automatable: true,
+                    type: FLOAT
+                },
+                bypass: {
+                    value: true,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+                filterType: {
+                    value: 1,
+                    min: 0,
+                    max: 7,
+                    automatable: false,
+                    type: INT
+                }
+            },
+            Cabinet: {
+                makeupGain: {
+                    value: 1,
+                    min: 0,
+                    max: 7,
+                    automatable: true,
+                    type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
+                }
+            },
+            Compressor: {
+                threshold: {
+                    value: -20,
+                    min: -60,
+                    max: 0,
+                    automatable: true,
+                    type: FLOAT
+                },
+                release: {
+                    value: 250,
+                    min: 10,
+                    max: 2000,
+                    automatable: true,
+                    type: FLOAT
+                },
+                makeupGain: {
+                    value: 1,
+                    min: 1,
+                    max: 100,
+                    automatable: true,
+                    type: FLOAT
+                },
+                attack: {
+                    value: 1,
+                    min: 0,
+                    max: 1000,
+                    automatable: true,
+                    type: FLOAT
+                },
+                ratio: {
+                    value: 4,
+                    min: 1,
+                    max: 50,
+                    automatable: true,
+                    type: FLOAT
+                },
+                knee: {
+                    value: 5,
+                    min: 0,
+                    max: 40,
+                    automatable: true,
+                    type: FLOAT
+                },
+                automakeup: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+                bypass: {
+                    value: true,
+                    automatable: false,
+                    type: BOOLEAN
+                }
+            },
+            Chorus: {
+                feedback: {
+                    value: 0.4,
+                    min: 0,
+                    max: 0.95,
+                    automatable: false,
+                    type: FLOAT
+                },
+                delay: {
+                    value: 0.0045,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                depth: {
+                    value: 0.7,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                rate: {
+                    value: 1.5,
+                    min: 0,
+                    max: 8,
+                    automatable: false,
+                    type: FLOAT
+                },
+                bypass: {
+                    value: true,
+                    automatable: false,
+                    type: BOOLEAN
+                }
+            },
+            Convolver: {
+                highCut: {
+                    value: 22050,
+                    min: 20,
+                    max: 22050,
+                    automatable: true,
+                    type: FLOAT
+                },
+                lowCut: {
+                    value: 20,
+                    min: 20,
+                    max: 22050,
+                    automatable: true,
+                    type: FLOAT
+                },
+                dryLevel: {
+                    value: 1,
+                    min: 0,
+                    max: 1,
+                    automatable: true,
+                    type: FLOAT
+                },
+                wetLevel: {
+                    value: 1,
+                    min: 0,
+                    max: 1,
+                    automatable: true,
+                    type: FLOAT
+                },
+                level: {
+                    value: 1,
+                    min: 0,
+                    max: 1,
+                    automatable: true,
+                    type: FLOAT
+                }
+            },
+            Delay: {
+                delayTime: {
+                    value: 1000,
+                    min: 20,
+                    max: 1000,
+                    automatable: false,
+                    type: FLOAT
+                },
+                feedback: {
+                    value: 0.45,
+                    min: 0,
+                    max: 0.9,
+                    automatable: true,
+                    type: FLOAT
+                },
+                cutoff: {
+                    value: 20000,
+                    min: 20,
+                    max: 20000,
+                    automatable: true,
+                    type: FLOAT
+                },
+                wetLevel: {
+                    value: 0.5,
+                    min: 0,
+                    max: 1,
+                    automatable: true,
+                    type: FLOAT
+                },
+                dryLevel: {
+                    value: 1,
+                    min: 0,
+                    max: 1,
+                    automatable: true,
+                    type: FLOAT
+                }
+            },
+            Overdrive: {
+                drive: {
+                    value: 1,
+                    min: 0,
+                    max: 1,
+                    automatable: true,
+                    type: FLOAT,
+                    scaled: true
+                },
+                outputGain: {
+                    value: 1,
+                    min: 0,
+                    max: 1,
+                    automatable: true,
+                    type: FLOAT,
+                    scaled: true
+                },
+                curveAmount: {
+                    value: 0.725,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                algorithmIndex: {
+                    value: 0,
+                    min: 0,
+                    max: 5,
+                    automatable: false,
+                    type: INT
+                }
+            },
+            Phaser: {
+                rate: {
+                    value: 0.1,
+                    min: 0,
+                    max: 8,
+                    automatable: false,
+                    type: FLOAT
+                },
+                depth: {
+                    value: 0.6,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                feedback: {
+                    value: 0.7,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                stereoPhase: {
+                    value: 40,
+                    min: 0,
+                    max: 180,
+                    automatable: false,
+                    type: FLOAT
+                },
+                baseModulationFrequency: {
+                    value: 700,
+                    min: 500,
+                    max: 1500,
+                    automatable: false,
+                    type: FLOAT
+                }
+            },
+            Tremolo: {
+                intensity: {
+                    value: 0.3,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                stereoPhase: {
+                    value: 0,
+                    min: 0,
+                    max: 180,
+                    automatable: false,
+                    type: FLOAT
+                },
+                rate: {
+                    value: 5,
+                    min: 0.1,
+                    max: 11,
+                    automatable: false,
+                    type: FLOAT
+                }
+            },
+            WahWah: {
+                automode: {
+                    value: true,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+                baseFrequency: {
+                    value: 0.5,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                excursionOctaves: {
+                    value: 2,
+                    min: 1,
+                    max: 6,
+                    automatable: false,
+                    type: FLOAT
+                },
+                sweep: {
+                    value: 0.2,
+                    min: 0,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                },
+                resonance: {
+                    value: 10,
+                    min: 1,
+                    max: 100,
+                    automatable: false,
+                    type: FLOAT
+                },
+                sensitivity: {
+                    value: 0.5,
+                    min: -1,
+                    max: 1,
+                    automatable: false,
+                    type: FLOAT
+                }
+            }
+        };
 
     function Tab(parent, name) {
         var tab = document.createElement("div"),
@@ -134,7 +477,7 @@
         draw: {
             value: function () {
                 ctx.rectangle(this.x, this.y, this.width, this.width, "#444");
-                if(this.active) {
+                if (this.active) {
                     ctx.line(this.x, this.y, this.x + this.width, this.y + this.width);
                     ctx.line(this.x, this.y + this.width, this.x + this.width, this.y);
                 }
@@ -185,16 +528,16 @@
         this.offset = el.getBoundingClientRect();
         this.controls = {};
         this.controlsByIndex = [];
-        for(var i = 0, ii = knobNames.length; i < ii; i++) {
+        for (var i = 0, ii = knobNames.length; i < ii; i++) {
             knobNames[i].innerHTML = "";
         }
         i = 0;
-        for(var def in Tuna[proto][name][proto].defaults) {
-            if(def === "bypass") {
+        for (var def in Tuna[proto][name][proto].defaults) {
+            if (def === "bypass") {
                 continue;
             }
             prop = Tuna[proto][name][proto].defaults[def];
-            switch(prop.type) {
+            switch (prop.type) {
             case "boolean":
                 this.controls[def] = new CheckBox(offset, 10, def, effects[name], i);
                 this.controlsByIndex.push(this.controls[def]);
@@ -225,7 +568,7 @@
         drawControls: {
             value: function (y) {
                 ctx.clear();
-                for(var i = 0, ii = this.controlsByIndex.length; i < ii; i++) {
+                for (var i = 0, ii = this.controlsByIndex.length; i < ii; i++) {
                     this.controlsByIndex[i].draw();
                 }
             }
@@ -233,15 +576,15 @@
     });
 
     function down(e) {
-        if(e.srcElement.classList.contains("tabanchor")) {
+        if (e.srcElement.classList.contains("tabanchor")) {
             tabDown(e);
             return;
         }
-        if(e.srcElement.id === "interface_canvas") {
+        if (e.srcElement.id === "interface_canvas") {
             interfaceDown(e);
             return;
         }
-        if(e.srcElement.id === "play_stop") {
+        if (e.srcElement.id === "play_stop") {
             playDown();
             return;
         }
@@ -249,17 +592,17 @@
 
     function up(e) {
         movingKnob = false;
-        if(!fxInterface) {
+        if (!fxInterface) {
             return;
         }
-        for(var k in fxInterface.controls) if(fxInterface.controls[k].type === "Picker") {
+        for (var k in fxInterface.controls) if (fxInterface.controls[k].type === "Picker") {
             fxInterface.controls[k].downLeft = fxInterface.controls[k].downRight = false;
         }
         fxInterface.drawControls();
     }
 
     function move(e) {
-        if(!movingKnob) {
+        if (!movingKnob) {
             return;
         }
         var y = e.pageY,
@@ -267,14 +610,14 @@
             value;
         activeKnob.theta += (mouse.lastY - y > 0 ? 0.15 : -0.15);
 
-        if(activeKnob.theta > activeKnob.upperLimit) {
+        if (activeKnob.theta > activeKnob.upperLimit) {
             activeKnob.theta = activeKnob.upperLimit;
         }
-        if(activeKnob.theta < 0) {
+        if (activeKnob.theta < 0) {
             activeKnob.theta = 0;
         }
         normalized = activeKnob.theta / (slice * 10);
-        if(activeKnob.param["value"] !== undefined) {
+        if (activeKnob.param["value"] !== undefined) {
             activeKnob.param.value = activeKnob.offset + normalized * activeKnob.range;
         } else {
             activeKnob.parent[activeKnob.name] = activeKnob.offset + normalized * activeKnob.range;
@@ -294,8 +637,8 @@
             stop();
         }
     }
-    
-    function play () {
+
+    function play() {
         source = context.createBufferSource();
         source.buffer = song;
         source.loop = true;
@@ -307,13 +650,12 @@
         }
     }
 
-    function timeoutStop () {
+    function timeoutStop() {
         playing = false;
         drawPlay();
     }
 
-    function stop () {
-        console.log('stop');
+    function stop() {
         if (!source) {
             return;
         }
@@ -326,7 +668,7 @@
 
     function tabDown(e) {
         var el = e.srcElement;
-        if(tabDown.previous) {
+        if (tabDown.previous) {
             document.getElementById(tabDown.previous).classList.remove("activetab");
         }
         el.classList.add("activetab");
@@ -338,7 +680,7 @@
     }
 
     function deactivateAll() {
-        for(var i = 0, ii = names.length; i < ii; i++) {
+        for (var i = 0, ii = names.length; i < ii; i++) {
             effects[names[i]].bypass = true;
         }
     }
@@ -346,8 +688,8 @@
     function interfaceDown(e) {
         var adjX = e.pageX - fxInterface.offset.left,
             effectIndex = ~~ (((adjX - 20) / 780) * 8);
-        if(fxInterface.controlsByIndex[effectIndex]) {
-            switch(fxInterface.controlsByIndex[effectIndex].type) {
+        if (fxInterface.controlsByIndex[effectIndex]) {
+            switch (fxInterface.controlsByIndex[effectIndex].type) {
             case "Knob":
                 activeKnob = fxInterface.controlsByIndex[effectIndex];
                 movingKnob = true;
@@ -363,15 +705,15 @@
                     value = effects[pick.parent.name][pick.name],
                     LR = adjX > pick.x + pick.w * 0.5,
                     x = adjX - 20;
-                if(LR) {
+                if (LR) {
                     value++;
-                    if(value > pick.max) {
+                    if (value > pick.max) {
                         value = pick.min;
                     }
                     pick.downLeft = true;
                 } else {
                     value--;
-                    if(value < pick.min) {
+                    if (value < pick.min) {
                         value = pick.max;
                     }
                     pick.downRight = true;
@@ -388,7 +730,7 @@
 
     function drawPlay() {
         var fill = "#444";
-        
+
         playCtx.clear();
         playCtx.strokeStyle = fill;
         playCtx.circle(50, 50, 45, 45);
@@ -411,6 +753,7 @@
         playCtx.circle(50, 50, 45, 45);
         playCtx.rectangle(22, 22, 56, 56, fill);
     }
+
     function drawLoading() {
         var fill = "#444",
             dots = drawLoading.dot,
@@ -431,7 +774,8 @@
         timeout = setTimeout(drawLoading, 400);
     }
     drawLoading.dot = 1;
-    function loadBuffer () {
+
+    function loadBuffer() {
         var iHateSafari = /Chrome/.test(window.navigator.userAgent),
             format = iHateSafari ? ".ogg" : ".m4a";
         request = new XMLHttpRequest();
@@ -442,7 +786,7 @@
         request.send();
     }
 
-    function xhrload () {
+    function xhrload() {
         context.decodeAudioData(this.response, function (buffer) {
             song = buffer;
             clearTimeout(timeout);
@@ -465,16 +809,18 @@
         ctx = interface_canvas.getContext("2d");
         ctx.lineWidth = 3;
 
-        for(var i = 0, ii = names.length; i < ii; i++) {
+        for (var i = 0, ii = names.length; i < ii; i++) {
             name = names[i];
             effects[name] = new tuna[name]();
-            if(i) {
+            effects[name].defaults = demoDefaults[name];
+            if (i) {
                 effects[names[i - 1]].connect(effects[names[i]].input);
             }
             Tab(tabsEl, name);
         }
+        window.effects = effects;
         drawPlay();
-        
+
         masterGain = context.createGainNode();
         effects[name].connect(masterGain);
         masterGain.connect(context.destination);
@@ -511,10 +857,10 @@ CanvasRenderingContext2D.prototype.circle = function (x, y, r, stroke, fill) {
     this.beginPath();
     this.arc(x, y, r, 0, Math.PI * 2, true);
     this.closePath();
-    if(stroke) {
+    if (stroke) {
         this.strokeStyle = stroke;
     }
-    if(fill) {
+    if (fill) {
         this.fillStyle = fill;
         this.fill();
         this.stroke();
@@ -526,7 +872,7 @@ CanvasRenderingContext2D.prototype.rectangle = function (x, y, w, h, fill) {
     this.beginPath();
     this.rect(x, y, w, h);
     this.closePath();
-    if(fill) {
+    if (fill) {
         this.fillStyle = fill;
         this.fill();
         this.stroke();
@@ -541,7 +887,7 @@ CanvasRenderingContext2D.prototype.triangle = function (p1, p2, p3, fill) {
     this.lineTo(p2.x, p2.y);
     this.lineTo(p3.x, p3.y);
     this.closePath();
-    if(fill) {
+    if (fill) {
         this.fillStyle = fill;
         this.fill();
     }

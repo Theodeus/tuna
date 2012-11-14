@@ -196,6 +196,7 @@
             value: "Filter"
         },
         defaults: {
+            writable:true,
             value: {
                 frequency: {
                     value: 800,
@@ -291,6 +292,7 @@
             value: "Cabinet"
         },
         defaults: {
+            writable:true,
             value: {
                 makeupGain: {
                     value: 1,
@@ -376,11 +378,12 @@
             value: "Chorus"
         },
         defaults: {
+            writable:true,
             value: {
                 feedback: {
                     value: 0.4,
                     min: 0,
-                    max: 1,
+                    max: 0.95,
                     automatable: false,
                     type: FLOAT
                 },
@@ -453,8 +456,8 @@
             },
             set: function (value) {
                 this._rate = value;
-                this.lfoL._frequency = this._rate;
-                this.lfoR._frequency = this._rate;
+                this.lfoL.frequency = this._rate;
+                this.lfoR.frequency = this._rate;
             }
         }
     });
@@ -484,6 +487,7 @@
             value: "Compressor"
         },
         defaults: {
+            writable:true,
             value: {
                 threshold: {
                     value: -20,
@@ -651,6 +655,7 @@
             value: "Convolver"
         },
         defaults: {
+            writable:true,
             value: {
                 highCut: {
                     value: 22050,
@@ -793,9 +798,10 @@
             value: "Delay"
         },
         defaults: {
+            writable:true,
             value: {
                 delayTime: {
-                    value: 30,
+                    value: 100,
                     min: 20,
                     max: 1000,
                     automatable: false,
@@ -905,6 +911,7 @@
             value: "Overdrive"
         },
         defaults: {
+            writable:true,
             value: {
                 drive: {
                     value: 1,
@@ -1100,6 +1107,7 @@
             value: 4
         },
         defaults: {
+            writable:true,
             value: {
                 rate: {
                     value: 0.1,
@@ -1238,6 +1246,7 @@
             value: "Tremolo"
         },
         defaults: {
+            writable:true,
             value: {
                 intensity: {
                     value: 0.3,
@@ -1269,8 +1278,8 @@
             },
             set: function (value) {
                 this._intensity = value;
-                this.lfoL.offset = this._intensity / 2;
-                this.lfoR.offset = this._intensity / 2;
+                this.lfoL.offset = 1 - this._intensity / 2;
+                this.lfoR.offset = 1 - this._intensity / 2;
                 this.lfoL.oscillation = this._intensity;
                 this.lfoR.oscillation = this._intensity;
             }
@@ -1338,6 +1347,7 @@
             value: "WahWah"
         },
         defaults: {
+            writable:true,
             value: {
                 automode: {
                     value: true,
@@ -1483,8 +1493,7 @@
         this.releaseTime = properties.releaseTime || this.defaults.releaseTime.value;
         this._envelope = 0;
         this.target = properties.target || {};
-        this.callback = properties.callback ||
-        function () {};
+        this.callback = properties.callback || function () {};
     };
     Tuna.prototype.EnvelopeFollower.prototype = Object.create(Super, {
         name: {
@@ -1501,8 +1510,8 @@
                 },
                 releaseTime: {
                     value: 0.5,
-                    min: 0.5,
-                    max: 1,
+                    min: 0,
+                    max: 0.5,
                     automatable: false,
                     type: FLOAT
                 }
@@ -1582,7 +1591,7 @@
                     channels = event.inputBuffer.numberOfChannels,
                     current, chan, rms, i;
                 chan = rms = i = 0;
-                if(channels > 1) { // need to mixdown
+                if(channels > 1) { //need to mixdown
                     for(i = 0; i < count; ++i) {
                         for(; chan < channels; ++chan) {
                             current = event.inputBuffer.getChannelData(chan)[i];

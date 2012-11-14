@@ -12,7 +12,6 @@ body {
     background: #EFEFEF;
     cursor:normal;
     overflow: auto;
-    min-width: 810px;
 }
 strong {
     color:#EEE;
@@ -62,10 +61,10 @@ a:hover {
     color: #cb8139; 
 }
 section {
-    width:710px;
+    width:716px;
     position:relative;
     left:50%;
-    margin-left:-400px;
+    margin-left:-358px;
 }
 audio {
     width:710px;
@@ -91,6 +90,7 @@ canvas {
     background: #444;
     border-radius: 5px;
     display:none;
+    margin-bottom:25px;
 }
 .tab {
     display:inline-block;
@@ -117,13 +117,26 @@ canvas {
 .activeTab {
     color:#da9753; 
 }
-footer {
-    position:absolute;
-    bottom:25px;
+#brought {
+    border:0px;
+    padding-top: 3px;
+    text-align: right;
 }
-footer h3 {
-    font-size: 16px;
-}
-footer a {
+#brought a {
     text-decoration: none;
+}
+#warning {
+    position:static;
+    display:block;
+    background:#444;
+    border-radius:5px;
+    color:#EEE;
+    font-size: 14px;
+    height:80px;
+}
+#warning div {
+    margin-left:45px;
+    padding-bottom:10px;
+    text-align: center;
+    line-height: 20px;
 }
