@@ -818,7 +818,6 @@
             }
             Tab(tabsEl, name);
         }
-        window.effects = effects;
         drawPlay();
 
         masterGain = context.createGainNode();
