@@ -1,5 +1,3 @@
-OBS. tuna.js is currently very much beta.
-
 Latest news
 ====
 New effects added: Chorus, Phaser, and Tremolo. <br /> Be sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> for future updates. Feel free to create your own effects and give us a pull request!
