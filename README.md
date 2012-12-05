@@ -2,7 +2,7 @@ OBS. tuna.js is currently very much beta.
 
 Latest news
 ====
-<strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request!
+New effects added: Chorus, Phaser, and Tremolo. <br /> Be sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> for future updates. Feel free to create your own effects and give us a pull request!
 
 tuna
 ====
@@ -21,12 +21,9 @@ Effect list:
     <li>Convolver (Reverb)</li>
     <li>Compressor</li>
     <li>WahWah</li>
-    <br />
-    Coming soon:
     <li>Tremolo</li>
     <li>Phaser</li>
     <li>Chorus</li>
-    <li>And then some...</li>
 </ul>
 
 Usage
