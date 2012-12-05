@@ -62,11 +62,33 @@ a:hover {
     color: #cb8139; 
 }
 section {
-    width:716px;
+    width:640px;
     position:relative;
     left:50%;
-    margin-left:-358px;
+    margin-left:-320px;
 }
+#canvas_wrapper {
+    width:100%;
+    background: #444;
+    background: rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+}
+aside {
+    float:left;
+    width:110px;
+    height:200px;
+    background: #444;
+    border-radius: 5px;
+}
+#interface {
+    width: 500px;
+    height:200px;
+    background: #444;
+    border-radius: 5px;
+    margin-bottom:25px;
+    float:left;
+}
+/*
 audio {
     width:710px;
     padding-bottom: 25px;
@@ -85,14 +107,7 @@ canvas {
     margin-bottom: 25px;
     border-radius: 5px;
 }
-#interface {
-    width: 100%;
-    height: 95px;
-    background: #444;
-    border-radius: 5px;
-    display:none;
-    margin-bottom:25px;
-}
+
 .tab {
     display:inline-block;
     margin: 10px;
@@ -114,7 +129,7 @@ canvas {
 }
 .name:first-child {
     margin-left:22px;
-}
+}*/
 .activeTab {
     color:#da9753; 
 }

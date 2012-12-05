@@ -6,8 +6,9 @@
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold" />
     <link rel="stylesheet" href="style/reset.css">
     <link rel="stylesheet" href="style/style.css">
+    <script type="text/javascript" src="js/ctrl.js"></script>
     <script type="text/javascript" src="../tuna.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/demo.js"></script>
 </head>
 <body>
     <a href="https://github.com/Dinahmoe/tuna"><img style="position: absolute; top: 0; right: 0; border: 0; z-index:4" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
@@ -18,28 +19,33 @@
         <h3 id="brought">brought to you by <a href="http://www.dinahmoe.com">Dinahmoe</a>.</h3>
     </header>
     <section id="main">
-        <canvas id="play_stop"></canvas>
-        <div id="tabs"></div>
-        <div id="interface">
-            <canvas id="interface_canvas"></canvas>
-            <div id="names">
-                <div class="name"></div>
-                <div class="name"></div>
-                <div class="name"></div>
-                <div class="name"></div>
-                <div class="name"></div>
-                <div class="name"></div>
-                <div class="name"></div>
-                <div class="name"></div>
-            </div>
-            <div id="other"></div>
+        <div id="canvas_wrapper">
+            <canvas id="play_stop"></canvas>
         </div>
-        <div id="warning">
+        <aside id="tabs">
+            <nav>
+                <ul>
+                <li>Cabinet</li>
+                <li>Chorus</li>
+                <li>Compressor</li>
+                <li>Convolver</li>
+                <li>Delay</li>
+                <li>Filter</li>
+                <li>Phaser</li>
+                <li>Overdrive</li>
+                <li>Tremolo</li>
+                <li>WahWah</li>
+                </ul>
+            </nav>
+        </aside>
+        <div id="interface">
+        </div>
+       <!--  <div id="warning">
             <div><br />
                 Warning! Certain combinations of settings in this demo can produce very loud sounds.<br /> 
                 Please be careful when adjusting gain and Q knobs and adjust your device volume appropriately.
             </div>
-        </div>
+        </div> -->
     </section>
     <footer></footer>
 </body>

@@ -1,6 +1,3 @@
-"useStrict";
-//Music from freesound.org user TexasMusicForge
-//http://freesound.org/people/TexasMusicForge/sounds/2684/
 /*
     tuna.js: demo
     @author chris coniglio || chris@dinahmoe.com
