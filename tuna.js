@@ -65,8 +65,8 @@
                 }
             },
             disconnect: {
-                value: function () {
-                    this.output.disconnect();
+                value: function (target) {
+                    this.output.disconnect(target);
                 }
             },
             connectInOrder: {
