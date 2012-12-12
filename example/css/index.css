@@ -1,0 +1,90 @@
+body {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    font-size: 12px;
+    font-family: "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;  
+    height: 100%;
+    color: #7d7d7b;
+    background: #EFEFEF;
+}
+.fuckyou_mobile_safari {
+    overflow:hidden;
+}
+header {
+    margin-bottom: 10px;
+}
+.left_edge {
+    margin-left:25px;
+}
+h1 {
+    font-size: 40px;   
+    line-height: 45px; 
+    margin-top: 5px;
+    color: #444;
+    font-family: "Droid Serif", Georgia, Times, "Times New Roman", serif;
+    text-decoration: bold;
+    text-shadow: 1px 1px 1px #c4c4c4;
+    filter: dropshadow(color=#c4c4c4, offx=1, offy=1);
+}
+h2 {
+    font-family: "Droid Serif", Georgia, Times, "Times New Roman", serif;
+    display:inline-block;
+    font-style: italic;
+    font-size: 14px;
+    color: #666;
+}
+.header_stuff {
+    display:inline-block;
+    border-bottom: 1px solid #d4d4d4;
+}
+strong {
+    color:#EEE;
+}
+h3 {
+    font-size:14px;
+    line-height: 22px;
+    display:block;
+    font-style: italic;
+    padding:10px;
+    color:#333;
+    font-family: "Droid Serif", Georgia, Times, "Times New Roman", serif;
+}
+strong {
+    color:#000;
+    font-size: 16px
+}
+a {
+    color: #da9753; 
+    text-decoration: none;
+}
+a:hover {
+    color: #cb8139; 
+}
+.app {
+    position:relative;
+    width:640px;
+    left:50%;
+    margin-left:-320px;
+    background: #EFEFEF;
+}
+.app_section {
+    display:block;
+    background: #EFEFEF;
+}
+.block {
+    padding:10px;
+    width:620px;
+    border-radius: 5px;
+    background: #d4d4d4;
+    margin-bottom: 5px;
+}
+.fade {
+    opacity:0.25;
+}
+.hidden {
+    display:none;
+}

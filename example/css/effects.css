@@ -1,0 +1,171 @@
+.effect {
+    height:auto;
+    /*transition: height 1s;
+    -moz-transition: height 1s;
+    -webkit-transition: height 1s;*/
+    overflow: hidden;
+}
+.effect_expanded {
+    /*height:300px;*/
+}
+.effect_select_wrap {
+    text-align: center;
+    display:inline-block;
+    width:420px;
+    vertical-align: top; 
+    transition: opacity 1s;
+    -moz-transition: opacity 1s;
+    -webkit-transition: opacity 1s; 
+}
+.effect_select_wrap canvas{ 
+    vertical-align: middle;
+}
+.effect_title {
+    width:200px;
+    text-align: center;
+    display:inline-block;
+    font-size: 24px;
+    vertical-align: middle;
+    font-family: "Droid Serif", Georgia, Times, "Times New Roman", serif;
+    font-style: italic;
+    color:#333;
+    margin: 0px 10px 0px 10px;
+}
+.effect button {
+    color: #606060;
+    vertical-align: top;
+    /*margin-left: 68px;*/
+    float:right;
+    border: solid 1px #b7b7b7;
+    background: #fff;
+    color:#333;
+    width:27px;
+    height: 27px;
+    border-radius:5px;
+    font-size: 18px;
+    cursor: pointer;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+    background: -moz-linear-gradient(top,  #fff,  #ededed);
+    transition: opacity 0.4s;
+    -moz-transition: opacity 0.4s;
+    -webkit-transition: opacity 0.4s; 
+}
+.effect button:hover {
+    background: #ededed;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
+    background: -moz-linear-gradient(top,  #fff,  #dcdcdc);
+}
+.effect button:active {
+    color: #999;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#fff));
+    background: -moz-linear-gradient(top,  #ededed,  #fff);
+}
+.skip {
+    width:27px;
+    height:27px;
+    display:inline-block;
+    cursor: pointer;
+}
+input {
+    height: 26px
+}
+[type = checkbox]::after {
+    content: '';
+    margin: 0px; 
+    padding: 0px;
+    width: 39px;
+    height: 25px;
+    background: -webkit-linear-gradient(top, #cdcdcd, #fbfbfb);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 #f0f0f0;
+    position: absolute;
+    top: 0; left: 53px;
+    border: 1px solid #919191;
+}
+[type = checkbox]::before {
+    content: 'ON';
+    margin: 0; 
+    padding: 0;
+    width: 55px;
+    height: 25px;
+    background: -webkit-linear-gradient(top, #cfcfcf, #efefef 50%, #f9f9f9 50%, #fefefe);
+    border-radius: 3px;
+    border: 1px solid #666;
+    box-shadow: inset 0 2px 2px #999,
+                inset -3px 0 3px #999;
+    text-align: center;
+    color: #7f7f7f;
+    font: 700 14px sans-serif; 
+    line-height: 27px;
+    position: absolute;
+    top: 0; left: 0;
+}
+[type = checkbox] {
+    -webkit-appearance: none;
+    padding: 0;
+    display: inline-block;
+    width: 94px;
+    height: 27px;
+    position: relative;
+    border-radius: 3px 0 0 3px;
+    font-family: Consolas, monaco, monospace;
+}
+[type = checkbox]:checked::after {
+    left: 0;
+}
+[type = checkbox]:checked::before {
+    content: 'OFF';
+    left: 37px;
+    background: -webkit-linear-gradient(top, #aeaeae, #cdcdcd 50%, #d7d7d7 50%, #dcdcdc);
+    box-shadow: inset 0 2px 2px #b6b6b6,
+                inset 3px 0 3px #b6b6b6;
+    color: #7f7f7f;
+    text-shadow: none;
+    border-color: #7d7d7d
+}​
+.fx_controls_wrapper {
+    display:block;
+}
+.knobWrap {
+    display:inline-block;
+    margin: 10px 5px 0px 0px;
+    border: 1px solid #999;
+    border-radius: 5px;
+}
+.knobWrap:nth-child(4) {
+    margin-right: 0px;
+}
+.knobWrap:nth-child(8) {
+    margin-right: 0px;
+}
+.knobWrap span {
+    display:block;
+    border-bottom: 1px solid #999;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 24px;
+    margin-bottom: 5px;
+    /*margin-bottom: 10px;
+    margin-top: 5px;*/
+    font-style: italic;
+    font-family: Consolas, monaco, monospace;
+}
+.knobWrap canvas, .knobWrap input, .knobWrap button {
+    display:inline-block;
+    vertical-align: middle;
+    margin-right:5px;
+}
+.knobWrap input {
+    width:96px;
+    text-align: center;
+}
+.knobWrap button {
+    margin:0px;
+    padding:0px;
+}
+.knobWrap input.effect_value_display {
+    width:96px;
+    border:1px solid #999;
+    border-radius: 5px;
+    text-align: center;
+}

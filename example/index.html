@@ -1,52 +1,74 @@
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>tuna.js</title>
+    <title>Tuna Demo</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="Tuna.js, audio effects for the web">
+    <meta name="author" content="DinahMoe">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
+    <meta name="viewport" content="initial-scale=0.8,user-scalable=no">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Serif:regular,italic,bold,bolditalic" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold" />
-    <link rel="stylesheet" href="style/reset.css">
-    <link rel="stylesheet" href="style/style.css">
-    <script type="text/javascript" src="js/ctrl.js"></script>
-    <script type="text/javascript" src="../tuna.js"></script>
-    <script type="text/javascript" src="js/demo.js"></script>
+    <link rel="stylesheet" href="css/reset.css" type="text/css">
+    <link rel="stylesheet" href="css/grid.css" type="text/css">
+    <link rel="stylesheet" href="css/index.css" type="text/css">
+    <link rel="stylesheet" href="css/synth.css" type="text/css">
+    <link rel="stylesheet" href="css/chord.css" type="text/css">
+    <link rel="stylesheet" href="css/effects.css" type="text/css">
+    <script src="js/tuna.js"></script>
+    <script src="js/demoDefaults.js"></script>
+    <script src="js/eve.js"></script>
+    <script src="js/ctrl.js"></script>
+    <script src="js/synth.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/seq.js"></script>
+    <script src="js/pitch.js"></script>
+    <script src="js/chord.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/main.js"></script>
 </head>
 <body>
     <a href="https://github.com/Dinahmoe/tuna"><img style="position: absolute; top: 0; right: 0; border: 0; z-index:4" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-    <!-- <img id="logo" src="img/logo.png" />  -->
     <header>
-        <h1>tuna.js</h1></br></br>
-        <h3>a simple effects library for the <a href="https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html">Web Audio API</a>.</h3>
-        <h3 id="brought">brought to you by <a href="http://www.dinahmoe.com">Dinahmoe</a>.</h3>
+        <div class="header_stuff">
+            <h1 class="left_edge">tuna.js </h1>
+            <h2 class="left_edge">audio effects for the <a target="_blank" href="https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html">Web Audio API</a></h2>
+        </div>
     </header>
-    <section id="main">
-        <div id="canvas_wrapper">
-            <canvas id="play_stop"></canvas>
-        </div>
-        <aside id="tabs">
-            <nav>
-                <ul>
-                <li>Cabinet</li>
-                <li>Chorus</li>
-                <li>Compressor</li>
-                <li>Convolver</li>
-                <li>Delay</li>
-                <li>Filter</li>
-                <li>Phaser</li>
-                <li>Overdrive</li>
-                <li>Tremolo</li>
-                <li>WahWah</li>
-                </ul>
-            </nav>
-        </aside>
-        <div id="interface">
-        </div>
-       <!--  <div id="warning">
-            <div><br />
-                Warning! Certain combinations of settings in this demo can produce very loud sounds.<br /> 
-                Please be careful when adjusting gain and Q knobs and adjust your device volume appropriately.
+    <div class="app" id="ALL">
+        <section id="source" class="app_section source active">
+            <div id="synth_controls" class="block">
+                <div id="synth_control_wrap">
+                    <div class="synth_control">
+                        <div id="synth_play"></div>
+                        <span id="synth_play_value">Stopped</span> 
+                    </div>
+                    <div class="synth_control">
+                        <div id="synth_type"></div>
+                        <span id="synth_type_value">Sine</span> 
+                    </div>
+                </div>
             </div>
-        </div> -->
-    </section>
-    <footer></footer>
+            <div id="grid" class="block"></div>
+            <div id="chord_controls" class="block">
+                <button id="chord_0" class="chord_control"></button>
+                <button id="chord_1" class="chord_control"></button>
+                <button id="chord_2" class="chord_control"></button>
+                <button id="chord_3" class="chord_control"></button>
+                <button id="chord_4" class="chord_control"></button>
+                <button id="chord_5" class="chord_control"></button>
+                <button id="chord_6" class="chord_control"></button>
+                <button id="chord_7" class="chord_control"></button>
+            </div>
+        </section>
+        <section id="effects" class="app_section effects">
+        </section>
+    </div>
+    <footer>
+        <h3>brought to you by Dinahmoe</h3>
+    </footer>
 </body>
 </html>

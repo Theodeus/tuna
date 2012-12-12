@@ -1,0 +1,26 @@
+.chord_select {
+    width:70.5px;
+    height:27px;
+    display: inline-block;
+    margin:20px 7px 7px 0px;
+    background: #F00;
+    border-radius:4px;
+}
+.grid_block {
+    width:35px;
+    height:35px;
+    border-radius:4px;
+    background:#000;
+    display:inline-block;
+    margin:0px 4px 4px 0px;
+    opacity: 1;
+}
+.light_up {
+    opacity:0.5;
+}
+.last_in_row {
+    margin-right:0px;
+}
+.active {
+    background:#DD4A4A;
+}

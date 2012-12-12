@@ -1,0 +1,16 @@
+#synth_control_wrap {
+    width:320px;
+    position:relative;
+    left:50%;
+    margin-left:-160px;
+    text-align: center;
+}
+.synth_control {
+    display:inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.synth_control span {
+    position:relative;
+    top:5px;
+}
