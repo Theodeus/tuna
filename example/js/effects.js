@@ -78,13 +78,8 @@ eve.once("load.ui", function () {
 
         if (this.expanded) {
             this.block.style.height = "27px";
-            //this.button.innerHTML = "v";
         } else {
-            for (; i < ii; i++) if (demo.effectSlots[i].expanded) {
-                //demo.effectSlots[i].toggleExpand(true);
-            }
-            //this.button.innerHTML = "^";
-            this.block.style.height = height;
+            this.block.style.height = "auto";
         }
         this.expanded = !this.expanded;
     };
@@ -176,15 +171,16 @@ eve.once("load.ui", function () {
             wrapper = document.createElement("div"),
             control,
             rows;
-
-        keys.splice(keys.indexOf("bypass"), 1);
+        if (keys.indexOf("bypass") > -1) {
+            keys.splice(keys.indexOf("bypass"), 1);
+        }
         wrapper.classList.add("fx_controls_wrapper");
         if (effectIndex !== slot) {
             wrapper.classList.add("hidden");
         }
         rows = ~~((keys.length / 4) + 0.999);
         wrapper.id = "slot_" + slot + "_" + effectIndex;
-        wrapper.data = {height: 48 + (65 * rows) + (20 * (rows - 1))}; //{height: 47 + 85 * (~~(keys.length / 4) + 1)};
+        wrapper.data = {height: 48 + (65 * rows) + (20 * (rows - 1))};
         for (var i = 0; (key = keys[i++]);) {
             control = makeControl(slot, effectIndex, key, name, defaults);
             wrapper.appendChild(control);

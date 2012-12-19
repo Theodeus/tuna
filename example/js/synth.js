@@ -46,10 +46,15 @@ eve.once("load.ui", function () {
     var demo = this,
         s = 80,
         types = [
-            "sine",
-            "square",
-            "sawtooth",
-            "triangle"
+            "Sine",
+            "Square",
+            "Sawtooth",
+            "Triangle"
+        ],
+        scales = [
+            "Major",
+            "Minor",
+            "Pentatonic"
         ];
     demo.ui.synthPlay = Ctrl.play({
         size: s,
@@ -67,11 +72,25 @@ eve.once("load.ui", function () {
         change: type,
         container: "synth_type"
     });
+    demo.ui.synthScale = Ctrl.picker({
+        size: s,
+        min: 0,
+        max: 2,
+        value: 0,
+        upFill: "#999",
+        downFill: "AAA",
+        change: scale,
+        container: "synth_scale"
+    });
     demo.ui.synthPlay.span = document.getElementById("synth_play_value");
     demo.ui.synthType.span = document.getElementById("synth_type_value");
+    demo.ui.synthScale.span = document.getElementById("synth_scale_value");
 
+    function scale (value) {
+        eve("pitch.scale", demo, scales[value], value);
+        this.span.innerText = scales[value];
+    }
     function type (value) {
-        console.log("CHANGE");
         this.span.innerText = types[value];
         demo.audio.synth.oscType = value;
     }
@@ -86,4 +105,5 @@ eve.once("load.ui", function () {
             this.span.innerText = "Stopped";
         }
     }
+    document.getElementById("synth_clear").data = {evnt: "grid.clear"};
 });

@@ -45,7 +45,7 @@ eve.on("load.ui", function () {
             return;
         }
         var offset = parseInt(e.srcElement.id.split(underscore)[1], 0);
-        demo.music.pitch.offset = offset;
+        demo.music.pitch.chordOffset = offset;
         demo.ui.chord.clear().displayOptions(offset);
     }
 })();

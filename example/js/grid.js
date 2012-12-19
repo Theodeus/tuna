@@ -36,11 +36,15 @@ eve.once("load.ui", function () {
         this.blocks[row][column].classList[mod]("active");
         this.states[row][column] = state;
     };
-    Grid.prototype.clearAll = function () {
+    Grid.prototype.clearAll = function (activeClear) {
         var i, j;
         for (i = 0; i < this.rows; i++) {
             for (j = 0; j < this.columns; j++) {
                 this.blocks[i][j].classList.remove("light_up");
+                if (activeClear) {
+                    this.blocks[i][j].classList.remove("active");
+                    this.states[i][j] = false;
+                }
             }
         }
     };

@@ -1,16 +1,24 @@
 #synth_control_wrap {
-    width:320px;
-    position:relative;
-    left:50%;
-    margin-left:-160px;
     text-align: center;
 }
 .synth_control {
     display:inline-block;
-    margin-left: 10px;
-    margin-right: 10px;
+    vertical-align: middle;
 }
-.synth_control span {
-    position:relative;
-    top:5px;
+.synth_control button {
+    width:73px;
+    height:71px;
+    margin: 5px 5px 7px 5px;
+    display:block;
+    border: none;
+    border-radius: 36px;
+    background: #999;
+       
+}
+.synth_control button:active {
+    background: #AAA;
+}
+.synth_control_title {
+    margin:10px;
+    vertical-align: bottom;
 }

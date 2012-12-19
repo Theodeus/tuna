@@ -11,11 +11,8 @@ body {
     color: #7d7d7b;
     background: #EFEFEF;
 }
-.fuckyou_mobile_safari {
-    overflow:hidden;
-}
 header {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 .left_edge {
     margin-left:25px;
@@ -80,11 +77,38 @@ a:hover {
     width:620px;
     border-radius: 5px;
     background: #d4d4d4;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
 }
 .fade {
     opacity:0.25;
 }
 .hidden {
     display:none;
+}
+.logoblock {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #EFEFEF;
+    border: 1px solid #e3e3e3;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.share-img {
+    background: #d4d4d4;
+    padding: 3px;
+    margin: 3px;
+    border-radius: 5px;
+    display:block
+}
+.logo {
+    display:inline-block;
+    vertical-align: middle;
+}
+.share-block {
+    display:inline-block;
+    vertical-align: middle;
 }

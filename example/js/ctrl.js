@@ -316,7 +316,6 @@
         if (downEl && downEl.type === "Knob") {
             downEl.move(e.pageY);
         }
-        
     }
     function load () {
         /*

@@ -14,9 +14,9 @@
     <link rel="stylesheet" href="css/reset.css" type="text/css">
     <link rel="stylesheet" href="css/grid.css" type="text/css">
     <link rel="stylesheet" href="css/index.css" type="text/css">
-    <link rel="stylesheet" href="css/synth.css" type="text/css">
     <link rel="stylesheet" href="css/chord.css" type="text/css">
     <link rel="stylesheet" href="css/effects.css" type="text/css">
+    <link rel="stylesheet" href="css/synth.css" type="text/css">
     <script src="js/tuna.js"></script>
     <script src="js/demoDefaults.js"></script>
     <script src="js/eve.js"></script>
@@ -44,11 +44,19 @@
                 <div id="synth_control_wrap">
                     <div class="synth_control">
                         <div id="synth_play"></div>
-                        <span id="synth_play_value">Stopped</span> 
+                        <span class="synth_control_title" id="synth_play_value">Stopped</span> 
                     </div>
                     <div class="synth_control">
                         <div id="synth_type"></div>
-                        <span id="synth_type_value">Sine</span> 
+                        <span class="synth_control_title" id="synth_type_value">Sine</span> 
+                    </div>
+                    <div class="synth_control">
+                        <div id="synth_scale"></div>
+                        <span class="synth_control_title" id="synth_scale_value">Major</span> 
+                    </div>
+                    <div class="synth_control">
+                        <button id="synth_clear"></button>
+                        <span class="synth_control_title">Clear Grid</span> 
                     </div>
                 </div>
             </div>
@@ -66,9 +74,19 @@
         </section>
         <section id="effects" class="app_section effects">
         </section>
+        <div class="block logoblock">
+            <a href="http://www.dinahmoe.com" target="_blank" title="Dinahmoe">
+                <img class="logo" src="img/logo.png" />
+            </a>
+            <div class="share-block">
+                <a href="http://www.facebook.com/dinahmoeSTHLM" target="_blank" title="Facebook">
+                    <img class="share-img" src="img/facebook.png" />
+                </a>
+                <a href="http://www.twitter.com/dinahmoeSTHLM" target="_blank" title="@DinahmoeSTHLM">
+                    <img class="share-img" src="img/twitter.png" />
+                </a>
+            </div>
+        </div>
     </div>
-    <footer>
-        <h3>brought to you by Dinahmoe</h3>
-    </footer>
 </body>
 </html>

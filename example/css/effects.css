@@ -1,12 +1,6 @@
 .effect {
-    height:auto;
-    /*transition: height 1s;
-    -moz-transition: height 1s;
-    -webkit-transition: height 1s;*/
+    height:27px;
     overflow: hidden;
-}
-.effect_expanded {
-    /*height:300px;*/
 }
 .effect_select_wrap {
     text-align: center;
@@ -156,7 +150,7 @@ input {
     margin-right:5px;
 }
 .knobWrap input {
-    width:96px;
+    width:90px;
     text-align: center;
 }
 .knobWrap button {
