@@ -1416,7 +1416,7 @@
         sweep: {
             enumerable: true,
             get: function () {
-                return this._sweep.value;
+                return this._sweep;
             },
             set: function (value) {
                 this._sweep = Math.pow(value > 1 ? 1 : value < 0 ? 0 : value, this._sensitivity);

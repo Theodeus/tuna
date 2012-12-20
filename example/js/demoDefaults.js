@@ -15,14 +15,14 @@
             Q: {
                 value: 1,
                 min: 0.001,
-                max: 50,
+                max: 20,
                 automatable: true,
                 type: FLOAT
             },
             gain: {
                 value: 0,
-                min: -20,
-                max: 20,
+                min: -24,
+                max: 24,
                 automatable: true,
                 type: FLOAT
             },
@@ -71,7 +71,7 @@
             makeupGain: {
                 value: 1,
                 min: 1,
-                max: 100,
+                max: 24,
                 automatable: true,
                 type: FLOAT
             },
@@ -92,7 +92,7 @@
             knee: {
                 value: 5,
                 min: 0,
-                max: 40,
+                max: 30,
                 automatable: true,
                 type: FLOAT
             },
@@ -357,4 +357,5 @@
         name = names[i];
         Tuna.prototype[name].defaults = demoDefaults[name];
     }
+    window.demoDefaults = demoDefaults;
 })();

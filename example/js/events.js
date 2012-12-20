@@ -34,7 +34,7 @@ eve.once("load", function () {
         this.effectSlots[el.data.slot].skip(el);
     }
     function valueChange (ctrl) {
-        var prop = this.effectSlots[ctrl.el.data.slot].effects[ctrl.el.data.effectIndex][ctrl.el.data.prop];
+        var prop = this.effectSlots[ctrl.el.data.slot].effects[ctrl.el.data.effectIndex];
         if (prop.value === undefined) {
             this.effectSlots[ctrl.el.data.slot].effects[ctrl.el.data.effectIndex][ctrl.el.data.prop] = ctrl.value;
         } else {
