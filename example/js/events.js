@@ -15,6 +15,15 @@ eve.once("load", function () {
             }
         }
     }
+    function disable_select () {
+        demo.ui.chord.clear();
+        demo.ui.chord.enabled = false;
+    }
+    function enable_select () {
+        if (demo.ui.chord.enabled) return;
+        demo.ui.chord.enabled = true;
+        demo.ui.chord.displayOptions(demo.music.pitch.chordOffset);
+    }
     function effectActivate (el) {
         this.effectSlots[el.data.slot].activate();
     }
@@ -96,7 +105,8 @@ eve.once("load", function () {
             return destroyEvent(e);
         }
     }
-
+    eve.on("disable_select", disable_select);
+    eve.on("enable_select", enable_select);
     eve.on("valueChange", valueChange);
     eve.on("ui.gridBlock", gridBlock);
     eve.on("ui.onOff", effectActivate);

@@ -48,7 +48,7 @@ eve.once("load", function () {
             }),
             "Pentatonic": [0, 3, 5, 7, 10]
         };
-    window.s = scales;
+
     demo.music.pitch = Object.create(null, {
         chordOffset: {
             get: function () {
@@ -97,7 +97,6 @@ eve.once("load", function () {
         scaleDegree += offset || 0;
         var octaveOffset = Math.floor(scaleDegree / this._scale.length) * 12,
             scaleQuantized = this._scale[scaleDegree % this._scale.length];
-        //console.log(this.scale, scaleDegree);
         return 36 + octaveOffset + scaleQuantized;
     }
 });

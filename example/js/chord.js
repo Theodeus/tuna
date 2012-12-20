@@ -23,6 +23,7 @@ eve.on("load.ui", function () {
         }
         this.buttons[0].parentElement.addEventListener(demo.touchMap.down, down, false);
         this.displayOptions(0);
+        this.enabled = true;
     };
     demo.ChordControl.prototype.displayOptions = function(selected) {
         var opts = demo.music.pitch.getChordOptions(selected);
@@ -41,7 +42,9 @@ eve.on("load.ui", function () {
         return this;
     };
     function down (e) {
-        if (e.srcElement.id == "chord_controls" || e.srcElement.classList.contains(fade)) {
+        if (!demo.ui.chord.enabled ||
+                e.srcElement.id == "chord_controls" ||
+                e.srcElement.classList.contains(fade)) {
             return;
         }
         var offset = parseInt(e.srcElement.id.split(underscore)[1], 0);

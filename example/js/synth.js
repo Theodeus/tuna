@@ -88,6 +88,11 @@ eve.once("load.ui", function () {
 
     function scale (value) {
         eve("pitch.scale", demo, scales[value], value);
+        if (value === 2) {
+            eve("disable_select");
+        } else {
+            eve("enable_select");
+        }
         this.span.innerText = scales[value];
     }
     function type (value) {
