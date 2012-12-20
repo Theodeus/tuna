@@ -2,12 +2,21 @@
     var hasAudio = "webkitAudioContext" in window,
         hasTouch = "createTouch" in document,
         load = hasAudio ? function () {
+            demo = new Demo();
             eve("load.ui", demo);
-        } : function () {
-            //No Audio Context
-            //Handle error
-        },
+        } : noWebAudio,
         demo;
+    function noWebAudio () {
+        var block = document.createElement("div"),
+            text = document.createElement("p");
+        block.className = "block app";
+        text.className = "errortext";
+        text.innerHTML = "It looks like the browser you're using doesn't support " +
+            "web audio! Try downloading <a href=\"http://www.google.com/chrome\"" +
+            "target=\"_blank\">chrome</a> and come back to enjoy this demo.";
+        block.appendChild(text);
+        document.body.appendChild(block);
+    }
     function Demo () {
         this.audio = Object.create(null);
         this.context = new webkitAudioContext();
@@ -29,9 +38,8 @@
         this.effectSlots[3].effects[this.effectSlots[3].effects.length - 1].output.connect(this.context.destination);
         this.clock = new this.Clock(this.context, this.tempoMs).start();
         this.ui.chord = new this.ChordControl();
+        document.getElementById("ALL").classList.remove("hidden");
     }
-    demo = new Demo();
-    window.demo = demo;
     eve.once("load.ui", init)(1);
     window.addEventListener("load", load, false);
 })(this, this.document);

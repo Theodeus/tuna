@@ -112,3 +112,7 @@ a:hover {
     display:inline-block;
     vertical-align: middle;
 }
+.errortext {
+    font-size: 18px;
+    color:#333;
+}
