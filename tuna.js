@@ -22,8 +22,9 @@
             }
             userContext = context;
             userInstance = this;
+            this.connectInOrder = Super.connectInOrder;
         },
-        version = "0.1",
+        version = "0.3",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
         pipe = function (param, val) {
@@ -276,7 +277,7 @@
         }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
-        this.convolver = this.newConvolver(properties.impulsePath || "../impulses/impulse_guitar.wav");
+        this.convolver = this.newConvolver(properties.impulse || "../impulses/impulse_guitar.wav");
         this.makeupNode = userContext.createGainNode();
         this.output = userContext.createGainNode();
 
@@ -1415,7 +1416,7 @@
         sweep: {
             enumerable: true,
             get: function () {
-                return this._sweep.value;
+                return this._sweep;
             },
             set: function (value) {
                 this._sweep = Math.pow(value > 1 ? 1 : value < 0 ? 0 : value, this._sensitivity);
@@ -1737,7 +1738,7 @@
             }
         }
     });
-    Tuna.toString = Tuna.prototype.toString = function () {
+    Tuna.toString = function () {
         return "You are running Tuna version " + version + " by Dinahmoe!";
     };
     if(typeof define === "function") {

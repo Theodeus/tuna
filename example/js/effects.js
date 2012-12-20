@@ -36,7 +36,7 @@ eve.once("load.ui", function () {
                 continue;
             }
             effect = new demo.audio.tuna[demo.effectNames[i]](fakeProps);
-            //effect.defaults = demoDefaults[demo.effectNames[i]];
+            effect.defaults = demoDefaults[demo.effectNames[i]];
             controls = makeControls(slot, i, demo.effectNames[i], effect.defaults, this);
             controls.name = demo.effectNames[i];
             this.effects.push(effect);
