@@ -99,8 +99,14 @@ eve.once("load", function () {
     function doc_up (e) {
         eve("CONTROL.up", document, e);
     }
+    var moveThrottle;
     function doc_move (e) {
-        eve("CONTROL.move", document, e);
+        if (moveThrottle) clearTimeout(moveThrottle);
+        moveThrottle = setTimeout(function () {
+            eve("CONTROL.move", document, e);
+            moveThrottle = null;
+        }, 10);
+        
         if (checkIfApp(e)) {
             return destroyEvent(e);
         }

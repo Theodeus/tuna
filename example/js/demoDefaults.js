@@ -220,7 +220,7 @@
             drive: {
                 value: 1,
                 min: 0,
-                max: 11,
+                max: 24,
                 automatable: true,
                 type: FLOAT,
                 scaled: true

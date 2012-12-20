@@ -57,7 +57,7 @@
             move: function (y) {
                 var normalized = 0,
                     value;
-                this.theta += (lastY - y) > 0 ? 0.25 : -0.25;
+                this.theta += (lastY - y) > 0 ? 0.15 : -0.15;
                 this.theta = constrain(this.theta, this.upperLimit, 0);
                 normalized = this.theta / (slice * 10);
                 if (this.isExponential) {
