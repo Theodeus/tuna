@@ -207,7 +207,7 @@ eve.once("load.ui", function () {
     
         switch (defaults[key].type) {
             case "float":
-                makeKnob(data, defaults[key], control);
+                makeKnob(data, defaults[key], control, key);
                 break;
             case "int":
                 makePicker(data, defaults[key], control);
@@ -218,17 +218,17 @@ eve.once("load.ui", function () {
         }
         return control;
     }
-    function makeKnob(data, defaults, parent) {
+    function makeKnob(data, defaults, parent, name) {
         var knob = Ctrl.knob({
                 size: ctrlSize,
                 min: defaults.min,
                 max: defaults.max,
                 value: defaults.value,
                 stroke: "#999",
-                change: valueChange
+                change: valueChange,
+                isExponential: name === "frequency"
             }),
             textBox = document.createElement("input");
-
         data.textBoxId = "effectValue_" + uid++;
         data.ctrlId = knob.id;
 

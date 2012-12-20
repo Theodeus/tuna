@@ -60,7 +60,11 @@
                 this.theta += (lastY - y) > 0 ? 0.25 : -0.25;
                 this.theta = constrain(this.theta, this.upperLimit, 0);
                 normalized = this.theta / (slice * 10);
-                this.value = Math.floor((this.offset + normalized * this.range) * 100) / 100;
+                if (this.isExponential) {
+                    this.value = Math.floor(this.offset + Math.pow(normalized, 2) * this.range * 100) / 100;
+                } else {
+                    this.value = Math.floor((this.offset + normalized * this.range) * 100) / 100;
+                }
                 this.change(this.value);
                 lastY = y;
                 this.draw();
@@ -233,6 +237,7 @@
         root.cx = root.size * 0.5;
         root.cy = root.size * 0.5;
         root.r = (root.size * 0.5) - 3;
+        root.isExponential = props.isExponential || false;
         root.theta = (root.value / root.range) * slice * 10;
         root.ctx = root.el.getContext("2d");
         root.ctx.lineWidth = props.lineWidth || 3;
