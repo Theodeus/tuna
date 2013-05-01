@@ -17,9 +17,13 @@
 //Originally written by Alessandro Saccoia, Chris Coniglio and Oskar Eriksson
 (function (window) {
     var userContext, userInstance, Tuna = function (context) {
+            if (! window.AudioContext) {
+		window.AudioContext = window.webkitAudioContext;
+   	    }
+
             if(!context) {
                 console.log("tuna.js: Missing audio context! Creating a new context for you.");
-                context = window.webkitAudioContext && (new window.webkitAudioContext());
+                context = window.AudioContext && (new window.AudioContext());
             }
             userContext = context;
             userInstance = this;
