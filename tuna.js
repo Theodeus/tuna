@@ -1746,13 +1746,12 @@
         return "You are running Tuna version " + version + " by Dinahmoe!";
     };
 
-    // Expose Tuna to the global object
-    window.Tuna = Tuna;
-
-    // Check for amd in the define function / object
     if(typeof define === "function" && define.amd) {
-        define("Tuna", [], function () {
+        define(function () {
             return Tuna;
         });
+    } else {
+        window.Tuna = Tuna;
     }
+
 })(this);
