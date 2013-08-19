@@ -22,6 +22,8 @@ Effect list:
     <li>Tremolo</li>
     <li>Phaser</li>
     <li>Chorus</li>
+    <li>Bitcrusher</li>
+    <li>Moog Filter</li>
 </ul>
 
 Usage
@@ -177,3 +179,23 @@ var wahwah = new tuna.WahWah({
                  bypass: 0
              });
 </pre>
+
+A lo-fi bitcrusher effect.
+
+```javascript
+var bitcrusher = new tuna.Bitcrusher({
+                     bits: 4,          //1 to 16
+                     normfreq: 0.1,    //0 to 1
+                     bufferSize: 4096  //256 to 16384
+                 });
+```
+
+A resonant, analog-sounding filter.
+
+```javascript
+var moog = new tuna.MoogFilter({
+               cutoff: 0.065,    //0 to 1
+               resonance: 3.5,   //0 to 4
+               bufferSize: 4096  //256 to 16384
+           });
+```
