@@ -328,7 +328,7 @@
                 return this.convolver.buffer;
             },
             set: function (decodedImpulse) {
-                this.convolver.buffer = decodedImpulse;
+                this.convolver.decodedBuffer = decodedImpulse;
             }
         },
         newConvolver: {
