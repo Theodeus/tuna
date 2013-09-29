@@ -1,0 +1,5 @@
+{
+    "buildConfig": {
+        "uglify": true
+    }
+}
