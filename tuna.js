@@ -648,7 +648,7 @@
         this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
         this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
         this.highCut = properties.highCut || this.defaults.highCut.value;
-        this.buffer = properties.impulse || "../impulses/ir_rev_short.wav";
+        this.buffer = properties.impulse || null;
         this.lowCut = properties.lowCut || this.defaults.lowCut.value;
         this.level = properties.level || this.defaults.level.value;
         this.filterHigh.type = 0;
