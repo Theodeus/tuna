@@ -739,6 +739,15 @@
                 this.wet.gain.value = value;
             }
         },
+        decodedBuffer: {
+            enumerable: false,
+            get: function () {
+                return this.convolver.buffer;
+            },
+            set: function (decodedImpulse) {
+                this.convolver.buffer = decodedImpulse;
+            }
+        },
         buffer: {
             enumerable: false,
             get: function () {
