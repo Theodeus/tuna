@@ -281,7 +281,7 @@
         }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
-        this.convolver = this.newConvolver(properties.impulsePath || "../impulses/impulse_guitar.wav");
+        this.convolver = this.newConvolver(properties.impulsePath || null);
         this.makeupNode = userContext.createGainNode();
         this.output = userContext.createGainNode();
 
@@ -320,6 +320,15 @@
             },
             set: function (value) {
                 this.makeupNode.gain.value = value;
+            }
+        },
+        decodedBuffer: {
+            enumerable: false,
+            get: function () {
+                return this.convolver.buffer;
+            },
+            set: function (decodedImpulse) {
+                this.convolver.buffer = decodedImpulse;
             }
         },
         newConvolver: {
