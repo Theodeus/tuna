@@ -1,0 +1,79 @@
+header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+h1 {
+    font-size: 40px;   
+    line-height: 50px; 
+    text-align: right;
+    padding-right:5px;
+    padding-bottom: 5px;
+    width:310px;
+    color: #444;
+    font-family: "Droid Serif", Georgia, Times, "Times New Roman", serif;
+    text-decoration: bold;
+    display: inline-block;
+    border-right: 1px solid #d4d4d4;
+    border-bottom: 1px solid #d4d4d4;
+    text-shadow: 1px 1px 1px #c4c4c4;
+    filter: dropshadow(color=#c4c4c4, offx=1, offy=1);
+}
+h2 {
+    font-family: "Droid Serif", Georgia, Times, "Times New Roman", serif;
+    vertical-align: top;
+    margin-left: 3px;
+    display:inline-block;
+    font-style: italic;
+    line-height: 50px; 
+    font-size: 14px;
+    color: #666;
+}
+.space {
+    width:100%;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 45px;
+    border-left: 1px solid #d4d4d4;
+}
+.header_stuff {
+    width:640px;
+    display:inline-block;
+    text-align: left;
+    border-bottom: 1px solid #d4d4d4;
+}
+.section_nav {
+    margin-top:-52px;
+    border:none;
+}
+.nav_button {
+    display: inline-block;
+    height: 70px;
+    width: 70px;
+    border-radius: 35px;
+    background: #EEE;
+    border: 1px solid #d4d4d4;
+    margin:16px 70px 0px 70px;
+    font-size: 12px;
+    color:#222;
+}
+.nav_button.active {
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+    background: -moz-linear-gradient(top,  #fff,  #ededed);
+}
+.nav_button:last-child:after {
+    content:"";
+    position: absolute;
+    left:50%;
+    margin-left:240px;
+    top:100px;
+    background: #EFEFEF;
+    width:90px;
+    height:20px;
+}
+.app_section {
+    display:none;
+}
+.app_section.active {
+    display:block;
+    background: #EFEFEF;
+}

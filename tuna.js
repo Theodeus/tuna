@@ -22,8 +22,9 @@
             }
             userContext = context;
             userInstance = this;
+            this.connectInOrder = Super.connectInOrder;
         },
-        version = "0.1",
+        version = "0.3",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
         pipe = function (param, val) {
@@ -196,6 +197,7 @@
             value: "Filter"
         },
         defaults: {
+            writable:true,
             value: {
                 frequency: {
                     value: 800,
@@ -275,7 +277,7 @@
         }
         this.input = userContext.createGainNode();
         this.activateNode = userContext.createGainNode();
-        this.convolver = this.newConvolver(properties.impulsePath || "../impulses/impulse_guitar.wav");
+        this.convolver = this.newConvolver(properties.impulse || "../impulses/impulse_guitar.wav");
         this.makeupNode = userContext.createGainNode();
         this.output = userContext.createGainNode();
 
@@ -291,6 +293,7 @@
             value: "Cabinet"
         },
         defaults: {
+            writable:true,
             value: {
                 makeupGain: {
                     value: 1,
@@ -376,11 +379,12 @@
             value: "Chorus"
         },
         defaults: {
+            writable:true,
             value: {
                 feedback: {
                     value: 0.4,
                     min: 0,
-                    max: 1,
+                    max: 0.95,
                     automatable: false,
                     type: FLOAT
                 },
@@ -453,8 +457,8 @@
             },
             set: function (value) {
                 this._rate = value;
-                this.lfoL._frequency = this._rate;
-                this.lfoR._frequency = this._rate;
+                this.lfoL.frequency = this._rate;
+                this.lfoR.frequency = this._rate;
             }
         }
     });
@@ -484,10 +488,11 @@
             value: "Compressor"
         },
         defaults: {
+            writable:true,
             value: {
                 threshold: {
                     value: -20,
-                    min: -80,
+                    min: -60,
                     max: 0,
                     automatable: true,
                     type: FLOAT
@@ -651,6 +656,7 @@
             value: "Convolver"
         },
         defaults: {
+            writable:true,
             value: {
                 highCut: {
                     value: 22050,
@@ -773,10 +779,10 @@
 
         this.activateNode.connect(this.delay);
         this.activateNode.connect(this.dry);
-        this.delay.connect(this.feedbackNode);
-        this.feedbackNode.connect(this.delay);
         this.delay.connect(this.filter);
-        this.filter.connect(this.wet);
+        this.filter.connect(this.feedbackNode);
+        this.feedbackNode.connect(this.delay);
+        this.feedbackNode.connect(this.wet);
         this.wet.connect(this.output);
         this.dry.connect(this.output);
 
@@ -785,7 +791,7 @@
         this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
         this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
-        this.filter.type = 1;
+        this.filter.type = 0;
         this.bypass = false;
     };
     Tuna.prototype.Delay.prototype = Object.create(Super, {
@@ -793,9 +799,10 @@
             value: "Delay"
         },
         defaults: {
+            writable:true,
             value: {
                 delayTime: {
-                    value: 30,
+                    value: 100,
                     min: 20,
                     max: 1000,
                     automatable: false,
@@ -809,7 +816,7 @@
                     type: FLOAT
                 },
                 cutoff: {
-                    value: 20,
+                    value: 20000,
                     min: 20,
                     max: 20000,
                     automatable: true,
@@ -897,7 +904,7 @@
         this.drive = properties.drive || this.defaults.drive.value;
         this.outputGain = properties.outputGain || this.defaults.outputGain.value;
         this.curveAmount = properties.curveAmount || this.defaults.curveAmount.value;
-        this.algorithm = properties.algorithmIndex || this.defaults.algorithmIndex.value;
+        this.algorithmIndex = properties.algorithmIndex || this.defaults.algorithmIndex.value;
         this.bypass = false;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
@@ -905,6 +912,7 @@
             value: "Overdrive"
         },
         defaults: {
+            writable:true,
             value: {
                 drive: {
                     value: 1,
@@ -970,7 +978,7 @@
                 this._outputGain = dbToWAVolume(value);
             }
         },
-        algorithm: {
+        algorithmIndex: {
             get: function () {
                 return this._algorithmIndex;
             },
@@ -1100,6 +1108,7 @@
             value: 4
         },
         defaults: {
+            writable:true,
             value: {
                 rate: {
                     value: 0.1,
@@ -1238,6 +1247,7 @@
             value: "Tremolo"
         },
         defaults: {
+            writable:true,
             value: {
                 intensity: {
                     value: 0.3,
@@ -1269,8 +1279,8 @@
             },
             set: function (value) {
                 this._intensity = value;
-                this.lfoL.offset = this._intensity / 2;
-                this.lfoR.offset = this._intensity / 2;
+                this.lfoL.offset = 1 - this._intensity / 2;
+                this.lfoR.offset = 1 - this._intensity / 2;
                 this.lfoL.oscillation = this._intensity;
                 this.lfoR.oscillation = this._intensity;
             }
@@ -1338,6 +1348,7 @@
             value: "WahWah"
         },
         defaults: {
+            writable:true,
             value: {
                 automode: {
                     value: true,
@@ -1405,7 +1416,7 @@
         sweep: {
             enumerable: true,
             get: function () {
-                return this._sweep.value;
+                return this._sweep;
             },
             set: function (value) {
                 this._sweep = Math.pow(value > 1 ? 1 : value < 0 ? 0 : value, this._sensitivity);
@@ -1483,8 +1494,7 @@
         this.releaseTime = properties.releaseTime || this.defaults.releaseTime.value;
         this._envelope = 0;
         this.target = properties.target || {};
-        this.callback = properties.callback ||
-        function () {};
+        this.callback = properties.callback || function () {};
     };
     Tuna.prototype.EnvelopeFollower.prototype = Object.create(Super, {
         name: {
@@ -1501,8 +1511,8 @@
                 },
                 releaseTime: {
                     value: 0.5,
-                    min: 0.5,
-                    max: 1,
+                    min: 0,
+                    max: 0.5,
                     automatable: false,
                     type: FLOAT
                 }
@@ -1582,7 +1592,7 @@
                     channels = event.inputBuffer.numberOfChannels,
                     current, chan, rms, i;
                 chan = rms = i = 0;
-                if(channels > 1) { // need to mixdown
+                if(channels > 1) { //need to mixdown
                     for(i = 0; i < count; ++i) {
                         for(; chan < channels; ++chan) {
                             current = event.inputBuffer.getChannelData(chan)[i];
@@ -1728,7 +1738,7 @@
             }
         }
     });
-    Tuna.toString = Tuna.prototype.toString = function () {
+    Tuna.toString = function () {
         return "You are running Tuna version " + version + " by Dinahmoe!";
     };
     if(typeof define === "function") {

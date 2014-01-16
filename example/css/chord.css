@@ -1,0 +1,28 @@
+
+.chord_control {
+    color: #606060;
+    border: solid 1px #b7b7b7;
+    background: #fff;
+    width:70px;
+    height: 27px;
+    border-radius:5px;
+    margin-right:5px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+    background: -moz-linear-gradient(top,  #fff,  #ededed);
+    transition: opacity 0.4s;
+    -moz-transition: opacity 0.4s;
+    -webkit-transition: opacity 0.4s; 
+}
+.chord_control:hover {
+    background: #ededed;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
+    background: -moz-linear-gradient(top,  #fff,  #dcdcdc);
+}
+.chord_control:active {
+    color: #999;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#fff));
+    background: -moz-linear-gradient(top,  #ededed,  #fff);
+}
+.chord_control:last-child {
+    margin-right: 0px
+}
