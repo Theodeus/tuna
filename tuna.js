@@ -348,8 +348,8 @@
         this.input = userContext.createGain();
         this.attenuator = this.activateNode = userContext.createGain();
         this.splitter = userContext.createChannelSplitter(2);
-        this.delayL = userContext.createDelayNode();
-        this.delayR = userContext.createDelayNode();
+        this.delayL = userContext.createDelay();
+        this.delayR = userContext.createDelay();
         this.feedbackGainNodeLR = userContext.createGain();
         this.feedbackGainNodeRL = userContext.createGain();
         this.merger = userContext.createChannelMerger(2);
@@ -795,7 +795,7 @@
         this.dry = userContext.createGain();
         this.wet = userContext.createGain();
         this.filter = userContext.createBiquadFilter();
-        this.delay = userContext.createDelayNode();
+        this.delay = userContext.createDelay();
         this.feedbackNode = userContext.createGain();
         this.output = userContext.createGain();
 
