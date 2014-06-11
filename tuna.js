@@ -660,8 +660,8 @@
         this.buffer = properties.impulse || null;
         this.lowCut = properties.lowCut || this.defaults.lowCut.value;
         this.level = properties.level || this.defaults.level.value;
-        this.filterHigh.type = 0;
-        this.filterLow.type = 1;
+        this.filterHigh.type = "lowpass";
+        this.filterLow.type = "highpass";
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Convolver.prototype = Object.create(Super, {
@@ -813,7 +813,7 @@
         this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
         this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
-        this.filter.type = 0;
+        this.filter.type = "lowpass";
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Delay.prototype = Object.create(Super, {
@@ -1095,8 +1095,8 @@
         while(i--) {
             this.filtersL[i] = userContext.createBiquadFilter();
             this.filtersR[i] = userContext.createBiquadFilter();
-            this.filtersL[i].type = 7;
-            this.filtersR[i].type = 7;
+            this.filtersL[i].type = "allpass";
+            this.filtersR[i].type = "allpass";
         }
         this.input.connect(this.splitter);
         this.input.connect(this.output);
@@ -1492,8 +1492,8 @@
         init: {
             value: function () {
                 this.output.gain.value = 1;
-                this.filterPeaking.type = 5;
-                this.filterBp.type = 2;
+                this.filterPeaking.type = "peaking";
+                this.filterBp.type = "bandpass";
                 this.filterPeaking.frequency.value = 100;
                 this.filterPeaking.gain.value = 20;
                 this.filterPeaking.Q.value = 5;
