@@ -1508,7 +1508,7 @@
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
-        this.jsNode = this.output = userContext.createJavaScriptNode(this.buffersize, 1, 1);
+        this.jsNode = this.output = userContext.createScriptProcessor(this.buffersize, 1, 1);
 
         this.input.connect(this.output);
 
@@ -1642,7 +1642,7 @@
     });
     Tuna.prototype.LFO = function (properties) {
         //Instantiate AudioNode
-        this.output = userContext.createJavaScriptNode(256, 1, 1);
+        this.output = userContext.createScriptProcessor(256, 1, 1);
         this.activateNode = userContext.destination;
 
         //Set Properties
