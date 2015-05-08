@@ -18,8 +18,8 @@
 (function (window) {
     var userContext, userInstance, Tuna = function (context) {
             if (! window.AudioContext) {
-		window.AudioContext = window.webkitAudioContext;
-   	    }
+                window.AudioContext = window.webkitAudioContext;
+            }
 
             if(!context) {
                 console.log("tuna.js: Missing audio context! Creating a new context for you.");
@@ -178,6 +178,11 @@
     function tanh(n) {
         return(Math.exp(n) - Math.exp(-n)) / (Math.exp(n) + Math.exp(-n));
     }
+
+    function setOrDefault(set, def) {
+        return set === undefined ? def : set;
+    }
+
     Tuna.prototype.Filter = function (properties) {
         if(!properties) {
             properties = this.getDefaults();
@@ -192,8 +197,8 @@
 
         this.frequency = properties.frequency || this.defaults.frequency.value;
         this.Q = properties.resonance || this.defaults.Q.value;
-        this.filterType = properties.filterType || this.defaults.filterType.value;
-        this.gain = properties.gain || this.defaults.gain.value;
+        this.filterType = setOrDefault(properties.filterType, this.defaults.filterType.value);
+        this.gain = setOrDefault(properties.gain, this.defaults.gain.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Filter.prototype = Object.create(Super, {
@@ -289,7 +294,7 @@
         this.convolver.output.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.makeupGain = properties.makeupGain || this.defaults.makeupGain;
+        this.makeupGain = setOrDefault(properties.makeupGain, this.defaults.makeupGain);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Cabinet.prototype = Object.create(Super, {
@@ -368,10 +373,10 @@
         this.delayR.connect(this.merger, 0, 1);
         this.merger.connect(this.output);
 
-        this.feedback = properties.feedback || this.defaults.feedback.value;
-        this.rate = properties.rate || this.defaults.rate.value;
-        this.delay = properties.delay || this.defaults.delay.value;
-        this.depth = properties.depth || this.defaults.depth.value;
+        this.feedback = setOrDefault(properties.feedback, this.defaults.feedback.value);
+        this.rate = setOrDefault(properties.rate, this.defaults.rate.value);
+        this.delay = setOrDefault(properties.delay, this.defaults.delay.value);
+        this.depth = setOrDefault(properties.depth, this.defaults.depth.value);
         this.lfoR.phase = Math.PI / 2;
         this.attenuator.gain.value = 0.6934; // 1 / (10 ^ (((20 * log10(3)) / 3) / 20))
         this.lfoL.activate(true);
@@ -478,13 +483,13 @@
         this.compNode.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.automakeup = properties.automakeup || this.defaults.automakeup.value;
+        this.automakeup = setOrDefault(properties.automakeup, this.defaults.automakeup.value);
         this.makeupGain = properties.makeupGain || this.defaults.makeupGain.value;
-        this.threshold = properties.threshold || this.defaults.threshold.value;
+        this.threshold = setOrDefault(properties.threshold, this.defaults.threshold.value);
         this.release = properties.release || this.defaults.release.value;
-        this.attack = properties.attack || this.defaults.attack.value;
+        this.attack = setOrDefault(properties.attack, this.defaults.attack.value);
         this.ratio = properties.ratio || this.defaults.ratio.value;
-        this.knee = properties.knee || this.defaults.knee.value;
+        this.knee = setOrDefault(properties.knee, this.defaults.knee.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Compressor.prototype = Object.create(Super, {
@@ -645,12 +650,12 @@
         this.wet.connect(this.output);
         this.dry.connect(this.output);
 
-        this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
-        this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
+        this.dryLevel = setOrDefault(properties.dryLevel, this.defaults.dryLevel.value);
+        this.wetLevel = setOrDefault(properties.wetLevel, this.defaults.wetLevel.value);
         this.highCut = properties.highCut || this.defaults.highCut.value;
         this.buffer = properties.impulse || "../impulses/ir_rev_short.wav";
         this.lowCut = properties.lowCut || this.defaults.lowCut.value;
-        this.level = properties.level || this.defaults.level.value;
+        this.level = setOrDefault(properties.level, this.defaults.level.value);
         this.filterHigh.type = "lowpass";
         this.filterLow.type = "highpass";
         this.bypass = properties.bypass || false;
@@ -791,9 +796,9 @@
         this.dry.connect(this.output);
 
         this.delayTime = properties.delayTime || this.defaults.delayTime.value;
-        this.feedback = properties.feedback || this.defaults.feedback.value;
-        this.wetLevel = properties.wetLevel || this.defaults.wetLevel.value;
-        this.dryLevel = properties.dryLevel || this.defaults.dryLevel.value;
+        this.feedback = setOrDefault(properties.feedback, this.defaults.feedback.value);
+        this.wetLevel = setOrDefault(properties.wetLevel, this.defaults.wetLevel.value);
+        this.dryLevel = setOrDefault(properties.dryLevel, this.defaults.dryLevel.value);
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
         this.filter.type = "lowpass";
         this.bypass = properties.bypass || false;
@@ -905,10 +910,10 @@
         this.outputDrive.connect(this.output);
 
         this.ws_table = new Float32Array(this.k_nSamples);
-        this.drive = properties.drive || this.defaults.drive.value;
-        this.outputGain = properties.outputGain || this.defaults.outputGain.value;
-        this.curveAmount = properties.curveAmount || this.defaults.curveAmount.value;
-        this.algorithmIndex = properties.algorithmIndex || this.defaults.algorithmIndex.value;
+        this.drive = setOrDefault(properties.drive, this.defaults.drive.value);
+        this.outputGain = setOrDefault(properties.outputGain, this.defaults.outputGain.value);
+        this.curveAmount = setOrDefault(properties.curveAmount, this.defaults.curveAmount.value);
+        this.algorithmIndex = setOrDefault(properties.algorithmIndex, this.defaults.algorithmIndex.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
@@ -1094,11 +1099,11 @@
         this.feedbackGainNodeR.connect(this.filtersR[0]);
         this.merger.connect(this.output);
 
-        this.rate = properties.rate || this.defaults.rate.value;
+        this.rate = setOrDefault(properties.rate, this.defaults.rate.value);
         this.baseModulationFrequency = properties.baseModulationFrequency || this.defaults.baseModulationFrequency.value;
-        this.depth = properties.depth || this.defaults.depth.value;
-        this.feedback = properties.feedback || this.defaults.feedback.value;
-        this.stereoPhase = properties.stereoPhase || this.defaults.stereoPhase.value;
+        this.depth = setOrDefault(properties.depth, this.defaults.depth.value);
+        this.feedback = setOrDefault(properties.feedback, this.defaults.feedback.value);
+        this.stereoPhase = setOrDefault(properties.stereoPhase, this.defaults.stereoPhase.value);
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
@@ -1235,8 +1240,8 @@
         this.merger.connect(this.output);
 
         this.rate = properties.rate || this.defaults.rate.value;
-        this.intensity = properties.intensity || this.defaults.intensity.value;
-        this.stereoPhase = properties.stereoPhase || this.defaults.stereoPhase.value;
+        this.intensity = setOrDefault(properties.intensity, this.defaults.intensity.value);
+        this.stereoPhase = setOrDefault(properties.stereoPhase, this.defaults.stereoPhase.value);
 
         this.lfoL.offset = 1 - (this.intensity / 2);
         this.lfoR.offset = 1 - (this.intensity / 2);
@@ -1336,12 +1341,12 @@
 
         //Set Properties
         this.init();
-        this.automode = properties.enableAutoMode || this.defaults.automode.value;
+        this.automode = setOrDefault(properties.enableAutoMode, this.defaults.automode.value);
         this.resonance = properties.resonance || this.defaults.resonance.value;
-        this.sensitivity = properties.sensitivity || this.defaults.sensitivity.value;
-        this.baseFrequency = properties.baseFrequency || this.defaults.baseFrequency.value;
+        this.sensitivity = setOrDefault(properties.sensitivity, this.defaults.sensitivity.value);
+        this.baseFrequency = setOrDefault(properties.baseFrequency, this.defaults.baseFrequency.value);
         this.excursionOctaves = properties.excursionOctaves || this.defaults.excursionOctaves.value;
-        this.sweep = properties.sweep || this.defaults.sweep.value;
+        this.sweep = setOrDefault(properties.sweep, this.defaults.sweep.value);
 
         this.activateNode.gain.value = 2;
         this.envelopeFollower.activate(true);
@@ -1494,8 +1499,8 @@
 
         this.input.connect(this.output);
 
-        this.attackTime = properties.attackTime || this.defaults.attackTime.value;
-        this.releaseTime = properties.releaseTime || this.defaults.releaseTime.value;
+        this.attackTime = setOrDefault(properties.attackTime, this.defaults.attackTime.value);
+        this.releaseTime = setOrDefault(properties.releaseTime, this.defaults.releaseTime.value);
         this._envelope = 0;
         this.target = properties.target || {};
         this.callback = properties.callback || function () {};
@@ -1628,10 +1633,10 @@
         this.activateNode = userContext.destination;
 
         //Set Properties
-        this.frequency = properties.frequency || this.defaults.frequency.value;
-        this.offset = properties.offset || this.defaults.offset.value;
-        this.oscillation = properties.oscillation || this.defaults.oscillation.value;
-        this.phase = properties.phase || this.defaults.phase.value;
+        this.frequency = setOrDefault(properties.frequency, this.defaults.frequency.value);
+        this.offset = setOrDefault(properties.offset, this.defaults.offset.value);
+        this.oscillation = setOrDefault(properties.oscillation, this.defaults.oscillation.value);
+        this.phase = setOrDefault(properties.phase, this.defaults.phase.value);
         this.target = properties.target || {};
         this.output.onaudioprocess = this.callback(properties.callback ||
         function () {});
