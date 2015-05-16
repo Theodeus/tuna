@@ -17,9 +17,9 @@
 //Originally written by Alessandro Saccoia, Chris Coniglio and Oskar Eriksson
 (function (window) {
     var userContext, userInstance, Tuna = function (context) {
-            if (! window.AudioContext) {
-		window.AudioContext = window.webkitAudioContext;
-   	    }
+            if(!window.AudioContext) {
+                window.AudioContext = window.webkitAudioContext;
+            }
 
             if(!context) {
                 console.log("tuna.js: Missing audio context! Creating a new context for you.");
@@ -161,7 +161,7 @@
             l = Math.round(Math.log(tmp2) / Math.log(10));
             l2 = Math.pow(10, l);
 
-            return(tmp2 / l2).toFixed(l - p) * l2;
+            return (tmp2 / l2).toFixed(l - p) * l2;
         } else {
             return parseFloat(tmp2.toFixed(-p));
         }
@@ -1436,8 +1436,10 @@
             set: function (value) {
                 this._baseFrequency = 50 * Math.pow(10, value * 2);
                 this._excursionFrequency = Math.min(this.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves));
-                this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
-                this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                if(!isNaN(this._baseFrequency + this._excursionFrequency * this._sweep)){
+                   this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                   this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                }
             }
         },
         excursionOctaves: {
@@ -1447,9 +1449,12 @@
             },
             set: function (value) {
                 this._excursionOctaves = value;
+                this._baseFrequency = this._baseFrequency || 1;
                 this._excursionFrequency = Math.min(this.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves));
-                this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
-                this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                if(!isNaN(this._baseFrequency + this._excursionFrequency * this._sweep)){
+                   this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                   this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                }
             }
         },
         sensitivity: {
