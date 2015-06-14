@@ -1,6 +1,6 @@
 Latest news
 ====
-New effects added: Chorus, Phaser, and Tremolo. <br /> Be sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> for future updates. Feel free to create your own effects and give us a pull request!
+Moog style filter and Bitcrusher added! Also, make sure you update your filter nodes to use strings instead of int's for filter type!
 
 tuna
 ====
@@ -31,33 +31,33 @@ Usage
 
 Start by creating a new Tuna object like so:
 
-<pre>
+```javascript
 var context = new AudioContext();
 var tuna = new Tuna(context);
-</pre>
+```
 
 You need to pass the audio context you're using in your application. Tuna will be using it to create its effects.
 
 You create a new tuna node as such:
 
-<pre>
+```javascript
 var chorus = new tuna.Chorus({
                  rate: 1.5,
                  feedback: 0.2,
                  delay: 0.0045,
                  bypass: 0
              });
-</pre>
+```
 You can then connect the tuna node to native Web Audio nodes by doing:
-<pre>
+```javascript
 nativeNode.connect(chorus.input);
 chorus.connect(anotherNativeNode);
-</pre>
+```
 or to other tuna nodes by doing:
-<pre>
+```javascript
 tunaNode.connect(chorus.input);
 chorus.connect(anotherTunaNode.input);
-</pre>
+```
 All tuna nodes are connected TO by using the nodes input property, but connecting FROM the tuna node works as it does with ordinary native AudioNodes.
 
 
@@ -65,17 +65,17 @@ The nodes
 ====
 
 A basic chorus effect.
-<pre>
+```javascript
 var chorus = new tuna.Chorus({
                  rate: 1.5,         //0.01 to 8+
                  feedback: 0.2,     //0 to 1+
                  delay: 0.0045,     //0 to 1
                  bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
              });
-</pre>
+```
 
 A delay effect with feedback and a lowpass filter applied to the delayed signal.
-<pre>
+```javascript
 var delay = new tuna.Delay({
                 feedback: 0.45,    //0 to 1+
                 delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
@@ -84,10 +84,10 @@ var delay = new tuna.Delay({
                 cutoff: 2000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
                 bypass: 0
             });
-</pre>
+```
 
 A basic phaser effect.
-<pre>
+```javascript
 var phaser = new tuna.Phaser({
                  rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
                  depth: 0.3,                    //0 to 1
@@ -96,10 +96,10 @@ var phaser = new tuna.Phaser({
                  baseModulationFrequency: 700,  //500 to 1500
                  bypass: 0
              });
-</pre>
+```
 
 A basic overdrive effect.
-<pre>
+```javascript
 var overdrive = new tuna.Overdrive({
                     outputGain: 0.5,         //0 to 1+
                     drive: 0.7,              //0 to 1
@@ -107,10 +107,10 @@ var overdrive = new tuna.Overdrive({
                     algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
                     bypass: 0
                 });
-</pre>
+```
 
 A compressor with the option to use automatic makeup gain.
-<pre>
+```javascript
 var compressor = new tuna.Compressor({
                      threshold: 0.5,    //-100 to 0
                      makeupGain: 1,     //0 and up
@@ -121,10 +121,10 @@ var compressor = new tuna.Compressor({
                      automakeup: true,  //true/false
                      bypass: 0
                  });
-</pre>
+```
 
 A convolver with high- and lowcut. You can find a lot of impulse resonses <a href="http://chromium.googlecode.com/svn/trunk/samples/audio/impulse-responses/">here</a>, or by searching for "free impulse response files".
-<pre>
+```javascript
 var convolver = new tuna.Convolver({
                     highCut: 22050,                         //20 to 22050
                     lowCut: 20,                             //20 to 22050
@@ -134,10 +134,10 @@ var convolver = new tuna.Convolver({
                     impulse: "impulses/impulse_rev.wav",    //the path to your impulse response
                     bypass: 0
                 });
-</pre>
+```
 
 A basic filter.
-<pre>
+```javascript
 var filter = new tuna.Filter({
                 frequency: 440, //20 to 22050
                 Q: 1, //0.001 to 100
@@ -145,29 +145,29 @@ var filter = new tuna.Filter({
                 filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
                 bypass: 0
             });
-</pre>
+```
 
 A cabinet/speaker emulator.
-<pre>
+```javascript
 var cabinet = new tuna.Cabinet({
                   makeupGain: 1,                                 //0 to 20
                   impulsePath: "impulses/impulse_guitar.wav",    //path to your speaker impulse
                   bypass: 0
               });
-</pre>
+```
 
 A basic tremolo.
-<pre>
+```javascript
 var tremolo = new tuna.Tremolo({
                   intensity: 0.3,    //0 to 1
                   rate: 4,         //0.001 to 8
                   stereoPhase: 0,    //0 to 180
                   bypass: 0
               });
-</pre>
+```
 
 A wahwah with an auto wah option.
-<pre>
+```javascript
 var wahwah = new tuna.WahWah({
                  automode: true,                //true/false
                  baseFrequency: 0.5,            //0 to 1
@@ -177,7 +177,7 @@ var wahwah = new tuna.WahWah({
                  sensitivity: 0.5,              //-1 to 1
                  bypass: 0
              });
-</pre>
+```
 
 A lo-fi bitcrusher effect.
 

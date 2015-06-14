@@ -28,7 +28,7 @@
             userContext = context;
             userInstance = this;
         },
-        version = "0.1",
+        version = "0.2",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
         pipe = function (param, val) {
@@ -179,8 +179,8 @@
         return(Math.exp(n) - Math.exp(-n)) / (Math.exp(n) + Math.exp(-n));
     }
 
-    function setOrDefault(set, def) {
-        return set === undefined ? def : set;
+    function initValue(userVal, defaultVal) {
+        return userVal === undefined ? defaultVal : userVal;
     }
 
     Tuna.prototype.Filter = function (properties) {
@@ -197,8 +197,8 @@
 
         this.frequency = properties.frequency || this.defaults.frequency.value;
         this.Q = properties.resonance || this.defaults.Q.value;
-        this.filterType = setOrDefault(properties.filterType, this.defaults.filterType.value);
-        this.gain = setOrDefault(properties.gain, this.defaults.gain.value);
+        this.filterType = initValue(properties.filterType, this.defaults.filterType.value);
+        this.gain = initValue(properties.gain, this.defaults.gain.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Filter.prototype = Object.create(Super, {
@@ -292,12 +292,13 @@
         this.activateNode.connect(this.processor);
         this.processor.connect(this.output);
 
-        var phaser = 0, last = 0;
+        var phaser = 0, last = 0, input, output, step, i, length;
         this.processor.onaudioprocess = function (e) {
-            var input = e.inputBuffer.getChannelData(0),
-                output = e.outputBuffer.getChannelData(0),
-                step = Math.pow(1/2, this.bits);
-            for(var i = 0; i < input.length; i++) {
+            input = e.inputBuffer.getChannelData(0),
+            output = e.outputBuffer.getChannelData(0),
+            step = Math.pow(1/2, this.bits);
+            length = input.length;
+            for(i = 0; i < length; i++) {
                 phaser += this.normfreq;
                 if(phaser >= 1.0) {
                     phaser -= 1.0;
@@ -308,7 +309,7 @@
         };
 
         this.bits = properties.bits || this.defaults.bits.value;
-        this.normfreq = properties.normfreq || this.defaults.normfreq.value;
+        this.normfreq = initValue(properties.normfreq, this.defaults.normfreq.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Bitcrusher.prototype = Object.create(Super, {
@@ -379,7 +380,7 @@
         this.convolver.output.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.makeupGain = setOrDefault(properties.makeupGain, this.defaults.makeupGain);
+        this.makeupGain = initValue(properties.makeupGain, this.defaults.makeupGain);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Cabinet.prototype = Object.create(Super, {
@@ -458,10 +459,10 @@
         this.delayR.connect(this.merger, 0, 1);
         this.merger.connect(this.output);
 
-        this.feedback = setOrDefault(properties.feedback, this.defaults.feedback.value);
-        this.rate = setOrDefault(properties.rate, this.defaults.rate.value);
-        this.delay = setOrDefault(properties.delay, this.defaults.delay.value);
-        this.depth = setOrDefault(properties.depth, this.defaults.depth.value);
+        this.feedback = initValue(properties.feedback, this.defaults.feedback.value);
+        this.rate = initValue(properties.rate, this.defaults.rate.value);
+        this.delay = initValue(properties.delay, this.defaults.delay.value);
+        this.depth = initValue(properties.depth, this.defaults.depth.value);
         this.lfoR.phase = Math.PI / 2;
         this.attenuator.gain.value = 0.6934; // 1 / (10 ^ (((20 * log10(3)) / 3) / 20))
         this.lfoL.activate(true);
@@ -568,13 +569,13 @@
         this.compNode.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.automakeup = setOrDefault(properties.automakeup, this.defaults.automakeup.value);
+        this.automakeup = initValue(properties.automakeup, this.defaults.automakeup.value);
         this.makeupGain = properties.makeupGain || this.defaults.makeupGain.value;
-        this.threshold = setOrDefault(properties.threshold, this.defaults.threshold.value);
+        this.threshold = initValue(properties.threshold, this.defaults.threshold.value);
         this.release = properties.release || this.defaults.release.value;
-        this.attack = setOrDefault(properties.attack, this.defaults.attack.value);
+        this.attack = initValue(properties.attack, this.defaults.attack.value);
         this.ratio = properties.ratio || this.defaults.ratio.value;
-        this.knee = setOrDefault(properties.knee, this.defaults.knee.value);
+        this.knee = initValue(properties.knee, this.defaults.knee.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Compressor.prototype = Object.create(Super, {
@@ -735,12 +736,12 @@
         this.wet.connect(this.output);
         this.dry.connect(this.output);
 
-        this.dryLevel = setOrDefault(properties.dryLevel, this.defaults.dryLevel.value);
-        this.wetLevel = setOrDefault(properties.wetLevel, this.defaults.wetLevel.value);
+        this.dryLevel = initValue(properties.dryLevel, this.defaults.dryLevel.value);
+        this.wetLevel = initValue(properties.wetLevel, this.defaults.wetLevel.value);
         this.highCut = properties.highCut || this.defaults.highCut.value;
         this.buffer = properties.impulse || "../impulses/ir_rev_short.wav";
         this.lowCut = properties.lowCut || this.defaults.lowCut.value;
-        this.level = setOrDefault(properties.level, this.defaults.level.value);
+        this.level = initValue(properties.level, this.defaults.level.value);
         this.filterHigh.type = "lowpass";
         this.filterLow.type = "highpass";
         this.bypass = properties.bypass || false;
@@ -881,9 +882,9 @@
         this.dry.connect(this.output);
 
         this.delayTime = properties.delayTime || this.defaults.delayTime.value;
-        this.feedback = setOrDefault(properties.feedback, this.defaults.feedback.value);
-        this.wetLevel = setOrDefault(properties.wetLevel, this.defaults.wetLevel.value);
-        this.dryLevel = setOrDefault(properties.dryLevel, this.defaults.dryLevel.value);
+        this.feedback = initValue(properties.feedback, this.defaults.feedback.value);
+        this.wetLevel = initValue(properties.wetLevel, this.defaults.wetLevel.value);
+        this.dryLevel = initValue(properties.dryLevel, this.defaults.dryLevel.value);
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
         this.filter.type = "lowpass";
         this.bypass = properties.bypass || false;
@@ -994,14 +995,17 @@
 
         var in1, in2, in3, in4, out1, out2, out3, out4;
         in1 = in2 = in3 = in4 = out1 = out2 = out3 = out4 = 0.0;
+        var input, output, f, fb, i, length;
         this.processor.onaudioprocess = function (e) {
-            var input = e.inputBuffer.getChannelData(0),
-                output = e.outputBuffer.getChannelData(0),
-                f = this.cutoff * 1.16,
-                fb = this.resonance * (1.0 - 0.15 * f * f);
-            for(var i = 0; i < input.length; i++) {
+            input = e.inputBuffer.getChannelData(0),
+            output = e.outputBuffer.getChannelData(0),
+            f = this.cutoff * 1.16,
+            inputFactor = 0.35013 * (f*f)*(f*f);
+            fb = this.resonance * (1.0 - 0.15 * f * f);
+            length = input.length;
+            for(i = 0; i < length; i++) {
                 input[i] -= out4 * fb;
-                input[i] *= 0.35013 * (f*f)*(f*f);
+                input[i] *= inputFactor;
                 out1 = input[i] + 0.3 * in1 + (1 - f) * out1; // Pole 1
                 in1 = input[i];
                 out2 = out1 + 0.3 * in2 + (1 - f) * out2; // Pole 2
@@ -1014,8 +1018,8 @@
             }
         };
 
-        this.cutoff = properties.cutoff || this.defaults.cutoff.value;
-        this.resonance = properties.resonance || this.defaults.resonance.value;
+        this.cutoff = initValue(properties.cutoff, this.defaults.cutoff.value);
+        this.resonance = initValue(properties.resonance, this.defaults.resonance.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.MoogFilter.prototype = Object.create(Super, {
@@ -1089,10 +1093,10 @@
         this.outputDrive.connect(this.output);
 
         this.ws_table = new Float32Array(this.k_nSamples);
-        this.drive = setOrDefault(properties.drive, this.defaults.drive.value);
-        this.outputGain = setOrDefault(properties.outputGain, this.defaults.outputGain.value);
-        this.curveAmount = setOrDefault(properties.curveAmount, this.defaults.curveAmount.value);
-        this.algorithmIndex = setOrDefault(properties.algorithmIndex, this.defaults.algorithmIndex.value);
+        this.drive = initValue(properties.drive, this.defaults.drive.value);
+        this.outputGain = initValue(properties.outputGain, this.defaults.outputGain.value);
+        this.curveAmount = initValue(properties.curveAmount, this.defaults.curveAmount.value);
+        this.algorithmIndex = initValue(properties.algorithmIndex, this.defaults.algorithmIndex.value);
         this.bypass = properties.bypass || false;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
@@ -1278,11 +1282,11 @@
         this.feedbackGainNodeR.connect(this.filtersR[0]);
         this.merger.connect(this.output);
 
-        this.rate = setOrDefault(properties.rate, this.defaults.rate.value);
+        this.rate = initValue(properties.rate, this.defaults.rate.value);
         this.baseModulationFrequency = properties.baseModulationFrequency || this.defaults.baseModulationFrequency.value;
-        this.depth = setOrDefault(properties.depth, this.defaults.depth.value);
-        this.feedback = setOrDefault(properties.feedback, this.defaults.feedback.value);
-        this.stereoPhase = setOrDefault(properties.stereoPhase, this.defaults.stereoPhase.value);
+        this.depth = initValue(properties.depth, this.defaults.depth.value);
+        this.feedback = initValue(properties.feedback, this.defaults.feedback.value);
+        this.stereoPhase = initValue(properties.stereoPhase, this.defaults.stereoPhase.value);
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
@@ -1419,8 +1423,8 @@
         this.merger.connect(this.output);
 
         this.rate = properties.rate || this.defaults.rate.value;
-        this.intensity = setOrDefault(properties.intensity, this.defaults.intensity.value);
-        this.stereoPhase = setOrDefault(properties.stereoPhase, this.defaults.stereoPhase.value);
+        this.intensity = initValue(properties.intensity, this.defaults.intensity.value);
+        this.stereoPhase = initValue(properties.stereoPhase, this.defaults.stereoPhase.value);
 
         this.lfoL.offset = 1 - (this.intensity / 2);
         this.lfoR.offset = 1 - (this.intensity / 2);
@@ -1520,12 +1524,12 @@
 
         //Set Properties
         this.init();
-        this.automode = setOrDefault(properties.enableAutoMode, this.defaults.automode.value);
+        this.automode = initValue(properties.enableAutoMode, this.defaults.automode.value);
         this.resonance = properties.resonance || this.defaults.resonance.value;
-        this.sensitivity = setOrDefault(properties.sensitivity, this.defaults.sensitivity.value);
-        this.baseFrequency = setOrDefault(properties.baseFrequency, this.defaults.baseFrequency.value);
+        this.sensitivity = initValue(properties.sensitivity, this.defaults.sensitivity.value);
+        this.baseFrequency = initValue(properties.baseFrequency, this.defaults.baseFrequency.value);
         this.excursionOctaves = properties.excursionOctaves || this.defaults.excursionOctaves.value;
-        this.sweep = setOrDefault(properties.sweep, this.defaults.sweep.value);
+        this.sweep = initValue(properties.sweep, this.defaults.sweep.value);
 
         this.activateNode.gain.value = 2;
         this.envelopeFollower.activate(true);
@@ -1691,8 +1695,8 @@
 
         this.input.connect(this.output);
 
-        this.attackTime = setOrDefault(properties.attackTime, this.defaults.attackTime.value);
-        this.releaseTime = setOrDefault(properties.releaseTime, this.defaults.releaseTime.value);
+        this.attackTime = initValue(properties.attackTime, this.defaults.attackTime.value);
+        this.releaseTime = initValue(properties.releaseTime, this.defaults.releaseTime.value);
         this._envelope = 0;
         this.target = properties.target || {};
         this.callback = properties.callback || function () {};
@@ -1825,10 +1829,10 @@
         this.activateNode = userContext.destination;
 
         //Set Properties
-        this.frequency = setOrDefault(properties.frequency, this.defaults.frequency.value);
-        this.offset = setOrDefault(properties.offset, this.defaults.offset.value);
-        this.oscillation = setOrDefault(properties.oscillation, this.defaults.oscillation.value);
-        this.phase = setOrDefault(properties.phase, this.defaults.phase.value);
+        this.frequency = initValue(properties.frequency, this.defaults.frequency.value);
+        this.offset = initValue(properties.offset, this.defaults.offset.value);
+        this.oscillation = initValue(properties.oscillation, this.defaults.oscillation.value);
+        this.phase = initValue(properties.phase, this.defaults.phase.value);
         this.target = properties.target || {};
         this.output.onaudioprocess = this.callback(properties.callback ||
         function () {});
