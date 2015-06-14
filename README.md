@@ -1,6 +1,6 @@
 Latest news
 ====
-Moog style filter and Bitcrusher added! Also, make sure you update your filter nodes to use strings instead of int's for filter type!
+Moog style filter and Bitcrusher added! Also, make sure you update your filter nodes to use strings instead of integers for filter type!
 
 tuna
 ====
