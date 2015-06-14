@@ -137,12 +137,12 @@ var convolver = new tuna.Convolver({
 A basic filter.
 <pre>
 var filter = new tuna.Filter({
-                 frequency: 20,         //20 to 22050
-                 Q: 1,                  //0.001 to 100
-                 gain: 0,               //-40 to 40
-                 filterType: 0,         //0 to 7, corresponds to the filter types in the native filter node: lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass in that order
-                 bypass: 0
-             });
+                frequency: 440, //20 to 22050
+                Q: 1, //0.001 to 100
+                gain: 0, //-40 to 40
+                filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
+                bypass: 0
+            });
 </pre>
 
 A cabinet/speaker emulator.
@@ -158,7 +158,7 @@ A basic tremolo.
 <pre>
 var tremolo = new tuna.Tremolo({
                   intensity: 0.3,    //0 to 1
-                  rate: 0.1,         //0.001 to 8
+                  rate: 4,         //0.001 to 8
                   stereoPhase: 0,    //0 to 180
                   bypass: 0
               });

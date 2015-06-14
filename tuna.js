@@ -230,11 +230,9 @@
                     type: BOOLEAN
                 },
                 filterType: {
-                    value: 1,
-                    min: 0,
-                    max: 7,
+                    value:"lowpass",
                     automatable: false,
-                    type: INT
+                    type: STRING
                 }
             }
         },
@@ -1417,6 +1415,23 @@
                 }
             }
         },
+        filterFreqTimeout: {
+            value: 0
+        },
+        setFilterFreq: {
+            value: function() {
+                try{
+                    this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                    this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                } catch(e) {
+                    clearTimeout(this.filterFreqTimeout);
+                    //put on the next cycle to let all init properties be set
+                    this.filterFreqTimeout = setTimeout(function() {
+                        this.setFilterFreq();
+                    }.bind(this), 0);
+                }
+            }
+        },
         sweep: {
             enumerable: true,
             get: function () {
@@ -1424,8 +1439,7 @@
             },
             set: function (value) {
                 this._sweep = Math.pow(value > 1 ? 1 : value < 0 ? 0 : value, this._sensitivity);
-                this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
-                this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                this.setFilterFreq();
             }
         },
         baseFrequency: {
@@ -1435,9 +1449,8 @@
             },
             set: function (value) {
                 this._baseFrequency = 50 * Math.pow(10, value * 2);
-                this._excursionFrequency = Math.min(this.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves));
-                this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
-                this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                this._excursionFrequency = Math.min(userContext.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves));
+                this.setFilterFreq();
             }
         },
         excursionOctaves: {
@@ -1447,9 +1460,8 @@
             },
             set: function (value) {
                 this._excursionOctaves = value;
-                this._excursionFrequency = Math.min(this.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves));
-                this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
-                this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                this._excursionFrequency = Math.min(userContext.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves));
+                this.setFilterFreq();
             }
         },
         sensitivity: {
@@ -1481,7 +1493,6 @@
                 this.filterPeaking.Q.value = 5;
                 this.filterBp.frequency.value = 100;
                 this.filterBp.Q.value = 1;
-                this.sampleRate = userContext.sampleRate;
             }
         }
     });
