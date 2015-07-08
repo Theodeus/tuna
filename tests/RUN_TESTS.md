@@ -5,22 +5,18 @@ currently using v. 2.3.4, and are run in the browser in two different ways.
  
 ## Remote mode
 
-In remote mode, the Jasmine files are loaded on the fly from the CLoudflare
+In remote mode, the Jasmine files are loaded on the fly from the CloudFlare
 CDN. Load the `$TUNA_BRANCH_ROOT/tests/online-runner.html` file in your
 browser: you should see a test output page with zero failures.
 
 ## Local mode
 
 In local mode, first install the Jasmine files inside your local branch by
-using the Bower package manager. If you don't have it, install it by using the
-NPM package manager. If you don't have the latter either, install it too.
-Yes, it's messy.
+using the Bower package manager. Installation instructions for Bower can 
+be found at http://bower.io/
 
-The following works for Ubuntu and Debian, adapt it to your system:
 
 ```
-$ sudo apt-get install npm
-$ sudo npm install -g bower
 $ cd $TUNA_BRANCH_ROOT/tests
 $ bower install jasmine
 ```
