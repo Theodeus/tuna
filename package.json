@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "uglify": "uglify -s tuna.js -o tuna-min.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/Dinahmoe/tuna/issues"
   },
-  "homepage": "https://github.com/Dinahmoe/tuna#readme"
+  "homepage": "https://github.com/Dinahmoe/tuna#readme",
+  "devDependencies": {
+    "uglify": "^0.1.5"
+  }
 }
