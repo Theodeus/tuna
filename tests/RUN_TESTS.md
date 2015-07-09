@@ -18,7 +18,7 @@ be found at http://bower.io/
 
 ```
 $ cd $TUNA_BRANCH_ROOT/tests
-$ bower install jasmine#2.3.4
+$ bower install
 ```
 
 If all went well, there will be a newly created
