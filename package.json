@@ -14,10 +14,8 @@
     "url": "git+https://github.com/Dinahmoe/tuna.git"
   },
   "keywords": [
-    "web",
-    "audio",
-    "audio",
-    "effects",
+    "web audio",
+    "audio effects",
     "tuna",
     "tunajs",
     "tuna.js"
