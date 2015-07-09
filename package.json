@@ -1,0 +1,31 @@
+{
+  "name": "tuna",
+  "version": "0.2.0",
+  "description": "Audio effects library for the Web Audio API",
+  "main": "tuna.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dinahmoe/tuna.git"
+  },
+  "keywords": [
+    "web",
+    "audio",
+    "audio",
+    "effects",
+    "tuna",
+    "tunajs",
+    "tuna.js"
+  ],
+  "author": "Oskar Eriksson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dinahmoe/tuna/issues"
+  },
+  "homepage": "https://github.com/Dinahmoe/tuna#readme"
+}
