@@ -1,5 +1,13 @@
 Latest news
 ====
+
+Ownership of the tuna repo has been transferred. The old Dinahmoe/tuna repo should be redirected here, but
+we recommend updating your remotes using:
+
+```bash
+git remote set-url origin git@github.com:Theodeus/tuna.git
+```
+
 Moog style filter and Bitcrusher added! Also, make sure you update your filter nodes to use strings instead of integers for filter type!
 
 tuna
@@ -78,7 +86,7 @@ A delay effect with feedback and a lowpass filter applied to the delayed signal.
 ```javascript
 var delay = new tuna.Delay({
                 feedback: 0.45,    //0 to 1+
-                delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
+                delayTime: 150,    //how many milliseconds should the wet signal be delayed?
                 wetLevel: 0.25,    //0 to 1+
                 dryLevel: 1,       //0 to 1+
                 cutoff: 2000,      //cutoff frequency of the built in lowpass-filter. 20 to 22050
