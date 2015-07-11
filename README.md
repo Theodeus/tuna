@@ -5,7 +5,7 @@ Ownership of the tuna repo has been transferred. The old Dinahmoe/tuna repo shou
 we recommend updating your remotes using:
 
 ```bash
-git remote set-url origin git@github.com:Theodeus/tuna.git
+git remote set-url origin https://github.com/Theodeus/tuna.git
 ```
 
 Moog style filter and Bitcrusher added! Also, make sure you update your filter nodes to use strings instead of integers for filter type!
