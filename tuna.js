@@ -17,18 +17,22 @@
 //Originally written by Alessandro Saccoia, Chris Coniglio and Oskar Eriksson
 (function (window) {
     var userContext, userInstance, Tuna = function (context) {
-            if (! window.AudioContext) {
+            if (!window.AudioContext) {
                 window.AudioContext = window.webkitAudioContext;
             }
 
-            if(!context) {
+            if (!context) {
                 console.log("tuna.js: Missing audio context! Creating a new context for you.");
                 context = window.AudioContext && (new window.AudioContext());
             }
+            if (!context) {
+                throw new Error("Tuna cannot initialize because this environment does not support web audio.");
+            }
+            connectify(context);
             userContext = context;
             userInstance = this;
         },
-        version = "0.2",
+        version = "0.2.1",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
         pipe = function (param, val) {
@@ -128,6 +132,20 @@
         BOOLEAN = "boolean",
         STRING = "string",
         INT = "int";
+
+    function connectify (context) {
+        var k = context.createGain(),
+            proto = Object.getPrototypeOf(Object.getPrototypeOf(k)),
+            oconnect = proto.connect;
+
+        proto.connect = shimConnect;
+
+        function shimConnect (node) {
+            var isTunaNode = Super.isPrototypeOf(node);
+            oconnect.call(this, isTunaNode ? node.output : node);
+            return node;
+        }
+    }
 
     function dbToWAVolume(db) {
         return Math.max(0, Math.round(100 * Math.pow(2, db / 6)) / 100);
