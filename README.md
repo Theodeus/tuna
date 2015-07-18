@@ -61,17 +61,17 @@ var chorus = new tuna.Chorus({
     bypass: 0
 });
 ```
-You can then connect the tuna node to native Web Audio nodes by doing:
+You can then connect the tuna node to native Web Audio just as you would normally:
+
 ```javascript
-nativeNode.connect(chorus.input);
-chorus.connect(anotherNativeNode);
+var input = context.createGain();
+var output = context.createGain();
+gain.connect(chorus);
+chorus.connect(output);
 ```
-or to other tuna nodes by doing:
-```javascript
-tunaNode.connect(chorus.input);
-chorus.connect(anotherTunaNode.input);
-```
-All tuna nodes are connected TO by using the nodes input property, but connecting FROM the tuna node works as it does with ordinary native AudioNodes.
+
+Tuna masquerades as a normal web audio node so you can
+seamlessly connect with AudioNodes created by the AudioContext.
 
 
 The nodes
