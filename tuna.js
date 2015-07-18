@@ -42,10 +42,10 @@
             activate: {
                 writable: true,
                 value: function (doActivate) {
-                    if(doActivate) {
+                    if (doActivate) {
                         this.input.disconnect();
                         this.input.connect(this.activateNode);
-                        if(this.activateCallback) {
+                        if (this.activateCallback) {
                             this.activateCallback(doActivate);
                         }
                     } else {
@@ -59,7 +59,7 @@
                     return this._bypass;
                 },
                 set: function (value) {
-                    if(this._lastBypassValue === value) {
+                    if (this._lastBypassValue === value) {
                         return;
                     }
                     this._bypass = value;
@@ -80,11 +80,11 @@
             connectInOrder: {
                 value: function (nodeArray) {
                     var i = nodeArray.length - 1;
-                    while(i--) {
-                        if(!nodeArray[i].connect) {
+                    while (i--) {
+                        if (!nodeArray[i].connect) {
                             return console.error("AudioNode.connectInOrder: TypeError: Not an AudioNode.", nodeArray[i]);
                         }
-                        if(nodeArray[i + 1].input) {
+                        if (nodeArray[i + 1].input) {
                             nodeArray[i].connect(nodeArray[i + 1].input);
                         } else {
                             nodeArray[i].connect(nodeArray[i + 1]);
@@ -95,7 +95,7 @@
             getDefaults: {
                 value: function () {
                     var result = {};
-                    for(var key in this.defaults) {
+                    for (var key in this.defaults) {
                         result[key] = this.defaults[key].value;
                     }
                     return result;
@@ -103,15 +103,15 @@
             },
             automate: {
                 value: function (property, value, duration, startTime) {
-                    var start = startTime ? ~~ (startTime / 1000) : userContext.currentTime,
-                        dur = duration ? ~~ (duration / 1000) : 0,
+                    var start = startTime ? ~~(startTime / 1000) : userContext.currentTime,
+                        dur = duration ? ~~(duration / 1000) : 0,
                         _is = this.defaults[property],
                         param = this[property],
                         method;
 
-                    if(param) {
-                        if(_is.automatable) {
-                            if(!duration) {
+                    if (param) {
+                        if (_is.automatable) {
+                            if (!duration) {
                                 method = set;
                             } else {
                                 method = linear;
@@ -134,24 +134,23 @@
         INT = "int";
 
     function connectify (context) {
-        var k = context.createGain(),
-            proto = Object.getPrototypeOf(Object.getPrototypeOf(k)),
+        var gain = context.createGain(),
+            proto = Object.getPrototypeOf(Object.getPrototypeOf(gain)),
             oconnect = proto.connect;
 
         proto.connect = shimConnect;
 
         function shimConnect (node) {
-            var isTunaNode = Super.isPrototypeOf(node);
-            oconnect.call(this, isTunaNode ? node.output : node);
+            oconnect.call(this, Super.isPrototypeOf(node) ? node.input : node);
             return node;
         }
     }
 
-    function dbToWAVolume(db) {
+    function dbToWAVolume (db) {
         return Math.max(0, Math.round(100 * Math.pow(2, db / 6)) / 100);
     }
 
-    function fmod(x, y) {
+    function fmod (x, y) {
         // http://kevin.vanzonneveld.net
         // +   original by: Onno Marsman
         // +      input by: Brett Zamir (http://brett-zamir.me)
@@ -168,13 +167,13 @@
         tmp = y.toExponential().match(/^.\.?(.*)e(.+)$/);
         pY = parseInt(tmp[2], 10) - (tmp[1] + '').length;
 
-        if(pY > p) {
+        if (pY > p) {
             p = pY;
         }
 
         tmp2 = (x % y);
 
-        if(p < -100 || p > 20) {
+        if (p < -100 || p > 20) {
             // toFixed will give an out of bound error so we fix it like this:
             l = Math.round(Math.log(tmp2) / Math.log(10));
             l2 = Math.pow(10, l);
@@ -185,24 +184,24 @@
         }
     }
 
-    function sign(x) {
-        if(x === 0) {
+    function sign (x) {
+        if (x === 0) {
             return 1;
         } else {
             return Math.abs(x) / x;
         }
     }
 
-    function tanh(n) {
+    function tanh (n) {
         return(Math.exp(n) - Math.exp(-n)) / (Math.exp(n) + Math.exp(-n));
     }
 
-    function initValue(userVal, defaultVal) {
+    function initValue (userVal, defaultVal) {
         return userVal === undefined ? defaultVal : userVal;
     }
 
     Tuna.prototype.Filter = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -224,7 +223,7 @@
             value: "Filter"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 frequency: {
                     value: 800,
@@ -253,7 +252,7 @@
                     type: BOOLEAN
                 },
                 filterType: {
-                    value:"lowpass",
+                    value: "lowpass",
                     automatable: false,
                     type: STRING
                 }
@@ -297,7 +296,7 @@
         }
     });
     Tuna.prototype.Bitcrusher = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.bufferSize = properties.bufferSize || this.defaults.bufferSize.value;
@@ -314,11 +313,11 @@
         this.processor.onaudioprocess = function (e) {
             input = e.inputBuffer.getChannelData(0),
             output = e.outputBuffer.getChannelData(0),
-            step = Math.pow(1/2, this.bits);
+            step = Math.pow(1 / 2, this.bits);
             length = input.length;
-            for(i = 0; i < length; i++) {
+            for (i = 0; i < length; i++) {
                 phaser += this.normfreq;
-                if(phaser >= 1.0) {
+                if (phaser >= 1.0) {
                     phaser -= 1.0;
                     last = step * Math.floor(input[i] / step + 0.5);
                 }
@@ -385,7 +384,7 @@
         }
     });
     Tuna.prototype.Cabinet = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -406,7 +405,7 @@
             value: "Cabinet"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 makeupGain: {
                     value: 1,
@@ -442,7 +441,7 @@
         }
     });
     Tuna.prototype.Chorus = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -492,7 +491,7 @@
             value: "Chorus"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 feedback: {
                     value: 0.4,
@@ -576,7 +575,7 @@
         }
     });
     Tuna.prototype.Compressor = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -601,7 +600,7 @@
             value: "Compressor"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 threshold: {
                     value: -20,
@@ -672,7 +671,7 @@
             },
             set: function (value) {
                 this._automakeup = value;
-                if(this._automakeup) this.makeupGain = this.computeMakeup();
+                if (this._automakeup) this.makeupGain = this.computeMakeup();
             }
         },
         threshold: {
@@ -682,7 +681,7 @@
             },
             set: function (value) {
                 this.compNode.threshold.value = value;
-                if(this._automakeup) this.makeupGain = this.computeMakeup();
+                if (this._automakeup) this.makeupGain = this.computeMakeup();
             }
         },
         ratio: {
@@ -692,7 +691,7 @@
             },
             set: function (value) {
                 this.compNode.ratio.value = value;
-                if(this._automakeup) this.makeupGain = this.computeMakeup();
+                if (this._automakeup) this.makeupGain = this.computeMakeup();
             }
         },
         knee: {
@@ -702,7 +701,7 @@
             },
             set: function (value) {
                 this.compNode.knee.value = value;
-                if(this._automakeup) this.makeupGain = this.computeMakeup();
+                if (this._automakeup) this.makeupGain = this.computeMakeup();
             }
         },
         attack: {
@@ -734,7 +733,7 @@
         }
     });
     Tuna.prototype.Convolver = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -769,7 +768,7 @@
             value: "Convolver"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 highCut: {
                     value: 22050,
@@ -856,19 +855,19 @@
             set: function (impulse) {
                 var convolver = this.convolver,
                     xhr = new XMLHttpRequest();
-                if(!impulse) {
+                if (!impulse) {
                     console.log("Tuna.Convolver.setBuffer: Missing impulse path!");
                     return;
                 }
                 xhr.open("GET", impulse, true);
                 xhr.responseType = "arraybuffer";
                 xhr.onreadystatechange = function () {
-                    if(xhr.readyState === 4) {
-                        if(xhr.status < 300 && xhr.status > 199 || xhr.status === 302) {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status < 300 && xhr.status > 199 || xhr.status === 302) {
                             userContext.decodeAudioData(xhr.response, function (buffer) {
                                 convolver.buffer = buffer;
                             }, function (e) {
-                                if(e) console.log("Tuna.Convolver.setBuffer: Error decoding data" + e);
+                                if (e) console.log("Tuna.Convolver.setBuffer: Error decoding data" + e);
                             });
                         }
                     }
@@ -878,7 +877,7 @@
         }
     });
     Tuna.prototype.Delay = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -912,7 +911,7 @@
             value: "Delay"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 delayTime: {
                     value: 100,
@@ -998,7 +997,7 @@
         }
     });
     Tuna.prototype.MoogFilter = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.bufferSize = properties.bufferSize || this.defaults.bufferSize.value;
@@ -1018,10 +1017,10 @@
             input = e.inputBuffer.getChannelData(0),
             output = e.outputBuffer.getChannelData(0),
             f = this.cutoff * 1.16,
-            inputFactor = 0.35013 * (f*f)*(f*f);
+            inputFactor = 0.35013 * (f * f) * (f * f);
             fb = this.resonance * (1.0 - 0.15 * f * f);
             length = input.length;
-            for(i = 0; i < length; i++) {
+            for (i = 0; i < length; i++) {
                 input[i] -= out4 * fb;
                 input[i] *= inputFactor;
                 out1 = input[i] + 0.3 * in1 + (1 - f) * out1; // Pole 1
@@ -1095,7 +1094,7 @@
         }
     });
     Tuna.prototype.Overdrive = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -1122,7 +1121,7 @@
             value: "Overdrive"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 drive: {
                     value: 1,
@@ -1173,7 +1172,7 @@
             },
             set: function (value) {
                 this._curveAmount = value;
-                if(this._algorithmIndex === undefined) {
+                if (this._algorithmIndex === undefined) {
                     this._algorithmIndex = 0;
                 }
                 this.waveshaperAlgorithms[this._algorithmIndex](this._curveAmount, this.k_nSamples, this.ws_table);
@@ -1204,41 +1203,41 @@
                 amount = Math.min(amount, 0.9999);
                 var k = 2 * amount / (1 - amount),
                     i, x;
-                for(i = 0; i < n_samples; i++) {
+                for (i = 0; i < n_samples; i++) {
                     x = i * 2 / n_samples - 1;
                     ws_table[i] = (1 + k) * x / (1 + k * Math.abs(x));
                 }
             }, function (amount, n_samples, ws_table) {
                 var i, x, y;
-                for(i = 0; i < n_samples; i++) {
+                for (i = 0; i < n_samples; i++) {
                     x = i * 2 / n_samples - 1;
                     y = ((0.5 * Math.pow((x + 1.4), 2)) - 1) * y >= 0 ? 5.8 : 1.2;
                     ws_table[i] = tanh(y);
                 }
             }, function (amount, n_samples, ws_table) {
                 var i, x, y, a = 1 - amount;
-                for(i = 0; i < n_samples; i++) {
+                for (i = 0; i < n_samples; i++) {
                     x = i * 2 / n_samples - 1;
                     y = x < 0 ? -Math.pow(Math.abs(x), a + 0.04) : Math.pow(x, a);
                     ws_table[i] = tanh(y * 2);
                 }
             }, function (amount, n_samples, ws_table) {
                 var i, x, y, abx, a = 1 - amount > 0.99 ? 0.99 : 1 - amount;
-                for(i = 0; i < n_samples; i++) {
+                for (i = 0; i < n_samples; i++) {
                     x = i * 2 / n_samples - 1;
                     abx = Math.abs(x);
-                    if(abx < a) y = abx;
-                    else if(abx > a) y = a + (abx - a) / (1 + Math.pow((abx - a) / (1 - a), 2));
-                    else if(abx > 1) y = abx;
+                    if (abx < a) y = abx;
+                    else if (abx > a) y = a + (abx - a) / (1 + Math.pow((abx - a) / (1 - a), 2));
+                    else if (abx > 1) y = abx;
                     ws_table[i] = sign(x) * y * (1 / ((a + 1) / 2));
                 }
             }, function (amount, n_samples, ws_table) { // fixed curve, amount doesn't do anything, the distortion is just from the drive
                 var i, x;
-                for(i = 0; i < n_samples; i++) {
+                for (i = 0; i < n_samples; i++) {
                     x = i * 2 / n_samples - 1;
-                    if(x < -0.08905) {
+                    if (x < -0.08905) {
                         ws_table[i] = (-3 / 4) * (1 - (Math.pow((1 - (Math.abs(x) - 0.032857)), 12)) + (1 / 3) * (Math.abs(x) - 0.032847)) + 0.01;
-                    } else if(x >= -0.08905 && x < 0.320018) {
+                    } else if (x >= -0.08905 && x < 0.320018) {
                         ws_table[i] = (-6.153 * (x * x)) + 3.9375 * x;
                     } else {
                         ws_table[i] = 0.630035;
@@ -1250,7 +1249,7 @@
                     bits = Math.round(Math.pow(2, a - 1)),
                     // real number of quantization steps divided by 2
                     i, x;
-                for(i = 0; i < n_samples; i++) {
+                for (i = 0; i < n_samples; i++) {
                     x = i * 2 / n_samples - 1;
                     ws_table[i] = Math.round(x * bits) / bits;
                 }
@@ -1258,7 +1257,7 @@
         }
     });
     Tuna.prototype.Phaser = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -1280,7 +1279,7 @@
         });
 
         var i = this.stage;
-        while(i--) {
+        while (i--) {
             this.filtersL[i] = userContext.createBiquadFilter();
             this.filtersR[i] = userContext.createBiquadFilter();
             this.filtersL[i].type = "allpass";
@@ -1318,7 +1317,7 @@
             value: 4
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 rate: {
                     value: 0.1,
@@ -1359,7 +1358,7 @@
         },
         callback: {
             value: function (filters, value) {
-                for(var stage = 0; stage < 4; stage++) {
+                for (var stage = 0; stage < 4; stage++) {
                     filters[stage].frequency.value = value;
                 }
             }
@@ -1419,7 +1418,7 @@
         }
     });
     Tuna.prototype.Tremolo = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -1457,7 +1456,7 @@
             value: "Tremolo"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 intensity: {
                     value: 0.3,
@@ -1520,7 +1519,7 @@
         }
     });
     Tuna.prototype.WahWah = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -1558,7 +1557,7 @@
             value: "WahWah"
         },
         defaults: {
-            writable:true,
+            writable: true,
             value: {
                 automode: {
                     value: true,
@@ -1613,7 +1612,7 @@
             },
             set: function (value) {
                 this._automode = value;
-                if(value) {
+                if (value) {
                     this.activateNode.connect(this.envelopeFollower.input);
                     this.envelopeFollower.activate(true);
                 } else {
@@ -1627,14 +1626,14 @@
             value: 0
         },
         setFilterFreq: {
-            value: function() {
-                try{
+            value: function () {
+                try {
                     this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
                     this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
-                } catch(e) {
+                } catch (e) {
                     clearTimeout(this.filterFreqTimeout);
                     //put on the next cycle to let all init properties be set
-                    this.filterFreqTimeout = setTimeout(function() {
+                    this.filterFreqTimeout = setTimeout(function () {
                         this.setFilterFreq();
                     }.bind(this), 0);
                 }
@@ -1705,7 +1704,7 @@
         }
     });
     Tuna.prototype.EnvelopeFollower = function (properties) {
-        if(!properties) {
+        if (!properties) {
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
@@ -1775,7 +1774,7 @@
                 return this._callback;
             },
             set: function (value) {
-                if(typeof value === "function") {
+                if (typeof value === "function") {
                     this._callback = value;
                 } else {
                     console.error("tuna.js: " + this.name + ": Callback must be a function!");
@@ -1793,7 +1792,7 @@
         activate: {
             value: function (doActivate) {
                 this.activated = doActivate;
-                if(doActivate) {
+                if (doActivate) {
                     this.jsNode.connect(userContext.destination);
                     this.jsNode.onaudioprocess = this.returnCompute(this);
                 } else {
@@ -1815,22 +1814,22 @@
                     channels = event.inputBuffer.numberOfChannels,
                     current, chan, rms, i;
                 chan = rms = i = 0;
-                if(channels > 1) { //need to mixdown
-                    for(i = 0; i < count; ++i) {
-                        for(; chan < channels; ++chan) {
+                if (channels > 1) { //need to mixdown
+                    for (i = 0; i < count; ++i) {
+                        for (; chan < channels; ++chan) {
                             current = event.inputBuffer.getChannelData(chan)[i];
                             rms += (current * current) / channels;
                         }
                     }
                 } else {
-                    for(i = 0; i < count; ++i) {
+                    for (i = 0; i < count; ++i) {
                         current = event.inputBuffer.getChannelData(0)[i];
                         rms += (current * current);
                     }
                 }
                 rms = Math.sqrt(rms);
 
-                if(this._envelope < rms) {
+                if (this._envelope < rms) {
                     this._envelope *= this._attackC;
                     this._envelope += (1 - this._attackC) * rms;
                 } else {
@@ -1941,7 +1940,7 @@
         },
         activate: {
             value: function (doActivate) {
-                if(!doActivate) {
+                if (!doActivate) {
                     this.output.disconnect(userContext.destination);
                 } else {
                     this.output.connect(userContext.destination);
@@ -1953,7 +1952,7 @@
                 var that = this;
                 return function () {
                     that._phase += that._phaseInc;
-                    if(that._phase > 2 * Math.PI) {
+                    if (that._phase > 2 * Math.PI) {
                         that._phase = 0;
                     }
                     callback(that._target, that._offset + that._oscillation * Math.sin(that._phase));
@@ -1964,7 +1963,7 @@
     Tuna.toString = Tuna.prototype.toString = function () {
         return "You are running Tuna version " + version + " by Dinahmoe!";
     };
-    if(typeof define === "function") {
+    if (typeof define === "function") {
         define("Tuna", [], function () {
             return Tuna;
         });
