@@ -16,23 +16,9 @@
 */
 //Originally written by Alessandro Saccoia, Chris Coniglio and Oskar Eriksson
 (function (window) {
-    var userContext, userInstance, Tuna = function (context) {
-            if (!window.AudioContext) {
-                window.AudioContext = window.webkitAudioContext;
-            }
-
-            if (!context) {
-                console.log("tuna.js: Missing audio context! Creating a new context for you.");
-                context = window.AudioContext && (new window.AudioContext());
-            }
-            if (!context) {
-                throw new Error("Tuna cannot initialize because this environment does not support web audio.");
-            }
-            connectify(context);
-            userContext = context;
-            userInstance = this;
-        },
-        version = "0.2.1",
+    var userContext,
+        userInstance,
+        version = "0.3.0",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
         pipe = function (param, val) {
@@ -133,6 +119,34 @@
         STRING = "string",
         INT = "int";
 
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = Tuna;
+    } else if (typeof define === "function") {
+        window.define("Tuna", definition);
+    } else {
+        window.Tuna = Tuna;
+    }
+    function definition () {
+        return Tuna;
+    }
+    function Tuna (context) {
+        if (!(this instanceof Tuna)) {
+            return new Tuna(context);
+        }
+        if (!window.AudioContext) {
+            window.AudioContext = window.webkitAudioContext;
+        }
+        if (!context) {
+            console.log("tuna.js: Missing audio context! Creating a new context for you.");
+            context = window.AudioContext && (new window.AudioContext());
+        }
+        if (!context) {
+            throw new Error("Tuna cannot initialize because this environment does not support web audio.");
+        }
+        connectify(context);
+        userContext = context;
+        userInstance = this;
+    }
     function connectify (context) {
         var gain = context.createGain(),
             proto = Object.getPrototypeOf(Object.getPrototypeOf(gain)),
@@ -1963,11 +1977,4 @@
     Tuna.toString = Tuna.prototype.toString = function () {
         return "You are running Tuna version " + version + " by Dinahmoe!";
     };
-    if (typeof define === "function") {
-        define("Tuna", [], function () {
-            return Tuna;
-        });
-    } else {
-        window.Tuna = Tuna;
-    }
 })(this);
