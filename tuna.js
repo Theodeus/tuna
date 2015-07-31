@@ -148,14 +148,20 @@
         userInstance = this;
     }
     function connectify (context) {
+        if(context.__connectified__ === true) return;
+        
         var gain = context.createGain(),
             proto = Object.getPrototypeOf(Object.getPrototypeOf(gain)),
             oconnect = proto.connect;
 
         proto.connect = shimConnect;
+        context.__connectified__ = true;  // Prevent overriding connect more than once
 
-        function shimConnect (node) {
-            oconnect.call(this, Super.isPrototypeOf(node) ? node.input : node);
+        function shimConnect () {
+            var node = Array.prototype.shift.apply(arguments);
+            node = Super.isPrototypeOf ? (Super.isPrototypeOf(node) ? node.input : node) : (node.input || node);
+            Array.prototype.unshift.apply(arguments, node);
+            oconnect.apply(this, arguments);
             return node;
         }
     }
