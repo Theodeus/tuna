@@ -18,7 +18,7 @@
 (function (window) {
     var userContext,
         userInstance,
-        version = "0.3.0",
+        version = "0.3.1",
         set = "setValueAtTime",
         linear = "linearRampToValueAtTime",
         pipe = function (param, val) {
@@ -149,7 +149,7 @@
     }
     function connectify (context) {
         if(context.__connectified__ === true) return;
-        
+
         var gain = context.createGain(),
             proto = Object.getPrototypeOf(Object.getPrototypeOf(gain)),
             oconnect = proto.connect;
@@ -160,7 +160,8 @@
         function shimConnect () {
             var node = Array.prototype.shift.apply(arguments);
             node = Super.isPrototypeOf ? (Super.isPrototypeOf(node) ? node.input : node) : (node.input || node);
-            Array.prototype.unshift.apply(arguments, node);
+            arguments = Array.prototype.slice.call(arguments);
+            arguments.unshift(node);
             oconnect.apply(this, arguments);
             return node;
         }
