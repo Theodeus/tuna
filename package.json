@@ -29,5 +29,9 @@
   "homepage": "https://github.com/Dinahmoe/tuna#readme",
   "devDependencies": {
     "uglify": "^0.1.5"
+  },
+  "dependencies": {
+    "net": "^1.0.2",
+    "tls": "0.0.1"
   }
 }
