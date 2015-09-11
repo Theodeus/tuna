@@ -37,6 +37,7 @@ Effect list:
     <li>Chorus</li>
     <li>Bitcrusher</li>
     <li>Moog Filter</li>
+    <li>Ping Pong Delay</li>
 </ul>
 
 Usage
