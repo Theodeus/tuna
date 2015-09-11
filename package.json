@@ -1,5 +1,5 @@
 {
-  "name": "tuna",
+  "name": "tunajs",
   "version": "0.3.1",
   "description": "Audio effects library for the Web Audio API",
   "main": "tuna.js",
