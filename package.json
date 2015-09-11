@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dinahmoe/tuna.git"
+    "url": "git+https://github.com/Theodeus/tuna.git"
   },
   "keywords": [
     "web audio",
@@ -24,9 +24,9 @@
   "author": "Oskar Eriksson",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Dinahmoe/tuna/issues"
+    "url": "https://github.com/Theodeus/tuna/issues"
   },
-  "homepage": "https://github.com/Dinahmoe/tuna#readme",
+  "homepage": "https://github.com/Theodeus/tuna#readme",
   "devDependencies": {
     "uglify": "^0.1.5"
   }
