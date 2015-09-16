@@ -1,0 +1,6 @@
+{
+    "disallowMixedSpacesAndTabs": true,
+    "validateQuoteMarks": "\"",
+    "disallowMultipleVarDecl": false,
+    "validateIndentation": 4
+}
