@@ -13,13 +13,9 @@
     DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
     OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-//Originally written by Alessandro Saccoia, Chris Coniglio and Oskar Eriksson
 (function(window) {
     var userContext,
         userInstance,
-        version = "0.3.1",
-        set = "setValueAtTime",
-        linear = "linearRampToValueAtTime",
         pipe = function(param, val) {
             param.value = val;
         },
@@ -97,9 +93,9 @@
                     if (param) {
                         if (_is.automatable) {
                             if (!duration) {
-                                method = set;
+                                method = "setValueAtTime";
                             } else {
-                                method = linear;
+                                method = "linearRampToValueAtTime";
                                 param.cancelScheduledValues(start);
                                 param.setValueAtTime(param.value, start);
                             }
@@ -175,9 +171,6 @@
 
     function fmod(x, y) {
         // http://kevin.vanzonneveld.net
-        // +   original by: Onno Marsman
-        // +      input by: Brett Zamir (http://brett-zamir.me)
-        // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
         // *     example 1: fmod(5.7, 1.3);
         // *     returns 1: 0.5
         var tmp, tmp2, p = 0,
@@ -2062,8 +2055,7 @@
         //Set Properties
         this.frequency = initValue(properties.frequency, this.defaults.frequency
             .value);
-        this.offset = initValue(properties.offset, this.defaults.offset
-            .value);
+        this.offset = initValue(properties.offset, this.defaults.offset.value);
         this.oscillation = initValue(properties.oscillation, this.defaults
             .oscillation
             .value);
@@ -2184,7 +2176,6 @@
     });
 
     Tuna.toString = Tuna.prototype.toString = function() {
-        return "You are running Tuna version " + version +
-            " by Dinahmoe!";
+        return "Please visit https://github.com/Theodeus/tuna/wiki for instructions on how to use Tuna.js";
     };
 })(this);
