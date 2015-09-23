@@ -274,7 +274,7 @@
                     type: INT
                 },
                 bypass: {
-                    value: true,
+                    value: false,
                     automatable: false,
                     type: BOOLEAN
                 },
@@ -450,7 +450,7 @@
                     type: FLOAT
                 },
                 bypass: {
-                    value: true,
+                    value: false,
                     automatable: false,
                     type: BOOLEAN
                 }
@@ -584,7 +584,7 @@
                     type: BOOLEAN
                 },
                 bypass: {
-                    value: true,
+                    value: false,
                     automatable: false,
                     type: BOOLEAN
                 }
@@ -988,7 +988,7 @@
                     type: FLOAT
                 },
                 bypass: {
-                    value: true,
+                    value: false,
                     automatable: false,
                     type: BOOLEAN
                 },
