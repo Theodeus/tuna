@@ -13,7 +13,7 @@ describe("In Tuna", function() {
             bitcrusher = new tuna.Bitcrusher();
         });
 
-        it("will will have default values set", function() {
+        it("will have default values set", function() {
             expect(bitcrusher.bits).toEqual(4);
             expect(bitcrusher.normfreq).toBeCloseTo(0.1, 1);
             expect(bitcrusher.bufferSize).toEqual(4096);
@@ -48,7 +48,7 @@ describe("In Tuna", function() {
             chorus = new tuna.Chorus();
         });
 
-        it("will will have default values set", function() {
+        it("will have default values set", function() {
             expect(chorus.rate).toBeCloseTo(1.5, 1);
             expect(chorus.feedback).toBeCloseTo(0.4, 1);
             expect(chorus.delay).toBeCloseTo(0.0002 * (Math.pow(10, 0.0045) * 2), 5);
@@ -88,7 +88,7 @@ describe("In Tuna", function() {
             });
         });
 
-        it("will will have default values set", function() {
+        it("will have default values set", function() {
             expect(delay.cutoff.value).toBeCloseTo(20000, 1);
             expect(delay.delayTime.value).toBeCloseTo(0.1, 1);
             expect(delay.feedback.value).toBeCloseTo(0.45, 2);
@@ -127,7 +127,7 @@ describe("In Tuna", function() {
             filter = new tuna.Filter();
         });
 
-        it("will will have default values set", function() {
+        it("will have default values set", function() {
             expect(filter.frequency.value).toEqual(800);
             expect(filter.Q.value).toEqual(1);
             expect(filter.gain.value).toEqual(0);
