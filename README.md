@@ -32,6 +32,17 @@ Usage
 
 Check the wiki: https://github.com/Theodeus/tuna/wiki
 
+In the wild
+===
+This is an very incomplete list of places where Tuna.js is used.
+
+http://www.jamwithchrome.com/ - Jam With Chrome allows you to jam online with your mates across the globe using an assortment of instruments and effects. There's even a mode for dummies!
+
+http://looplabs.com/beta - Looplabs is a collaborative cloud based music studio that lets anyone, regardless of technical skills or ability, quickly and easily make professional quality music anywhere, anytime and with anyone.
+
+http://www.websynths.com/ - Browser-based microtonal midi instrument
+
+
 Notice
 ===
 Ownership of the tuna repo has been transferred. The old Dinahmoe/tuna repo should be redirected here, but
