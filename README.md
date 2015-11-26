@@ -34,7 +34,7 @@ Check the wiki: https://github.com/Theodeus/tuna/wiki
 
 In the wild
 ===
-This is an very incomplete list of places where Tuna.js is used.
+This is a very incomplete list of places where Tuna.js is used.
 
 http://www.jamwithchrome.com/ - Jam With Chrome allows you to jam online with your mates across the globe using an assortment of instruments and effects. There's even a mode for dummies!
 
