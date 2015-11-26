@@ -57,12 +57,10 @@ describe("In Tuna", function() {
         it("will have passed values set", function() {
             cabinet = new tuna.Cabinet({
                 makeupGain: 5.2,
-                impulsePath: "../impulses/ir_rev_short.wav",
-                bypass: false
+                bypass: true
             });
             expect(cabinet.makeupGain.value).toBeCloseTo(5.2, 1);
-            expect(cabinet.impulsePath).toEqual("../impulses/ir_rev_short.wav");
-            expect(cabinet.bypass).toBeFalsy();
+            expect(cabinet.bypass).toBeTruthy();
         });
 
         it("will be activated", function() {
