@@ -42,6 +42,38 @@ describe("In Tuna", function() {
 
     });
 
+    describe("a Cabinet node", function() {
+        var cabinet;
+
+        beforeEach(function() {
+            cabinet = new tuna.Cabinet();
+        });
+
+        it("will will have default values set", function() {
+            expect(cabinet.makeupGain.value).toEqual(1);
+            expect(cabinet.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            cabinet = new tuna.Cabinet({
+                makeupGain: 5.2,
+                impulsePath: "../impulses/ir_rev_short.wav",
+                bypass: false
+            });
+            expect(cabinet.makeupGain.value).toBeCloseTo(5.2, 1);
+            expect(cabinet.impulsePath).toEqual("../impulses/ir_rev_short.wav");
+            expect(cabinet.bypass).toBeFalsy();
+        });
+
+        it("will be activated", function() {
+            cabinet.activateCallback = jasmine.createSpy("activate_cabinet");
+            cabinet.bypass = true;
+            cabinet.bypass = false;
+            expect(cabinet.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
     describe("a Chorus node", function() {
         var chorus;
 
