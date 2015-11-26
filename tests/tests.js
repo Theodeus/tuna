@@ -153,6 +153,48 @@ describe("In Tuna", function() {
 
     });
 
+    describe("a Convolver node", function() {
+        var convolver;
+
+        beforeEach(function() {
+            convolver = new tuna.Convolver();
+        });
+
+        it("will will have default values set", function() {
+            expect(convolver.highCut.value).toEqual(22050);
+            expect(convolver.lowCut.value).toEqual(20);
+            expect(convolver.wetLevel.value).toEqual(1);
+            expect(convolver.dryLevel.value).toEqual(1);
+            expect(convolver.level.value).toEqual(1);
+            expect(convolver.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            convolver = new tuna.Convolver({
+                highCut: 2001,                         //20 to 22050
+                lowCut: 421,                             //20 to 22050
+                dryLevel: 0.4,                            //0 to 1+
+                wetLevel: 0.5,                            //0 to 1+
+                level: 0.8,                               //0 to 1+, adjusts total output of both wet and dry
+                bypass: true
+            });
+            expect(convolver.highCut.value).toEqual(2001);
+            expect(convolver.lowCut.value).toEqual(421);
+            expect(convolver.wetLevel.value).toBeCloseTo(0.5, 1);
+            expect(convolver.dryLevel.value).toBeCloseTo(0.4, 1);
+            expect(convolver.level.value).toBeCloseTo(0.8, 1);
+            expect(convolver.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            convolver.activateCallback = jasmine.createSpy("activate_convolver");
+            convolver.bypass = true;
+            convolver.bypass = false;
+            expect(convolver.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
     describe("a Filter node", function() {
         var filter;
 
