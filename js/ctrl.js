@@ -114,14 +114,14 @@
             down: function (e) {
                 var P = relMouseCoords(e, this.el);
                 if (P.x < this.half) {
-                //if (isInsideTriangle(this.L.A, this.L.B, this.L.C, P)) {
+                    //if (isInsideTriangle(this.L.A, this.L.B, this.L.C, P)) {
                     this.isDown = "left";
                     this.value--;
                     if (this.value < this.min) {
                         this.value = this.max;
                     }
                 } else {
-                //} else if (isInsideTriangle(this.R.A, this.R.B, this.R.C, P)) {
+                    //} else if (isInsideTriangle(this.R.A, this.R.B, this.R.C, P)) {
                     this.isDown = "right";
                     this.value++;
                     if (this.value > this.max) {
@@ -338,7 +338,7 @@
 })(this, this.document);
 
 CanvasRenderingContext2D.prototype.line = function (x1, y1, x2, y2) {
-    this.lineCap = 'round';
+    this.lineCap = "round";
     this.beginPath();
     this.moveTo(x1, y1);
     this.lineTo(x2, y2);

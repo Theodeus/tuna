@@ -1,8 +1,9 @@
 //Synth Class
 eve.once("load", function () {
+    var synthTypes = ["sine", "square", "sawtooth", "triangle"];
     this.Synth = function Synth (context)  {
         this.context = context;
-        this.output = context.createGainNode();
+        this.output = context.createGain();
     };
     this.Synth.prototype = Object.create(null, {
         gain: {
@@ -16,13 +17,13 @@ eve.once("load", function () {
         makeNote: {
             value: function (midiNote, t, d) {
                 var o = this.context.createOscillator(),
-                    g = this.context.createGainNode();
+                    g = this.context.createGain();
                 o.connect(g);
                 g.connect(this.output);
-                o.type = this.oscType;
+                o.type = synthTypes[this.oscType];
                 o.frequency.value = 440 * Math.pow(2, (midiNote - 69) / 12);
-                o.noteOn(t);
-                o.noteOff(t + d);
+                o.start(t);
+                o.stop(t + d);
                 g.gain.setValueAtTime(0, t);
                 g.gain.linearRampToValueAtTime(0.25, t + 0.005);
                 g.gain.linearRampToValueAtTime(0, t + d - 0.001);

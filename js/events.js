@@ -2,10 +2,10 @@ eve.once("load", function () {
     var demo = this,
         fade = "fade",
         mobile = /Mobile/.test(navigator.userAgent);
-    
+
     function beat (currentBeat, lastBeat, beatTime) {
         var grid = this.ui.grid, note;
-            now = ~~(beatTime * 1000) / 1000 + 0.03;
+        now = ~~(beatTime * 1000) / 1000 + 0.03;
         grid.lightColumn(currentBeat, true);
         grid.lightColumn(lastBeat, false);
         for (var i = 0, ii = grid.rows; i < ii; i++) {
@@ -106,7 +106,7 @@ eve.once("load", function () {
             eve("CONTROL.move", document, e);
             moveThrottle = null;
         }, 10);
-        
+
         if (checkIfApp(e)) {
             return destroyEvent(e);
         }

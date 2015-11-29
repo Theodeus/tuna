@@ -19,7 +19,7 @@ eve.once("load.ui", function () {
             F: skipFill
         },
         filterTypes = ["LOWPASS", "HIGHPASS", "BANDPASS", "LOWSHELF", "HIGHSHELF", "PEAKING", "NOTCH", "ALLPASS"];
-    
+
     demo.ui.ctrls = Object.create(null);
 
     function EffectControl (slot) {
@@ -32,10 +32,10 @@ eve.once("load.ui", function () {
         this.effects = [];
         this.effectDisplays = [];
         for (var i = 0, ii = demo.effectNames.length; i < ii; i++) {
-            if (demo.effectNames[i] === "LFO" || demo.effectNames[i] === "EnvelopeFollower") {
+            if (demo.effectNames[i] === "LFO" || demo.effectNames[i] === "EnvelopeFollower" || demo.effectNames[i] === "toString") {
                 continue;
             }
-            effect = new demo.audio.tuna[demo.effectNames[i]](fakeProps);
+            effect = new demo.audio.tuna[demo.effectNames[i]]();
             effect.defaults = demoDefaults[demo.effectNames[i]];
             controls = makeControls(slot, i, demo.effectNames[i], effect.defaults, this);
             controls.name = demo.effectNames[i];
@@ -43,7 +43,7 @@ eve.once("load.ui", function () {
             this.effectDisplays.push(controls);
             block.appendChild(controls);
         }
-        demo.audio.tuna.connectInOrder(this.effects);
+        this.effects[0].connectInOrder(this.effects);
         this.activate(false);
         document.querySelector("#effects").appendChild(block);
     }
@@ -175,6 +175,9 @@ eve.once("load.ui", function () {
         if (keys.indexOf("bypass") > -1) {
             keys.splice(keys.indexOf("bypass"), 1);
         }
+        // if (keys.indexOf("toString") > -1) {
+        //     keys.splice(keys.indexOf("toString"), 1);
+        // }
         wrapper.classList.add("fx_controls_wrapper");
         if (effectIndex !== slot) {
             wrapper.classList.add("hidden");
@@ -201,11 +204,11 @@ eve.once("load.ui", function () {
                 effectName: name,
                 height: height + "px"
             };
-        
+
         title.innerText = key;
         control.classList.add("knobWrap");
         control.appendChild(title);
-    
+
         switch (defaults[key].type) {
             case "float":
                 makeKnob(data, defaults[key], control, key);
@@ -266,7 +269,7 @@ eve.once("load.ui", function () {
         } else {
             textBox.value = defaults.value;
         }
-        
+
         textBox.disabled = "true";
         textBox.classList.add("effect_value_display");
 

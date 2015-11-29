@@ -43,7 +43,7 @@ eve.on("load", function () {
         var kick = this.context.createBufferSource(),
             buffer = this.context.createBuffer(1, 100, 44100);
         kick.buffer = buffer;
-        kick.noteOn(0);
+        kick.start(0);
         return this;
     };
     function dispatchLatent() {

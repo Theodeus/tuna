@@ -3,7 +3,36 @@
     BOOLEAN = "boolean",
     STRING = "string",
     INT = "int",
+
     demoDefaults = {
+        Bitcrusher: {
+            bits: {
+                value: 4,
+                min: 1,
+                max: 16,
+                automatable: false,
+                type: INT
+            },
+            bufferSize: {
+                value: 4096,
+                min: 256,
+                max: 16384,
+                automatable: false,
+                type: INT
+            },
+            bypass: {
+                value: false,
+                automatable: false,
+                type: BOOLEAN
+            },
+            normfreq: {
+                value: 0.1,
+                min: 0.0001,
+                max: 1.0,
+                automatable: false,
+                type: FLOAT
+            }
+        },
         Filter: {
             frequency: {
                 value: 800,
@@ -213,6 +242,64 @@
                 min: 0,
                 max: 1,
                 automatable: true,
+                type: FLOAT
+            }
+        },
+        MoogFilter: {
+            bufferSize: {
+                value: 4096,
+                min: 256,
+                max: 16384,
+                automatable: false,
+                type: INT
+            },
+            bypass: {
+                value: false,
+                automatable: false,
+                type: BOOLEAN
+            },
+            cutoff: {
+                value: 0.065,
+                min: 0.0001,
+                max: 1.0,
+                automatable: false,
+                type: FLOAT
+            },
+            resonance: {
+                value: 3.5,
+                min: 0.0,
+                max: 4.0,
+                automatable: false,
+                type: FLOAT
+            }
+        },
+        PingPongDelay: {
+            delayTimeLeft: {
+                value: 200,
+                min: 1,
+                max: 10000,
+                automatable: false,
+                type: INT
+            },
+            delayTimeRight: {
+                value: 400,
+                min: 1,
+                max: 10000,
+                automatable: false,
+                type: INT
+            },
+            feedback: {
+                value: 0.3,
+                min: 0,
+                max: 1,
+                automatable: false,
+                type: FLOAT
+            },
+            wetLevel: {
+                value: 0.5,
+                min: 0,
+                max: 1,
+                automatable: false,
                 type: FLOAT
             }
         },

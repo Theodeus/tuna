@@ -19,7 +19,7 @@
     }
     function Demo () {
         this.audio = Object.create(null);
-        this.context = new webkitAudioContext();
+        this.context = new AudioContext() || new webkitAudioContext();
         this.audio.tuna = new Tuna(this.context);
         this.effectNames = Object.keys(Tuna.prototype);
         this.touchMap = {

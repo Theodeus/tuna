@@ -314,7 +314,7 @@
         }
         this.input = userContext.createGain();
         this.activateNode = userContext.createGain();
-        this.convolver = this.newConvolver(properties.impulsePath || "../impulses/impulse_guitar.wav");
+        this.convolver = this.newConvolver(properties.impulsePath || "impulses/impulse_guitar.wav");
         this.makeupNode = userContext.createGain();
         this.output = userContext.createGain();
 
@@ -683,7 +683,7 @@
         this.dryLevel = initValue(properties.dryLevel, this.defaults.dryLevel.value);
         this.wetLevel = initValue(properties.wetLevel, this.defaults.wetLevel.value);
         this.highCut = properties.highCut || this.defaults.highCut.value;
-        this.buffer = properties.impulse || "../impulses/ir_rev_short.wav";
+        this.buffer = properties.impulse || "impulses/ir_rev_short.wav";
         this.lowCut = properties.lowCut || this.defaults.lowCut.value;
         this.level = initValue(properties.level, this.defaults.level.value);
         this.filterHigh.type = "lowpass";
@@ -1284,7 +1284,7 @@
                         ws_table[i] = Math.round(x * bits) / bits;
                     }
                 }
-            }
+            ]
         },
         intensity: {
             enumerable: true,
