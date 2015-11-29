@@ -1,0 +1,33 @@
+{
+  "name": "tunajs",
+  "version": "0.4.2",
+  "description": "Audio effects library for the Web Audio API",
+  "main": "tuna.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "uglify": "uglify -s tuna.js -o tuna-min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Theodeus/tuna.git"
+  },
+  "keywords": [
+    "web audio",
+    "audio effects",
+    "tuna",
+    "tunajs",
+    "tuna.js"
+  ],
+  "author": "Oskar Eriksson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Theodeus/tuna/issues"
+  },
+  "homepage": "https://github.com/Theodeus/tuna#readme",
+  "devDependencies": {
+    "uglify": "^0.1.5"
+  }
+}

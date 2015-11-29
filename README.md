@@ -1,13 +1,11 @@
-OBS. tuna.js is currently very much beta.
-
 Latest news
 ====
-<strong>tuna.js</strong> is released! We'll be adding more effects and features during the coming weeks, so make sure to follow us at <a href="https://twitter.com/DinahmoeSTHLM">@DinahmoeSTHLM</a> to not miss out. Feel free to create your own effects and give us a pull request!
+Moog style filter, Ping Pong Delay and Bitcrusher added! Also, make sure you update your filter nodes to use strings instead of integers for filter type!
 
 tuna
 ====
 
-An audio effects library for the Web Audio API. Created by <a href="http://www.dinahmoe.com">DinahMoe</a>
+An audio effects library for the Web Audio API. Concieved at <a href="http://www.dinahmoe.com">DinahMoe</a>, open source since 2012.
 
 <img src="https://i.chzbgr.com/completestore/12/9/4/rjttPiC7WE6S4Bi22aYp1A2.jpg" alt="tuna, tuna, tuna"/>
 
@@ -21,164 +19,39 @@ Effect list:
     <li>Convolver (Reverb)</li>
     <li>Compressor</li>
     <li>WahWah</li>
-    <br />
-    Coming soon:
     <li>Tremolo</li>
     <li>Phaser</li>
     <li>Chorus</li>
-    <li>And then some...</li>
+    <li>Bitcrusher</li>
+    <li>Moog Filter</li>
+    <li>Ping Pong Delay</li>
 </ul>
 
 Usage
 ====
 
-Start by creating a new Tuna object like so:
+Check the wiki: https://github.com/Theodeus/tuna/wiki
 
-<pre>
-var context = new webkitAudioContext();
-var tuna = new Tuna(context);
-</pre>
+In the wild
+===
+This is a very incomplete list of places where Tuna.js is used.
 
-You need to pass the audio context you're using in your application. Tuna will be using it to create its effects.
+http://www.jamwithchrome.com/ - Jam With Chrome allows you to jam online with your mates across the globe using an assortment of instruments and effects. There's even a mode for dummies!
 
-You create a new tuna node as such:
+http://looplabs.com/beta - Looplabs is a collaborative cloud based music studio that lets anyone, regardless of technical skills or ability, quickly and easily make professional quality music anywhere, anytime and with anyone.
 
-<pre>
-var chorus = new tuna.Chorus({
-                 rate: 1.5,
-                 feedback: 0.2,
-                 delay: 0.0045,
-                 bypass: 0
-             });
-</pre>
-You can then connect the tuna node to native Web Audio nodes by doing:
-<pre>
-nativeNode.connect(chorus.input);
-chorus.connect(anotherNativeNode);
-</pre>
-or to other tuna nodes by doing:
-<pre>
-tunaNode.connect(chorus.input);
-chorus.connect(anotherTunaNode.input);
-</pre>
-All tuna nodes are connected TO by using the nodes input property, but connecting FROM the tuna node works as it does with ordinary native AudioNodes.
+http://www.websynths.com/ - Browser-based microtonal midi instrument
 
 
-The nodes
-====
+Notice
+===
+Ownership of the tuna repo has been transferred. The old Dinahmoe/tuna repo should be redirected here, but
+we recommend updating your remotes using:
 
-A basic chorus effect.
-<pre>
-var chorus = new tuna.Chorus({
-                 rate: 1.5,         //0.01 to 8+
-                 feedback: 0.2,     //0 to 1+
-                 delay: 0.0045,     //0 to 1
-                 bypass: 0          //the value 1 starts the effect as bypassed, 0 or 1
-             });
-</pre>
-
-A delay effect with feedback and a highpass filter applied to the delayed signal.
-<pre>
-var delay = new tuna.Delay({
-                feedback: 0.45,    //0 to 1+
-                delayTime: 150,    //how many milliseconds should the wet signal be delayed? 
-                wetLevel: 0.25,    //0 to 1+
-                dryLevel: 1,       //0 to 1+
-                cutoff: 20,        //cutoff frequency of the built in highpass-filter. 20 to 22050
-                bypass: 0
-            });
-</pre>
-
-A basic phaser effect.
-<pre>
-var phaser = new tuna.Phaser({
-                 rate: 1.2,                     //0.01 to 8 is a decent range, but higher values are possible
-                 depth: 0.3,                    //0 to 1
-                 feedback: 0.2,                 //0 to 1+
-                 stereoPhase: 30,               //0 to 180
-                 baseModulationFrequency: 700,  //500 to 1500
-                 bypass: 0
-             });
-</pre>
-
-A basic overdrive effect.
-<pre>
-var overdrive = new tuna.Overdrive({
-                    outputGain: 0.5,         //0 to 1+
-                    drive: 0.7,              //0 to 1
-                    curveAmount: 1,          //0 to 1
-                    algorithmIndex: 0,       //0 to 5, selects one of our drive algorithms
-                    bypass: 0
-                });
-</pre>
-
-A compressor with the option to use automatic makeup gain.
-<pre>
-var compressor = new tuna.Compressor({
-                     threshold: 0.5,    //-100 to 0
-                     makeupGain: 1,     //0 and up
-                     attack: 1,         //0 to 1000
-                     release: 0,        //0 to 3000
-                     ratio: 4,          //1 to 20
-                     knee: 5,           //0 to 40
-                     automakeup: true,  //true/false
-                     bypass: 0
-                 });
-</pre>
-
-A convolver with high- and lowcut. You can find a lot of impulse resonses <a href="http://chromium.googlecode.com/svn/trunk/samples/audio/impulse-responses/">here</a>
-<pre>
-var convolver = new tuna.Convolver({
-                    highCut: 22050,                         //20 to 22050
-                    lowCut: 20,                             //20 to 22050
-                    dryLevel: 1,                            //0 to 1+
-                    wetLevel: 1,                            //0 to 1+
-                    level: 1,                               //0 to 1+, adjusts total output of both wet and dry
-                    impulse: "impulses/impulse_rev.wav",    //the path to your impulse response
-                    bypass: 0
-                });
-</pre>
-
-A basic filter.
-<pre>
-var filter = new tuna.Filter({
-                 frequency: 20,         //20 to 22050
-                 Q: 1,                  //0.001 to 100
-                 gain: 0,               //-40 to 40
-                 bypass: 1,             //0 to 1+
-                 filterType: 0,         //0 to 7, corresponds to the filter types in the native filter node: lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass in that order
-                 bypass: 0
-             });
-</pre>
-
-A cabinet/speaker emulator.
-<pre>
-var cabinet = new tuna.Cabinet({
-                  makeupGain: 1,                                 //0 to 20
-                  impulsePath: "impulses/impulse_guitar.wav",    //path to your speaker impulse
-                  bypass: 0
-              });
-</pre>
-
-A basic tremolo.
-<pre>
-var tremolo = new tuna.Tremolo({
-                  intensity: 0.3,    //0 to 1
-                  rate: 0.1,         //0.001 to 8
-                  stereoPhase: 0,    //0 to 180
-                  bypass: 0
-              });
-</pre>
-
-A wahwah with an auto wah option.
-<pre>
-var wahwah = new tuna.WahWah({
-                 automode: true,                //true/false
-                 baseFrequency: 0.5,            //0 to 1
-                 excursionOctaves: 2,           //1 to 6
-                 sweep: 0.2,                    //0 to 1
-                 resonance: 10,                 //1 to 100
-                 sensitivity: 0.5,              //-1 to 1
-                 bypass: 0
-             });
-</pre>
+```bash
+git remote set-url origin https://github.com/Theodeus/tuna.git
+```
+or, if you use ssh:
+```bash
+git remote set-url origin git@github.com:Theodeus/tuna.git
+```

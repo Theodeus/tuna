@@ -1,0 +1,22 @@
+{
+  "name": "tests",
+  "main": "tests.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Dinahmoe/tuna",
+  "description": "Tuna.js tests",
+  "authors": [
+    "Oskar Eriksson",
+    "Nicola Larosa"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jasmine": "~2.3.4"
+  }
+}
