@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/Theodeus/tuna#readme",
   "devDependencies": {
+    "eslint": "^1.10.3",
     "uglify": "^0.1.5"
   }
 }

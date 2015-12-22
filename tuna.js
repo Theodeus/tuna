@@ -13,8 +13,9 @@
     DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
     OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+/*global module*/
 (function(window) {
-
+    
     var userContext,
         userInstance,
         pipe = function(param, val) {
@@ -760,7 +761,7 @@
         },
         dryLevel: {
             get: function() {
-                return this.dry.gain
+                return this.dry.gain;
             },
             set: function(value) {
                 this.dry.gain.value = value;
@@ -1037,7 +1038,7 @@
 
         var in1, in2, in3, in4, out1, out2, out3, out4;
         in1 = in2 = in3 = in4 = out1 = out2 = out3 = out4 = 0.0;
-        var input, output, f, fb, i, length;
+        var input, output, f, fb, i, length, inputFactor;
         this.processor.onaudioprocess = function(e) {
             input = e.inputBuffer.getChannelData(0),
                 output = e.outputBuffer.getChannelData(0),
