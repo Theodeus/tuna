@@ -42,6 +42,8 @@ http://looplabs.com/beta - Looplabs is a collaborative cloud based music studio 
 
 http://www.websynths.com/ - Browser-based microtonal midi instrument
 
+http://bapjs.org/ - Beat making toolkit
+
 
 Notice
 ===
