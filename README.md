@@ -43,17 +43,3 @@ http://looplabs.com/beta - Looplabs is a collaborative cloud based music studio 
 http://www.websynths.com/ - Browser-based microtonal midi instrument
 
 http://bapjs.org/ - Beat making toolkit
-
-
-Notice
-===
-Ownership of the tuna repo has been transferred. The old Dinahmoe/tuna repo should be redirected here, but
-we recommend updating your remotes using:
-
-```bash
-git remote set-url origin https://github.com/Theodeus/tuna.git
-```
-or, if you use ssh:
-```bash
-git remote set-url origin git@github.com:Theodeus/tuna.git
-```
