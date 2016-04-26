@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "uglify": "uglify -s tuna.js -o tuna-min.js"
+    "uglify": "uglify -s tuna.js -o tuna-min.js",
+    "patch": "npm run uglify && npm version patch && npm publish"
   },
   "repository": {
     "type": "git",
