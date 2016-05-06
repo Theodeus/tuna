@@ -32,6 +32,8 @@ Usage
 
 Check the wiki: https://github.com/Theodeus/tuna/wiki
 
+Or a bare-bones example: http://codepen.io/Theodeus/pen/WbmXgV?editors=0010
+
 In the wild
 ===
 This is a very incomplete list of places where Tuna.js is used.
