@@ -32,7 +32,7 @@ Usage
 
 Check the wiki: https://github.com/Theodeus/tuna/wiki
 
-Or a bare-bones example: http://codepen.io/Theodeus/pen/WbmXgV?editors=0010
+Or a live example: http://codepen.io/Theodeus/pen/oxKjmy?editors=0010
 
 In the wild
 ===
