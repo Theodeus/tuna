@@ -1,11 +1,7 @@
-Latest news
-====
-Moog style filter, Ping Pong Delay and Bitcrusher added! Also, make sure you update your filter nodes to use strings instead of integers for filter type!
-
 tuna
 ====
 
-An audio effects library for the Web Audio API. Concieved at <a href="http://www.dinahmoe.com">DinahMoe</a>, open source since 2012.
+An audio effects library for the Web Audio API. 
 
 <img src="https://i.chzbgr.com/completestore/12/9/4/rjttPiC7WE6S4Bi22aYp1A2.jpg" alt="tuna, tuna, tuna"/>
 
