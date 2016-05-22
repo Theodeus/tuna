@@ -15,7 +15,7 @@
 */
 /*global module*/
 (function(window) {
-    
+
     var userContext,
         userInstance,
         pipe = function(param, val) {
@@ -513,9 +513,9 @@
         this.makeupNode.connect(this.output);
 
         this.automakeup = initValue(properties.automakeup, this.defaults.automakeup.value);
-        this.makeupGain = properties.makeupGain || this.defaults.makeupGain.value;
+        this.makeupGain = initValue(properties.makeupGain, this.defaults.makeupGain.value);
         this.threshold = initValue(properties.threshold, this.defaults.threshold.value);
-        this.release = properties.release || this.defaults.release.value;
+        this.release = initValue(properties.release, this.defaults.release.value);
         this.attack = initValue(properties.attack, this.defaults.attack.value);
         this.ratio = properties.ratio || this.defaults.ratio.value;
         this.knee = initValue(properties.knee, this.defaults.knee.value);
@@ -644,7 +644,7 @@
                 return this.compNode.release;
             },
             set: function(value) {
-                this.compNode.release = value / 1000;
+                this.compNode.release.value = value / 1000;
             }
         },
         makeupGain: {
