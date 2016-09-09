@@ -36,10 +36,12 @@ This is a very incomplete list of places where Tuna.js is used.
 
 http://www.jamwithchrome.com/ - Jam With Chrome allows you to jam online with your mates across the globe using an assortment of instruments and effects. There's even a mode for dummies!
 
+https://github.com/selfrefactor/tuna-player - A React.js/Electron wrapper around Tuna.js!
+
+https://slasher.chillertv.com/ - interactive experience for the TV show Slasher
+
 http://looplabs.com/beta - Looplabs is a collaborative cloud based music studio that lets anyone, regardless of technical skills or ability, quickly and easily make professional quality music anywhere, anytime and with anyone.
 
 http://www.websynths.com/ - Browser-based microtonal midi instrument
 
 http://bapjs.org/ - Beat making toolkit
-
-https://slasher.chillertv.com/ - interactive experience for the TV show Slasher
