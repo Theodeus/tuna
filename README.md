@@ -1,7 +1,7 @@
 tuna
 ====
 
-An audio effects library for the Web Audio API. 
+An audio effects library for the Web Audio API.
 
 <img src="https://i.chzbgr.com/completestore/12/9/4/rjttPiC7WE6S4Bi22aYp1A2.jpg" alt="tuna, tuna, tuna"/>
 
@@ -43,5 +43,7 @@ https://slasher.chillertv.com/ - interactive experience for the TV show Slasher
 http://looplabs.com/beta - Looplabs is a collaborative cloud based music studio that lets anyone, regardless of technical skills or ability, quickly and easily make professional quality music anywhere, anytime and with anyone.
 
 http://www.websynths.com/ - Browser-based microtonal midi instrument
+
+https://www.npmjs.com/package/react-music - Make music with React!
 
 http://bapjs.org/ - Beat making toolkit
