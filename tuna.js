@@ -1640,7 +1640,7 @@
         stereoPhase: {
             enumerable: true,
             get: function() {
-                return this._rate;
+                return this._stereoPhase;
             },
             set: function(value) {
                 this._stereoPhase = value;
