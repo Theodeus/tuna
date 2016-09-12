@@ -1458,8 +1458,8 @@
         this.stereoToMonoMix = userContext.createGain();
         this.feedbackLevel = userContext.createGain();
         this.output = userContext.createGain();
-        this.delayLeft = userContext.createDelay();
-        this.delayRight = userContext.createDelay();
+        this.delayLeft = userContext.createDelay(10);
+        this.delayRight = userContext.createDelay(10);
 
         this.activateNode = userContext.createGain();
         this.splitter = userContext.createChannelSplitter(2);
