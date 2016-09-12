@@ -812,7 +812,7 @@
         this.dry = userContext.createGain();
         this.wet = userContext.createGain();
         this.filter = userContext.createBiquadFilter();
-        this.delay = userContext.createDelay();
+        this.delay = userContext.createDelay(10);
         this.feedbackNode = userContext.createGain();
         this.output = userContext.createGain();
 
@@ -1761,8 +1761,8 @@
         setFilterFreq: {
             value: function() {
                 try {
-                    this.filterBp.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
-                    this.filterPeaking.frequency.value = this._baseFrequency + this._excursionFrequency * this._sweep;
+                    this.filterBp.frequency.value = Math.min(22050, this._baseFrequency + this._excursionFrequency * this._sweep);
+                    this.filterPeaking.frequency.value = Math.min(22050, this._baseFrequency + this._excursionFrequency * this._sweep);
                 } catch (e) {
                     clearTimeout(this.filterFreqTimeout);
                     //put on the next cycle to let all init properties be set
@@ -1788,8 +1788,7 @@
                 return this._baseFrequency;
             },
             set: function(value) {
-                this._baseFrequency = 50 * Math.pow(10, value *
-                    2);
+                this._baseFrequency = 50 * Math.pow(10, value * 2);
                 this._excursionFrequency = Math.min(userContext.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves));
                 this.setFilterFreq();
             }
