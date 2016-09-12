@@ -1,6 +1,6 @@
 {
   "name": "tunajs",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "Audio effects library for the Web Audio API",
   "main": "tuna.js",
   "directories": {
