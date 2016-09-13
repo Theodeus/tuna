@@ -14,7 +14,7 @@
     OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 /*global module*/
-(function(window) {
+(function() {
 
     var userContext,
         userInstance,
@@ -2098,4 +2098,4 @@
     Tuna.toString = Tuna.prototype.toString = function() {
         return "Please visit https://github.com/Theodeus/tuna/wiki for instructions on how to use Tuna.js";
     };
-})(this);
+})();
