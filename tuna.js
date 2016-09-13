@@ -132,6 +132,9 @@
         if (!(this instanceof Tuna)) {
             return new Tuna(context);
         }
+
+        var window = window || {};
+
         if (!window.AudioContext) {
             window.AudioContext = window.webkitAudioContext;
         }
