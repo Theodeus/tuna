@@ -133,14 +133,14 @@
             return new Tuna(context);
         }
 
-        var window = window || {};
+        var _window = typeof window === 'undefined' ? {} : window;
 
-        if (!window.AudioContext) {
-            window.AudioContext = window.webkitAudioContext;
+        if (!_window.AudioContext) {
+            _window.AudioContext = _window.webkitAudioContext;
         }
         if (!context) {
             console.log("tuna.js: Missing audio context! Creating a new context for you.");
-            context = window.AudioContext && (new window.AudioContext());
+            context = _window.AudioContext && (new _window.AudioContext());
         }
         if (!context) {
             throw new Error("Tuna cannot initialize because this environment does not support web audio.");
