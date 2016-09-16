@@ -1734,11 +1734,6 @@
                 }
             }
         },
-        activateCallback: {
-            value: function(value) {
-                this.automode = value;
-            }
-        },
         automode: {
             get: function() {
                 return this._automode;
