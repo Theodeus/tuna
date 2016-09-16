@@ -233,4 +233,33 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a Gain node", function() {
+        var gain;
+
+        beforeEach(function() {
+            gain = new tuna.Gain();
+        });
+
+        it("will have default values set", function() {
+            expect(gain.gain.value).toEqual(1);
+            expect(gain.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            gain = new tuna.Gain({
+                gain: 3,
+                bypass: true
+            });
+            expect(gain.gain.value).toEqual(3);
+            expect(gain.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            gain.activateCallback = jasmine.createSpy();
+            gain.bypass = true;
+            gain.bypass = false;
+            expect(gain.activateCallback).toHaveBeenCalled();
+        })
+    })
 });

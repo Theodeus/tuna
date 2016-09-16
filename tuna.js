@@ -1020,6 +1020,52 @@
         }
     });
 
+    Tuna.prototype.Gain = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+
+        this.input = userContext.createGain();
+        this.activateNode = userContext.createGain();
+        this.gainNode = userContext.createGain();
+        this.output = userContext.createGain();
+
+        this.activateNode.connect(this.gainNode);
+        this.gainNode.connect(this.output);
+
+        this.gain = initValue(properties.gain, this.defaults.gain.value);
+        this.bypass = properties.bypass || false;
+    };
+    Tuna.prototype.Gain.prototype = Object.create(Super, {
+        name: {
+            value: "Gain"
+        },
+        defaults: {
+            writable: true,
+            value: {
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+                gain: {
+                    value: 1.0,
+                    automatable: true,
+                    type: FLOAT
+                }
+            }
+        },
+        gain: {
+            enumerable: true,
+            get: function() {
+                return this.gainNode.gain;
+            },
+            set: function(value) {
+                this.gainNode.gain.value = value;
+            }
+        }
+    });
+
     Tuna.prototype.MoogFilter = function(properties) {
         if (!properties) {
             properties = this.getDefaults();
