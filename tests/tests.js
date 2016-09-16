@@ -286,4 +286,40 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a MoogFilter node", function() {
+        var filter;
+
+        beforeEach(function() {
+            filter = new tuna.MoogFilter();
+        });
+
+        it("will have default values set", function() {
+            expect(filter.bufferSize).toEqual(4096);
+            expect(filter.processor.cutoff).toEqual(0.065);
+            expect(filter.processor.resonance).toEqual(3.5);
+            expect(filter.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            filter = new tuna.MoogFilter({
+                bufferSize: 256,
+                cutoff: 0.110,
+                resonance: 2.5,
+                bypass: true
+            });
+            expect(filter.bufferSize).toEqual(256);
+            expect(filter.processor.cutoff).toEqual(0.110);
+            expect(filter.processor.resonance).toEqual(2.5);
+            expect(filter.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            filter.activateCallback = jasmine.createSpy();
+            filter.bypass = true;
+            filter.bypass = false;
+            expect(filter.activateCallback).toHaveBeenCalled();
+        });
+
+    });
 });
