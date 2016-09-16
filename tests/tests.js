@@ -403,4 +403,40 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a Tremlo node", function() {
+        var tremolo;
+
+        beforeEach(function() {
+            tremolo = new tuna.Tremolo();
+        });
+
+        it("will have default values set", function() {
+            expect(tremolo.intensity).toEqual(0.3);
+            expect(tremolo.stereoPhase).toEqual(0);
+            expect(tremolo.rate).toEqual(5);
+            expect(tremolo.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            tremolo = new tuna.Tremolo({
+                intensity: 0.5,
+                stereoPhase: 90,
+                rate: 8,
+                bypass: true
+            });
+            expect(tremolo.intensity).toEqual(0.5);
+            expect(tremolo.stereoPhase).toEqual(90);
+            expect(tremolo.rate).toEqual(8);
+            expect(tremolo.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            tremolo.activateCallback = jasmine.createSpy();
+            tremolo.bypass = true;
+            tremolo.bypass = false;
+            expect(tremolo.activateCallback).toHaveBeenCalled();
+        });
+
+    });
 });
