@@ -248,6 +248,39 @@ describe("In Tuna", function() {
 
     });
 
+    describe("a EnvelopeFollower node", function() {
+        var envelope;
+
+        beforeEach(function() {
+            envelope = new tuna.EnvelopeFollower();
+        });
+
+        it("will have default values set", function() {
+            expect(envelope.attackTime).toEqual(0.003);
+            expect(envelope.releaseTime).toEqual(0.5);
+            expect(envelope.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            envelope = new tuna.EnvelopeFollower({
+                attackTime: 0.008,
+                releaseTime: 0.4,
+                bypass: true
+            });
+            expect(envelope.attackTime).toEqual(0.008);
+            expect(envelope.releaseTime).toEqual(0.4);
+            expect(envelope.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            envelope.activateCallback = jasmine.createSpy();
+            envelope.bypass = true;
+            envelope.bypass = false;
+            expect(envelope.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
     describe("a Filter node", function() {
         var filter;
 
