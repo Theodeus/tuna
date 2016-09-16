@@ -404,7 +404,7 @@ describe("In Tuna", function() {
 
     });
 
-    describe("a Tremlo node", function() {
+    describe("a Tremolo node", function() {
         var tremolo;
 
         beforeEach(function() {
