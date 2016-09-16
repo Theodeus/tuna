@@ -364,4 +364,43 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a PingPongDelay node", function() {
+        var delay;
+
+        beforeEach(function() {
+            delay = new tuna.PingPongDelay();
+        });
+
+        it("will have default values set", function() {
+            expect(delay.delayTimeLeft).toEqual(200);
+            expect(delay.delayTimeRight).toEqual(400);
+            expect(delay.feedbackLevel.gain.value).toBeCloseTo(0.3, 2);
+            expect(delay.wetLevel.gain.value).toBeCloseTo(0.5, 2);
+            expect(delay.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            delay = new tuna.PingPongDelay({
+                delayTimeLeft: 210,
+                delayTimeRight: 410,
+                feedback: 0.5,
+                wetLevel: 0.8,
+                bypass: true
+            });
+            expect(delay.delayTimeLeft).toEqual(210);
+            expect(delay.delayTimeRight).toEqual(410);
+            expect(delay.feedbackLevel.gain.value).toBeCloseTo(0.5, 2);
+            expect(delay.wetLevel.gain.value).toBeCloseTo(0.8, 2);
+            expect(delay.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            delay.activateCallback = jasmine.createSpy();
+            delay.bypass = true;
+            delay.bypass = false;
+            expect(delay.activateCallback).toHaveBeenCalled();
+        });
+
+    });
 });
