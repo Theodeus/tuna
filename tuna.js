@@ -1846,6 +1846,8 @@
         this._envelope = 0;
         this.target = properties.target || {};
         this.callback = properties.callback || function() {};
+
+        this.bypass = properties.bypass || false;
     };
     Tuna.prototype.EnvelopeFollower.prototype = Object.create(Super, {
         name: {
@@ -1927,6 +1929,9 @@
                 } else {
                     this.jsNode.disconnect();
                     this.jsNode.onaudioprocess = null;
+                }
+                if (this.activateCallback) {
+                    this.activateCallback(doActivate);
                 }
             }
         },
