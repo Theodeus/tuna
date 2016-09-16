@@ -111,6 +111,59 @@ describe("In Tuna", function() {
 
     });
 
+    describe("a Compressor node", function() {
+        var compressor;
+
+        beforeEach(function() {
+            compressor = new tuna.Compressor();
+        });
+
+        it("will have default values set", function() {
+            expect(compressor.threshold.value).toEqual(-20);
+            expect(compressor.release.value).toEqual(250 / 1000);
+            expect(compressor.makeupGain.value).toBeCloseTo(1.12, 2);
+            expect(compressor.attack.value).toBeCloseTo(1 / 1000, 2);
+            expect(compressor.ratio.value).toEqual(4);
+            expect(compressor.knee.value).toEqual(5);
+            expect(compressor.automakeup).toBeFalsy();
+            expect(compressor.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            compressor = new tuna.Compressor({
+                threshold: -35,
+                release: 200,
+                makeupGain: 2.5,
+                attack: 2,
+                ratio: 3,
+                knee: 4,
+                bypass: true,
+            })
+            expect(compressor.threshold.value).toEqual(-35);
+            expect(compressor.release.value).toBeCloseTo(200 / 1000, 3);
+            expect(compressor.makeupGain.value).toBeCloseTo(1.33, 2);
+            expect(compressor.attack.value).toBeCloseTo(2 / 1000, 3);
+            expect(compressor.ratio.value).toEqual(3);
+            expect(compressor.knee.value).toEqual(4);
+            expect(compressor.bypass).toBeTruthy();
+
+            // automakeup makes threshold, ratio and knee all change makeupGain,
+            // hence testing it down here
+            compressor = new tuna.Compressor({
+                automakeup: true,
+            });
+            expect(compressor.automakeup).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            compressor.activateCallback = jasmine.createSpy("activate_compressor");
+            compressor.bypass = true;
+            compressor.bypass = false;
+            expect(compressor.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
     describe("a Delay node", function() {
         var delay;
 
