@@ -439,4 +439,49 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a WahWah node", function() {
+        var wahwah;
+
+        beforeEach(function() {
+            wahwah = new tuna.WahWah();
+        });
+
+        it("will have default values set", function() {
+            expect(wahwah.automode).toBeTruthy();
+            expect(wahwah.baseFrequency).toEqual(500);
+            expect(wahwah.excursionOctaves).toEqual(2);
+            expect(wahwah.sweep).toBeCloseTo(0.0062, 4);
+            expect(wahwah.resonance).toEqual(10);
+            expect(wahwah.sensitivity).toBeCloseTo(3.16, 2);
+            expect(wahwah.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            wahwah = new tuna.WahWah({
+                automode: false,
+                baseFrequency: 0.6,
+                excursionOctaves: 3,
+                sweep: 0.3,
+                resonance: 11,
+                sensitivity: 0.6,
+                bypass: true
+            });
+            expect(wahwah.automode).toBeFalsy();
+            expect(wahwah.baseFrequency).toBeCloseTo(792.45, 2);
+            expect(wahwah.excursionOctaves).toEqual(3);
+            expect(wahwah.sweep).toBeCloseTo(0.0083, 4);
+            expect(wahwah.resonance).toEqual(11);
+            expect(wahwah.sensitivity).toBeCloseTo(3.98, 2);
+            expect(wahwah.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            wahwah.activateCallback = jasmine.createSpy();
+            wahwah.bypass = true;
+            wahwah.bypass = false;
+            expect(wahwah.activateCallback).toHaveBeenCalled();
+        });
+
+    });
 });
