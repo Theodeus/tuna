@@ -1674,7 +1674,7 @@
 
         //Set Properties
         this.init();
-        this.automode = initValue(properties.enableAutoMode, this.defaults.automode.value);
+        this.automode = initValue(properties.automode, this.defaults.automode.value);
         this.resonance = properties.resonance || this.defaults.resonance.value;
         this.sensitivity = initValue(properties.sensitivity, this.defaults.sensitivity.value);
         this.baseFrequency = initValue(properties.baseFrequency, this.defaults.baseFrequency.value);
