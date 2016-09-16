@@ -320,6 +320,45 @@ describe("In Tuna", function() {
 
     });
 
+    describe("an LFO node", function() {
+        var lfo;
+
+        beforeEach(function() {
+            lfo = new tuna.LFO();
+        });
+
+        it("will have default values set", function() {
+            expect(lfo.frequency).toEqual(1);
+            expect(lfo.offset).toEqual(0.85);
+            expect(lfo.oscillation).toEqual(0.3);
+            expect(lfo.phase).toEqual(0);
+            expect(lfo.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            lfo = new tuna.LFO({
+                frequency: 0.8,
+                offset: 0.6,
+                oscillation: 0.4,
+                phase: 0.5,
+                bypass: true
+            });
+            expect(lfo.frequency).toEqual(0.8);
+            expect(lfo.offset).toEqual(0.6);
+            expect(lfo.oscillation).toEqual(0.4);
+            expect(lfo.phase).toEqual(0.5);
+            expect(lfo.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            lfo.activateCallback = jasmine.createSpy();
+            lfo.bypass = true;
+            lfo.bypass = false;
+            expect(lfo.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
     describe("a MoogFilter node", function() {
         var filter;
 
