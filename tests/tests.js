@@ -322,4 +322,46 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a Phaser node", function() {
+        var phaser;
+
+        beforeEach(function() {
+            phaser = new tuna.Phaser();
+        });
+
+        it("will have default values set", function() {
+            expect(phaser.rate).toEqual(0.1);
+            expect(phaser.depth).toEqual(0.6);
+            expect(phaser.feedback).toEqual(0.7);
+            expect(phaser.stereoPhase).toEqual(40);
+            expect(phaser.baseModulationFrequency).toEqual(700);
+            expect(phaser.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            phaser = new tuna.Phaser({
+                rate: 0.2,
+                depth: 0.8,
+                feedback: 0.5,
+                stereoPhase: 90,
+                baseModulationFrequency: 550,
+                bypass: true
+            });
+            expect(phaser.rate).toEqual(0.2);
+            expect(phaser.depth).toEqual(0.8);
+            expect(phaser.feedback).toEqual(0.5);
+            expect(phaser.stereoPhase).toEqual(90);
+            expect(phaser.baseModulationFrequency).toEqual(550);
+            expect(phaser.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            phaser.activateCallback = jasmine.createSpy();
+            phaser.bypass = true;
+            phaser.bypass = false;
+            expect(phaser.activateCallback).toHaveBeenCalled();
+        });
+
+    });
 });
