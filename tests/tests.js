@@ -260,6 +260,36 @@ describe("In Tuna", function() {
             gain.bypass = true;
             gain.bypass = false;
             expect(gain.activateCallback).toHaveBeenCalled();
-        })
-    })
+        });
+    });
+
+    describe("a Panner node", function() {
+        var panner;
+
+        beforeEach(function() {
+            panner = new tuna.Panner();
+        });
+
+        it("will have default values set", function() {
+            expect(panner.pan.value).toEqual(0);
+            expect(panner.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            panner = new tuna.Panner({
+                pan: 0.75,
+                bypass: true
+            });
+            expect(panner.pan.value).toEqual(0.75);
+            expect(panner.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            panner.activateCallback = jasmine.createSpy();
+            panner.bypass = true;
+            panner.bypass = false;
+            expect(panner.activateCallback).toHaveBeenCalled();
+        });
+
+    });
 });
