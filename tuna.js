@@ -1976,7 +1976,12 @@
     });
 
     Tuna.prototype.LFO = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+
         //Instantiate AudioNode
+        this.input = userContext.createGain();
         this.output = userContext.createScriptProcessor(256, 1, 1);
         this.activateNode = userContext.destination;
 
@@ -2070,15 +2075,6 @@
             },
             set: function(value) {
                 this._target = value;
-            }
-        },
-        activate: {
-            value: function(doActivate) {
-                if (!doActivate) {
-                    this.output.disconnect(userContext.destination);
-                } else {
-                    this.output.connect(userContext.destination);
-                }
             }
         },
         callback: {
