@@ -1677,7 +1677,7 @@
 
         //Set Properties
         this.init();
-        this.automode = initValue(properties.enableAutoMode, this.defaults.automode.value);
+        this.automode = initValue(properties.automode, this.defaults.automode.value);
         this.resonance = properties.resonance || this.defaults.resonance.value;
         this.sensitivity = initValue(properties.sensitivity, this.defaults.sensitivity.value);
         this.baseFrequency = initValue(properties.baseFrequency, this.defaults.baseFrequency.value);
@@ -1737,11 +1737,6 @@
                 }
             }
         },
-        activateCallback: {
-            value: function(value) {
-                this.automode = value;
-            }
-        },
         automode: {
             get: function() {
                 return this._automode;
@@ -1778,7 +1773,7 @@
         sweep: {
             enumerable: true,
             get: function() {
-                return this._sweep.value;
+                return this._sweep;
             },
             set: function(value) {
                 this._sweep = Math.pow(value > 1 ? 1 : value < 0 ? 0 : value, this._sensitivity);
@@ -1854,6 +1849,8 @@
         this._envelope = 0;
         this.target = properties.target || {};
         this.callback = properties.callback || function() {};
+
+        this.bypass = properties.bypass || false;
     };
     Tuna.prototype.EnvelopeFollower.prototype = Object.create(Super, {
         name: {
@@ -1936,6 +1933,9 @@
                     this.jsNode.disconnect();
                     this.jsNode.onaudioprocess = null;
                 }
+                if (this.activateCallback) {
+                    this.activateCallback(doActivate);
+                }
             }
         },
         returnCompute: {
@@ -1979,7 +1979,12 @@
     });
 
     Tuna.prototype.LFO = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+
         //Instantiate AudioNode
+        this.input = userContext.createGain();
         this.output = userContext.createScriptProcessor(256, 1, 1);
         this.activateNode = userContext.destination;
 
@@ -2077,10 +2082,13 @@
         },
         activate: {
             value: function(doActivate) {
-                if (!doActivate) {
-                    this.output.disconnect(userContext.destination);
-                } else {
+                if (doActivate) {
                     this.output.connect(userContext.destination);
+                    if (this.activateCallback) {
+                        this.activateCallback(doActivate);
+                    }
+                } else {
+                    this.output.disconnect();
                 }
             }
         },
