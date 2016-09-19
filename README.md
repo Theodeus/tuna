@@ -28,6 +28,10 @@ Effect list:
 Usage
 ====
 
+```
+npm install tunajs
+```
+
 Check the wiki: https://github.com/Theodeus/tuna/wiki
 
 Or a live example: http://codepen.io/Theodeus/pen/oxKjmy?editors=0010
