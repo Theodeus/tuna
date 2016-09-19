@@ -1023,6 +1023,52 @@
         }
     });
 
+    Tuna.prototype.Gain = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+
+        this.input = userContext.createGain();
+        this.activateNode = userContext.createGain();
+        this.gainNode = userContext.createGain();
+        this.output = userContext.createGain();
+
+        this.activateNode.connect(this.gainNode);
+        this.gainNode.connect(this.output);
+
+        this.gain = initValue(properties.gain, this.defaults.gain.value);
+        this.bypass = properties.bypass || false;
+    };
+    Tuna.prototype.Gain.prototype = Object.create(Super, {
+        name: {
+            value: "Gain"
+        },
+        defaults: {
+            writable: true,
+            value: {
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+                gain: {
+                    value: 1.0,
+                    automatable: true,
+                    type: FLOAT
+                }
+            }
+        },
+        gain: {
+            enumerable: true,
+            get: function() {
+                return this.gainNode.gain;
+            },
+            set: function(value) {
+                this.gainNode.gain.value = value;
+            }
+        }
+    });
+
     Tuna.prototype.MoogFilter = function(properties) {
         if (!properties) {
             properties = this.getDefaults();
@@ -1287,6 +1333,54 @@
                     }
                 }
             ]
+        }
+    });
+
+    Tuna.prototype.Panner = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+
+        this.input = userContext.createGain();
+        this.activateNode = userContext.createGain();
+        this.panner = userContext.createStereoPanner();
+        this.output = userContext.createGain();
+
+        this.activateNode.connect(this.panner);
+        this.panner.connect(this.output);
+
+        this.pan = initValue(properties.pan, this.defaults.pan.value);
+        this.bypass = properties.bypass || false;
+    };
+    Tuna.prototype.Panner.prototype = Object.create(Super, {
+        name: {
+            value: "Panner"
+        },
+        defaults: {
+            writable: true,
+            value: {
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+                pan: {
+                    value: 0.0,
+                    min: -1.0,
+                    max: 1.0,
+                    automatable: true,
+                    type: FLOAT
+                }
+            }
+        },
+        pan: {
+            enumerable: true,
+            get: function() {
+                return this.panner.pan;
+            },
+            set: function(value) {
+                this.panner.pan.value = value;
+            }
         }
     });
 
