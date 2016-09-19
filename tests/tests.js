@@ -111,6 +111,59 @@ describe("In Tuna", function() {
 
     });
 
+    describe("a Compressor node", function() {
+        var compressor;
+
+        beforeEach(function() {
+            compressor = new tuna.Compressor();
+        });
+
+        it("will have default values set", function() {
+            expect(compressor.threshold.value).toEqual(-20);
+            expect(compressor.release.value).toEqual(250 / 1000);
+            expect(compressor.makeupGain.value).toBeCloseTo(1.12, 2);
+            expect(compressor.attack.value).toBeCloseTo(1 / 1000, 2);
+            expect(compressor.ratio.value).toEqual(4);
+            expect(compressor.knee.value).toEqual(5);
+            expect(compressor.automakeup).toBeFalsy();
+            expect(compressor.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            compressor = new tuna.Compressor({
+                threshold: -35,
+                release: 200,
+                makeupGain: 2.5,
+                attack: 2,
+                ratio: 3,
+                knee: 4,
+                bypass: true,
+            })
+            expect(compressor.threshold.value).toEqual(-35);
+            expect(compressor.release.value).toBeCloseTo(200 / 1000, 3);
+            expect(compressor.makeupGain.value).toBeCloseTo(1.33, 2);
+            expect(compressor.attack.value).toBeCloseTo(2 / 1000, 3);
+            expect(compressor.ratio.value).toEqual(3);
+            expect(compressor.knee.value).toEqual(4);
+            expect(compressor.bypass).toBeTruthy();
+
+            // automakeup makes threshold, ratio and knee all change makeupGain,
+            // hence testing it down here
+            compressor = new tuna.Compressor({
+                automakeup: true,
+            });
+            expect(compressor.automakeup).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            compressor.activateCallback = jasmine.createSpy("activate_compressor");
+            compressor.bypass = true;
+            compressor.bypass = false;
+            expect(compressor.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
     describe("a Delay node", function() {
         var delay;
 
@@ -195,6 +248,39 @@ describe("In Tuna", function() {
 
     });
 
+    describe("a EnvelopeFollower node", function() {
+        var envelope;
+
+        beforeEach(function() {
+            envelope = new tuna.EnvelopeFollower();
+        });
+
+        it("will have default values set", function() {
+            expect(envelope.attackTime).toEqual(0.003);
+            expect(envelope.releaseTime).toEqual(0.5);
+            expect(envelope.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            envelope = new tuna.EnvelopeFollower({
+                attackTime: 0.008,
+                releaseTime: 0.4,
+                bypass: true
+            });
+            expect(envelope.attackTime).toEqual(0.008);
+            expect(envelope.releaseTime).toEqual(0.4);
+            expect(envelope.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            envelope.activateCallback = jasmine.createSpy();
+            envelope.bypass = true;
+            envelope.bypass = false;
+            expect(envelope.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
     describe("a Filter node", function() {
         var filter;
 
@@ -230,6 +316,243 @@ describe("In Tuna", function() {
             filter.bypass = true;
             filter.bypass = false;
             expect(filter.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("an LFO node", function() {
+        var lfo;
+
+        beforeEach(function() {
+            lfo = new tuna.LFO();
+        });
+
+        it("will have default values set", function() {
+            expect(lfo.frequency).toEqual(1);
+            expect(lfo.offset).toEqual(0.85);
+            expect(lfo.oscillation).toEqual(0.3);
+            expect(lfo.phase).toEqual(0);
+            expect(lfo.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            lfo = new tuna.LFO({
+                frequency: 0.8,
+                offset: 0.6,
+                oscillation: 0.4,
+                phase: 0.5,
+                bypass: true
+            });
+            expect(lfo.frequency).toEqual(0.8);
+            expect(lfo.offset).toEqual(0.6);
+            expect(lfo.oscillation).toEqual(0.4);
+            expect(lfo.phase).toEqual(0.5);
+            expect(lfo.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            lfo.activateCallback = jasmine.createSpy();
+            lfo.bypass = true;
+            lfo.bypass = false;
+            expect(lfo.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("a MoogFilter node", function() {
+        var filter;
+
+        beforeEach(function() {
+            filter = new tuna.MoogFilter();
+        });
+
+        it("will have default values set", function() {
+            expect(filter.bufferSize).toEqual(4096);
+            expect(filter.processor.cutoff).toEqual(0.065);
+            expect(filter.processor.resonance).toEqual(3.5);
+            expect(filter.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            filter = new tuna.MoogFilter({
+                bufferSize: 256,
+                cutoff: 0.110,
+                resonance: 2.5,
+                bypass: true
+            });
+            expect(filter.bufferSize).toEqual(256);
+            expect(filter.processor.cutoff).toEqual(0.110);
+            expect(filter.processor.resonance).toEqual(2.5);
+            expect(filter.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            filter.activateCallback = jasmine.createSpy();
+            filter.bypass = true;
+            filter.bypass = false;
+            expect(filter.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("a Phaser node", function() {
+        var phaser;
+
+        beforeEach(function() {
+            phaser = new tuna.Phaser();
+        });
+
+        it("will have default values set", function() {
+            expect(phaser.rate).toEqual(0.1);
+            expect(phaser.depth).toEqual(0.6);
+            expect(phaser.feedback).toEqual(0.7);
+            expect(phaser.stereoPhase).toEqual(40);
+            expect(phaser.baseModulationFrequency).toEqual(700);
+            expect(phaser.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            phaser = new tuna.Phaser({
+                rate: 0.2,
+                depth: 0.8,
+                feedback: 0.5,
+                stereoPhase: 90,
+                baseModulationFrequency: 550,
+                bypass: true
+            });
+            expect(phaser.rate).toEqual(0.2);
+            expect(phaser.depth).toEqual(0.8);
+            expect(phaser.feedback).toEqual(0.5);
+            expect(phaser.stereoPhase).toEqual(90);
+            expect(phaser.baseModulationFrequency).toEqual(550);
+            expect(phaser.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            phaser.activateCallback = jasmine.createSpy();
+            phaser.bypass = true;
+            phaser.bypass = false;
+            expect(phaser.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("a PingPongDelay node", function() {
+        var delay;
+
+        beforeEach(function() {
+            delay = new tuna.PingPongDelay();
+        });
+
+        it("will have default values set", function() {
+            expect(delay.delayTimeLeft).toEqual(200);
+            expect(delay.delayTimeRight).toEqual(400);
+            expect(delay.feedbackLevel.gain.value).toBeCloseTo(0.3, 2);
+            expect(delay.wetLevel.gain.value).toBeCloseTo(0.5, 2);
+            expect(delay.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            delay = new tuna.PingPongDelay({
+                delayTimeLeft: 210,
+                delayTimeRight: 410,
+                feedback: 0.5,
+                wetLevel: 0.8,
+                bypass: true
+            });
+            expect(delay.delayTimeLeft).toEqual(210);
+            expect(delay.delayTimeRight).toEqual(410);
+            expect(delay.feedbackLevel.gain.value).toBeCloseTo(0.5, 2);
+            expect(delay.wetLevel.gain.value).toBeCloseTo(0.8, 2);
+            expect(delay.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            delay.activateCallback = jasmine.createSpy();
+            delay.bypass = true;
+            delay.bypass = false;
+            expect(delay.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("a Tremolo node", function() {
+        var tremolo;
+
+        beforeEach(function() {
+            tremolo = new tuna.Tremolo();
+        });
+
+        it("will have default values set", function() {
+            expect(tremolo.intensity).toEqual(0.3);
+            expect(tremolo.stereoPhase).toEqual(0);
+            expect(tremolo.rate).toEqual(5);
+            expect(tremolo.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            tremolo = new tuna.Tremolo({
+                intensity: 0.5,
+                stereoPhase: 90,
+                rate: 8,
+                bypass: true
+            });
+            expect(tremolo.intensity).toEqual(0.5);
+            expect(tremolo.stereoPhase).toEqual(90);
+            expect(tremolo.rate).toEqual(8);
+            expect(tremolo.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            tremolo.activateCallback = jasmine.createSpy();
+            tremolo.bypass = true;
+            tremolo.bypass = false;
+            expect(tremolo.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
+    describe("a WahWah node", function() {
+        var wahwah;
+
+        beforeEach(function() {
+            wahwah = new tuna.WahWah();
+        });
+
+        it("will have default values set", function() {
+            expect(wahwah.automode).toBeTruthy();
+            expect(wahwah.baseFrequency).toEqual(500);
+            expect(wahwah.excursionOctaves).toEqual(2);
+            expect(wahwah.sweep).toBeCloseTo(0.0062, 4);
+            expect(wahwah.resonance).toEqual(10);
+            expect(wahwah.sensitivity).toBeCloseTo(3.16, 2);
+            expect(wahwah.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            wahwah = new tuna.WahWah({
+                automode: false,
+                baseFrequency: 0.6,
+                excursionOctaves: 3,
+                sweep: 0.3,
+                resonance: 11,
+                sensitivity: 0.6,
+                bypass: true
+            });
+            expect(wahwah.automode).toBeFalsy();
+            expect(wahwah.baseFrequency).toBeCloseTo(792.45, 2);
+            expect(wahwah.excursionOctaves).toEqual(3);
+            expect(wahwah.sweep).toBeCloseTo(0.0083, 4);
+            expect(wahwah.resonance).toEqual(11);
+            expect(wahwah.sensitivity).toBeCloseTo(3.98, 2);
+            expect(wahwah.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            wahwah.activateCallback = jasmine.createSpy();
+            wahwah.bypass = true;
+            wahwah.bypass = false;
+            expect(wahwah.activateCallback).toHaveBeenCalled();
         });
 
     });
