@@ -2080,6 +2080,18 @@
                 this._target = value;
             }
         },
+        activate: {
+            value: function(doActivate) {
+                if (doActivate) {
+                    this.output.connect(userContext.destination);
+                    if (this.activateCallback) {
+                        this.activateCallback(doActivate);
+                    }
+                } else {
+                    this.output.disconnect();
+                }
+            }
+        },
         callback: {
             value: function(callback) {
                 var that = this;
