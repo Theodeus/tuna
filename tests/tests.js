@@ -614,4 +614,51 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a Gate node", function() {
+        var gate;
+
+        beforeEach(function() {
+            gate = new tuna.Gate();
+        });
+
+        it("will have default values set", function() {
+            expect(gate.bufferSize).toEqual(256);
+            expect(gate.bypass).toBeFalsy();
+            expect(gate.threshold).toEqual(-30);
+            expect(gate.return).toEqual(0);
+            expect(gate.attack).toEqual(40);
+            expect(gate.hold).toEqual(10);
+            expect(gate.release).toEqual(100);
+            expect(gate.floor).toEqual(-60);
+        });
+
+        it("will have passed values set", function() {
+            gate = new tuna.Gate({
+                bufferSize: 512,
+                threshold: -50,
+                return: 12,
+                attack: 90,
+                hold: 110,
+                release: 130,
+                floor: -55,
+                bypass: true
+            });
+            expect(gate.bufferSize).toEqual(512);
+            expect(gate.threshold).toEqual(-50);
+            expect(gate.return).toEqual(12);
+            expect(gate.attack).toEqual(90);
+            expect(gate.hold).toEqual(110);
+            expect(gate.release).toEqual(130);
+            expect(gate.floor).toEqual(-55);
+            expect(gate.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            gate.activateCallback = jasmine.createSpy();
+            gate.bypass = true;
+            gate.bypass = false;
+            expect(gate.activateCallback).toHaveBeenCalled();
+        });
+    });
 });

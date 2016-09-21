@@ -1069,6 +1069,195 @@
         }
     });
 
+    Tuna.prototype.Gate = function(properties) {
+        var self = this;
+
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+
+        this.bufferSize = properties.bufferSize || this.defaults.bufferSize.value;
+
+        this.input = userContext.createGain();
+        this.activateNode = userContext.createGain();
+        this.processor = userContext.createScriptProcessor(this.bufferSize, 2, 1);
+        this.gain = userContext.createGain();
+        this.output = userContext.createGain();
+
+        // Gate states
+        this.lastEnter = 0;
+        this.lastLeave = 0;
+        this.state = 0;
+
+        this.processor.onaudioprocess = function(evt) {
+
+            // Calculate audio level
+            var inputL = evt.inputBuffer.getChannelData(0);
+            var inputR = evt.inputBuffer.getChannelData(1);
+            var peak = -120;
+            var total = 0;
+            for (var i = 0; i < inputL.length; inputL++) {
+                peak = inputL[i] > peak ? inputL[i] : peak;
+                total += Math.abs(inputL[i]);
+                peak = inputR[i] > peak ? inputR[i] : peak;
+                total += Math.abs(inputR[i]);
+            }
+            var rms = Math.sqrt(total / (self.bufferSize / 2));
+            var volume = 20 * (Math.log(rms) / Math.log(10));
+
+            // Enter, leave or prepare for enter
+            if (self.state === 0 && volume >= self.threshold) {
+                self.gain.gain.cancelScheduledValues(userContext.currentTime);
+                self.gain.gain.linearRampToValueAtTime(1, userContext.currentTime + (self.attack / 1000));
+                self.state = 1;
+                self.lastEnter = userContext.currentTime;
+            }
+            else if (self.state === 1
+                && userContext.currentTime - self.lastEnter >= (self.hold + self.attack) / 1000
+                && volume <= (self.threshold - self.return)) {
+
+                self.gain.gain.cancelScheduledValues(userContext.currentTime);
+                self.gain.gain.linearRampToValueAtTime(
+                    1 - (Math.abs(self.floor) / 120), 
+                    userContext.currentTime + (self.release / 1000)
+                );
+                self.state = 2;
+            }
+            else if (self.state === 2 && userContext.currentTime - self.lastLeave >= self.release / 1000) {
+                self.state = 0;
+            }
+        };
+
+        // Connect chain
+        this.activateNode.connect(this.gain);
+        this.gain.connect(this.output);
+        this.activateNode.connect(this.processor);
+        this.processor.connect(this.output);
+
+        this.gain.gain.value = 0;
+
+        this.threshold = initValue(properties.threshold, this.defaults.threshold.value);
+        this.return = initValue(properties.return, this.defaults.return.value);
+        this.attack = initValue(properties.attack, this.defaults.attack.value);
+        this.hold = initValue(properties.hold, this.defaults.hold.value);
+        this.release = initValue(properties.release, this.defaults.release.value);
+        this.floor = initValue(properties.floor, this.defaults.floor.value);
+
+        this.bypass = properties.bypass || false;
+    };
+    Tuna.prototype.Gate.prototype = Object.create(Super, {
+        name: {
+            value: "Gate"
+        },
+        defaults: {
+            writable: true,
+            value: {
+                bufferSize: {
+                    value: 256,
+                    min: 256,
+                    max: 16384,
+                    automatable: false,
+                    type: INT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+                threshold: {
+                    value: -30,
+                    min: -120,
+                    max: 0,
+                    automatable: true,
+                    type: FLOAT
+                },
+                return: {
+                    value: 0,
+                    min: 0,
+                    max: 120,
+                    automatable: true,
+                    type: FLOAT
+                },
+                attack: {
+                    value: 40,
+                    min: 0,
+                    max: 3000,
+                    automatable: true,
+                    type: FLOAT
+                },
+                hold: {
+                    value: 10,
+                    min: 1,
+                    max: 3000,
+                    automatable: true,
+                    type: FLOAT
+                },
+                release: {
+                    value: 100,
+                    min: 1,
+                    max: 3000,
+                    automatable: true,
+                    type: FLOAT
+                },
+                floor: {
+                    value: -60,
+                    min: -120,
+                    max: 0,
+                    automatable: true,
+                    type: FLOAT
+                }
+            }
+        },
+        threshold: {
+            get: function() {
+                return this._threshold;
+            },
+            set: function(value) {
+                this._threshold = value;
+            }
+        },
+        return: {
+            get: function() {
+                return this._return;
+            },
+            set: function(value) {
+                this._return = value;
+            }
+        },
+        attack: {
+            get: function() {
+                return this._attack;
+            },
+            set: function(value) {
+                this._attack = value;
+            }
+        },
+        hold: {
+            get: function() {
+                return this._hold;
+            },
+            set: function(value) {
+                this._hold = value;
+            }
+        },
+        release: {
+            get: function() {
+                return this._release;
+            },
+            set: function(value) {
+                this._release = value;
+            }
+        },
+        floor: {
+            get: function() {
+                return this._floor;
+            },
+            set: function(value) {
+                this._floor = value;
+            }
+        }
+    });
+
     Tuna.prototype.MoogFilter = function(properties) {
         if (!properties) {
             properties = this.getDefaults();
