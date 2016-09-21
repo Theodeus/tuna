@@ -21,6 +21,7 @@ Effect list:
     <li>Bitcrusher</li>
     <li>Moog Filter</li>
     <li>Ping Pong Delay</li>
+    <li>Gate</li>
     <li>Panner</li>
     <li>Gain</li>
 </ul>
