@@ -8,6 +8,6 @@ If you've created an application that uses Tuna - feel free to add a pull reques
 
 Who's pressing the red button?
 ====
-Tuna.js began as a hobby project of mine, @Theodeus, and were eventually brought in under the @Dinahmoe umbrella. The framework was further developed at @Dinahmoe while I was working there and finally released as open source as Jam With Chrome launched. The project then stagnated for a while until I left @Dinahmoe and was graciously allowed to keep maintaining the project.
+Tuna.js began as a hobby project of mine, @Theodeus, and were eventually brought in under the @Dinahmoe umbrella. The framework was further developed at @Dinahmoe, with the help of Alessandro Saccoia, while I was working there and finally released as open source as Jam With Chrome launched. The project then stagnated for a while until I left @Dinahmoe and was graciously allowed to keep maintaining the project.
 
-Along with me is @tencircles who's the current Technical Director at @Dinahmoe.
+Along with me is @tencircles who's the current Technical Director at @Dinahmoe, and @alesaccoia, freelancing DSP guru.
