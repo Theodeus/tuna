@@ -55,3 +55,5 @@ https://www.npmjs.com/package/react-music - Make music with React!
 http://bapjs.org/ - Beat making toolkit
 
 https://github.com/jamespfarrell/json-to-web-audio - Make music from Json with json-to-web-audio
+
+http://errozero.co.uk/acid-machine/ - Acid Machine 2, which is exactly what it sounds like! Add up to two Tuna effects per instrument.
