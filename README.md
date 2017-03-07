@@ -21,7 +21,7 @@ Effect list:
     <li>Bitcrusher</li>
     <li>Moog Filter</li>
     <li>Ping Pong Delay</li>
-    <li>Panner (needs polyfilling, see Panner section [in the wiki](https://github.com/Theodeus/tuna/wiki))</li>
+    <li>Panner (needs polyfilling, see Panner section [in the wiki] (https://github.com/Theodeus/tuna/wiki)</li>
     <li>Gain</li>
 </ul>
 
