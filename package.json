@@ -31,5 +31,9 @@
   "devDependencies": {
     "eslint": "^1.10.3",
     "uglify": "^0.1.5"
+  },
+  "dependencies": {
+    "net": "^1.0.2",
+    "tls": "0.0.1"
   }
 }
