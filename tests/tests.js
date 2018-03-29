@@ -2,7 +2,7 @@ describe("In Tuna", function() {
     var context, tuna;
 
     beforeAll(function() {
-        context = new AudioContext(1, 128, 44100);
+        context = new AudioContext();
         tuna = new Tuna(context);
     });
 
@@ -448,7 +448,7 @@ describe("In Tuna", function() {
             expect(delay.delayTimeLeft).toEqual(200);
             expect(delay.delayTimeRight).toEqual(400);
             expect(delay.feedbackLevel.gain.value).toBeCloseTo(0.3, 2);
-            expect(delay.wetLevel.gain.value).toBeCloseTo(0.5, 2);
+            expect(delay.wet.gain.value).toBeCloseTo(0.5, 2);
             expect(delay.bypass).toBeFalsy();
         });
 
@@ -463,7 +463,7 @@ describe("In Tuna", function() {
             expect(delay.delayTimeLeft).toEqual(210);
             expect(delay.delayTimeRight).toEqual(410);
             expect(delay.feedbackLevel.gain.value).toBeCloseTo(0.5, 2);
-            expect(delay.wetLevel.gain.value).toBeCloseTo(0.8, 2);
+            expect(delay.wet.gain.value).toBeCloseTo(0.8, 2);
             expect(delay.bypass).toBeTruthy();
         });
 
