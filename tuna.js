@@ -133,7 +133,7 @@
             return new Tuna(context);
         }
 
-        var _window = typeof window === 'undefined' ? {} : window;
+        var _window = typeof window === "undefined" ? {} : window;
 
         if (!_window.AudioContext) {
             _window.AudioContext = _window.webkitAudioContext;
@@ -253,7 +253,7 @@
 
         this.bits = properties.bits || this.defaults.bits.value;
         this.normfreq = initValue(properties.normfreq, this.defaults.normfreq.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Bitcrusher.prototype = Object.create(Super, {
         name: {
@@ -324,8 +324,8 @@
         this.convolver.output.connect(this.makeupNode);
         this.makeupNode.connect(this.output);
 
-        this.makeupGain = initValue(properties.makeupGain, this.defaults.makeupGain);
-        this.bypass = properties.bypass || false;
+        this.makeupGain = initValue(properties.makeupGain, this.defaults.makeupGain.value);
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Cabinet.prototype = Object.create(Super, {
         name: {
@@ -412,7 +412,7 @@
         this.attenuator.gain.value = 0.6934; // 1 / (10 ^ (((20 * log10(3)) / 3) / 20))
         this.lfoL.activate(true);
         this.lfoR.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Chorus.prototype = Object.create(Super, {
         name: {
@@ -522,7 +522,7 @@
         this.attack = initValue(properties.attack, this.defaults.attack.value);
         this.ratio = properties.ratio || this.defaults.ratio.value;
         this.knee = initValue(properties.knee, this.defaults.knee.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Compressor.prototype = Object.create(Super, {
         name: {
@@ -690,7 +690,7 @@
         this.level = initValue(properties.level, this.defaults.level.value);
         this.filterHigh.type = "lowpass";
         this.filterLow.type = "highpass";
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Convolver.prototype = Object.create(Super, {
         name: {
@@ -733,6 +733,11 @@
                     max: 1,
                     automatable: true,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -834,7 +839,7 @@
         this.dryLevel = initValue(properties.dryLevel, this.defaults.dryLevel.value);
         this.cutoff = properties.cutoff || this.defaults.cutoff.value;
         this.filter.type = "lowpass";
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Delay.prototype = Object.create(Super, {
         name: {
@@ -877,6 +882,11 @@
                     max: 1,
                     automatable: true,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -943,7 +953,7 @@
         this.Q = properties.resonance || this.defaults.Q.value;
         this.filterType = initValue(properties.filterType, this.defaults.filterType.value);
         this.gain = initValue(properties.gain, this.defaults.gain.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Filter.prototype = Object.create(Super, {
         name: {
@@ -1037,7 +1047,7 @@
         this.gainNode.connect(this.output);
 
         this.gain = initValue(properties.gain, this.defaults.gain.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Gain.prototype = Object.create(Super, {
         name: {
@@ -1110,7 +1120,7 @@
 
         this.cutoff = initValue(properties.cutoff, this.defaults.cutoff.value);
         this.resonance = initValue(properties.resonance, this.defaults.resonance.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.MoogFilter.prototype = Object.create(Super, {
         name: {
@@ -1188,7 +1198,7 @@
         this.outputGain = initValue(properties.outputGain, this.defaults.outputGain.value);
         this.curveAmount = initValue(properties.curveAmount, this.defaults.curveAmount.value);
         this.algorithmIndex = initValue(properties.algorithmIndex, this.defaults.algorithmIndex.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Overdrive.prototype = Object.create(Super, {
         name: {
@@ -1226,6 +1236,11 @@
                     max: 5,
                     automatable: false,
                     type: INT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -1350,7 +1365,7 @@
         this.panner.connect(this.output);
 
         this.pan = initValue(properties.pan, this.defaults.pan.value);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Panner.prototype = Object.create(Super, {
         name: {
@@ -1435,7 +1450,7 @@
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Phaser.prototype = Object.create(Super, {
         name: {
@@ -1481,6 +1496,11 @@
                     max: 1500,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -1551,7 +1571,7 @@
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
-        this.wetLevel = userContext.createGain();
+        this.wet = userContext.createGain();
         this.stereoToMonoMix = userContext.createGain();
         this.feedbackLevel = userContext.createGain();
         this.output = userContext.createGain();
@@ -1566,9 +1586,9 @@
         this.splitter.connect(this.stereoToMonoMix, 0, 0);
         this.splitter.connect(this.stereoToMonoMix, 1, 0);
         this.stereoToMonoMix.gain.value = .5;
-        this.stereoToMonoMix.connect(this.wetLevel);
-        this.wetLevel.connect(this.delayLeft);
-        this.feedbackLevel.connect(this.delayLeft);
+        this.stereoToMonoMix.connect(this.wet);
+        this.wet.connect(this.delayLeft);
+        this.feedbackLevel.connect(this.wet);
         this.delayLeft.connect(this.delayRight);
         this.delayRight.connect(this.feedbackLevel);
         this.delayLeft.connect(this.merger, 0, 0);
@@ -1579,8 +1599,8 @@
         this.delayTimeLeft = properties.delayTimeLeft !== undefined ? properties.delayTimeLeft : this.defaults.delayTimeLeft.value;
         this.delayTimeRight = properties.delayTimeRight !== undefined ? properties.delayTimeRight : this.defaults.delayTimeRight.value;
         this.feedbackLevel.gain.value = properties.feedback !== undefined ? properties.feedback : this.defaults.feedback.value;
-        this.wetLevel.gain.value = properties.wetLevel !== undefined ? properties.wetLevel : this.defaults.wetLevel.value;
-        this.bypass = properties.bypass || false;
+        this.wet.gain.value = properties.wetLevel !== undefined ? properties.wetLevel : this.defaults.wetLevel.value;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.PingPongDelay.prototype = Object.create(Super, {
         name: {
@@ -1604,6 +1624,24 @@
             set: function(value) {
                 this._delayTimeRight = value;
                 this.delayRight.delayTime.value = value / 1000;
+            }
+        },
+        wetLevel: {
+            enumerable: true,
+            get: function () {
+                return this.wet.gain;
+            },
+            set: function (value) {
+                this.wet.gain.value = value;
+            }
+        }, 
+        feedback: {
+            enumerable: true,
+            get: function () {
+                return this.feedbackLevel.gain;
+            },
+            set: function (value) {
+                this.feedbackLevel.gain.value = value;
             }
         },
         defaults: {
@@ -1636,6 +1674,11 @@
                     max: 1,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         }
@@ -1678,7 +1721,7 @@
 
         this.lfoL.activate(true);
         this.lfoR.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.Tremolo.prototype = Object.create(Super, {
         name: {
@@ -1707,6 +1750,11 @@
                     max: 11,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -1780,7 +1828,7 @@
 
         this.activateNode.gain.value = 2;
         this.envelopeFollower.activate(true);
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.WahWah.prototype = Object.create(Super, {
         name: {
@@ -1828,6 +1876,11 @@
                     max: 1,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -1944,7 +1997,7 @@
         this.target = properties.target || {};
         this.callback = properties.callback || function() {};
 
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.EnvelopeFollower.prototype = Object.create(Super, {
         name: {
@@ -1965,6 +2018,11 @@
                     max: 0.5,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
@@ -2089,7 +2147,7 @@
         this.phase = initValue(properties.phase, this.defaults.phase.value);
         this.target = properties.target || {};
         this.output.onaudioprocess = this.callback(properties.callback || function() {});
-        this.bypass = properties.bypass || false;
+        this.bypass = properties.bypass || this.defaults.bypass.value;
     };
     Tuna.prototype.LFO.prototype = Object.create(Super, {
         name: {
@@ -2130,6 +2188,11 @@
                     max: 2 * Math.PI,
                     automatable: false,
                     type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
                 }
             }
         },
