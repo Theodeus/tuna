@@ -1216,9 +1216,9 @@
                     scaled: true
                 },
                 outputGain: {
-                    value: 1,
+                    value: 0,
                     min: -46,
-                    max: 1,
+                    max: 0,
                     automatable: true,
                     type: FLOAT,
                     scaled: true
