@@ -1540,7 +1540,7 @@
                 this._baseModulationFrequency = value;
                 this.lfoL.offset = this._baseModulationFrequency;
                 this.lfoR.offset = this._baseModulationFrequency;
-                this._depth = this._depth;
+                this.depth = this._depth;
             }
         },
         feedback: {
