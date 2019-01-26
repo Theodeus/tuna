@@ -1217,7 +1217,7 @@
                 },
                 outputGain: {
                     value: 1,
-                    min: 0,
+                    min: -46,
                     max: 1,
                     automatable: true,
                     type: FLOAT,
@@ -1274,6 +1274,7 @@
             },
             set: function(value) {
                 this._outputGain = dbToWAVolume(value);
+                this.outputDrive.gain.setValueAtTime(this._outputGain, userContext.currentTime, 0.01);
             }
         },
         algorithmIndex: {
