@@ -354,7 +354,7 @@
                 return this.makeupNode.gain;
             },
             set: function(value) {
-                this.makeupNode.gain.value = value;
+                this.makeupNode.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         newConvolver: {
@@ -486,8 +486,8 @@
             },
             set: function(value) {
                 this._feedback = value;
-                this.feedbackGainNodeLR.gain.value = this._feedback;
-                this.feedbackGainNodeRL.gain.value = this._feedback;
+                this.feedbackGainNodeLR.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
+                this.feedbackGainNodeRL.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
             }
         },
         rate: {
@@ -656,7 +656,7 @@
                 return this.makeupNode.gain;
             },
             set: function(value) {
-                this.makeupNode.gain.value = dbToWAVolume(value);
+                this.makeupNode.gain.setTargetAtTime(dbToWAVolume(value), userContext.currentTime, 0.01);
             }
         }
     });
@@ -746,7 +746,7 @@
                 return this.filterLow.frequency;
             },
             set: function(value) {
-                this.filterLow.frequency.value = value;
+                this.filterLow.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         highCut: {
@@ -754,7 +754,7 @@
                 return this.filterHigh.frequency;
             },
             set: function(value) {
-                this.filterHigh.frequency.value = value;
+                this.filterHigh.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         level: {
@@ -762,7 +762,7 @@
                 return this.output.gain;
             },
             set: function(value) {
-                this.output.gain.value = value;
+                this.output.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         dryLevel: {
@@ -770,7 +770,7 @@
                 return this.dry.gain;
             },
             set: function(value) {
-                this.dry.gain.value = value;
+                this.dry.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         wetLevel: {
@@ -778,7 +778,7 @@
                 return this.wet.gain;
             },
             set: function(value) {
-                this.wet.gain.value = value;
+                this.wet.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         buffer: {
@@ -905,7 +905,7 @@
                 return this.wet.gain;
             },
             set: function(value) {
-                this.wet.gain.value = value;
+                this.wet.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         dryLevel: {
@@ -914,7 +914,7 @@
                 return this.dry.gain;
             },
             set: function(value) {
-                this.dry.gain.value = value;
+                this.dry.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         feedback: {
@@ -923,7 +923,7 @@
                 return this.feedbackNode.gain;
             },
             set: function(value) {
-                this.feedbackNode.gain.value = value;
+                this.feedbackNode.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         cutoff: {
@@ -932,7 +932,7 @@
                 return this.filter.frequency;
             },
             set: function(value) {
-                this.filter.frequency.value = value;
+                this.filter.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         }
     });
@@ -1019,7 +1019,7 @@
                 return this.filter.gain;
             },
             set: function(value) {
-                this.filter.gain.value = value;
+                this.filter.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         frequency: {
@@ -1028,7 +1028,7 @@
                 return this.filter.frequency;
             },
             set: function(value) {
-                this.filter.frequency.value = value;
+                this.filter.frequency.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         }
     });
@@ -1074,7 +1074,7 @@
                 return this.gainNode.gain;
             },
             set: function(value) {
-                this.gainNode.gain.value = value;
+                this.gainNode.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         }
     });
@@ -1097,10 +1097,10 @@
         in1 = in2 = in3 = in4 = out1 = out2 = out3 = out4 = 0.0;
         var input, output, f, fb, i, length, inputFactor;
         this.processor.onaudioprocess = function(e) {
-            input = e.inputBuffer.getChannelData(0),
-                output = e.outputBuffer.getChannelData(0),
-                f = this.cutoff * 1.16,
-                inputFactor = 0.35013 * (f * f) * (f * f);
+            input = e.inputBuffer.getChannelData(0);
+            output = e.outputBuffer.getChannelData(0);
+            f = this.cutoff * 1.16;
+            inputFactor = 0.35013 * (f * f) * (f * f);
             fb = this.resonance * (1.0 - 0.15 * f * f);
             length = input.length;
             for (i = 0; i < length; i++) {
@@ -1549,8 +1549,8 @@
             },
             set: function(value) {
                 this._feedback = value;
-                this.feedbackGainNodeL.gain.value = this._feedback;
-                this.feedbackGainNodeR.gain.value = this._feedback;
+                this.feedbackGainNodeL.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
+                this.feedbackGainNodeR.gain.setTargetAtTime(this._feedback, userContext.currentTime, 0.01);
             }
         },
         stereoPhase: {
@@ -1632,7 +1632,7 @@
                 return this.wet.gain;
             },
             set: function (value) {
-                this.wet.gain.value = value;
+                this.wet.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         }, 
         feedback: {
@@ -1641,7 +1641,7 @@
                 return this.feedbackLevel.gain;
             },
             set: function (value) {
-                this.feedbackLevel.gain.value = value;
+                this.feedbackLevel.gain.setTargetAtTime(value, userContext.currentTime, 0.01);
             }
         },
         defaults: {
@@ -1689,12 +1689,11 @@
             properties = this.getDefaults();
         }
         this.input = userContext.createGain();
-        this.splitter = this.activateNode = userContext.createChannelSplitter(
-                2),
-            this.amplitudeL = userContext.createGain(),
-            this.amplitudeR = userContext.createGain(),
-            this.merger = userContext.createChannelMerger(2),
-            this.output = userContext.createGain();
+        this.splitter = this.activateNode = userContext.createChannelSplitter(2);
+        this.amplitudeL = userContext.createGain();
+        this.amplitudeR = userContext.createGain();
+        this.merger = userContext.createChannelMerger(2);
+        this.output = userContext.createGain();
         this.lfoL = new userInstance.LFO({
             target: this.amplitudeL.gain,
             callback: pipe
