@@ -32,7 +32,7 @@ Usage
 npm install tunajs
 ```
 
-Check the wiki: https://github.com/Theodeus/tuna/wiki
+Check the wiki: https://github.com/Theodeus/tuna/wiki/Getting-started
 
 Or a live example: http://codepen.io/Theodeus/pen/oxKjmy?editors=0010
 
