@@ -1666,14 +1666,14 @@
                     value: 0.3,
                     min: 0,
                     max: 1,
-                    automatable: false,
+                    automatable: true,
                     type: FLOAT
                 },
                 wetLevel: {
                     value: 0.5,
                     min: 0,
                     max: 1,
-                    automatable: false,
+                    automatable: true,
                     type: FLOAT
                 },
                 bypass: {
