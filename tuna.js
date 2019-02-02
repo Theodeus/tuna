@@ -2294,6 +2294,8 @@
         this.activateNode = userContext.createGain();
         this.activateNode.connect(this.processor);
 
+        this.bypass = properties.bypass || this.defaults.bypass.value;
+
         this.processor.onaudioprocess = function(e) {
             var input = e.inputBuffer.getChannelData(0);
             var output = e.outputBuffer.getChannelData(0);

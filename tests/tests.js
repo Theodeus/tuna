@@ -614,4 +614,42 @@ describe("In Tuna", function() {
         });
 
     });
+
+    describe("a PitchShifter node", function() {
+        var pitchShifter;
+
+        beforeEach(function() {
+            pitchShifter = new tuna.PitchShifter();
+        });
+
+        it("will have default values set", function() {
+            expect(pitchShifter.processor.bufferSize).toEqual(512);
+            expect(pitchShifter.processor.pitchRatio).toEqual(1.0);
+            expect(pitchShifter.processor.overlapRatio).toEqual(0.5);
+            expect(pitchShifter.bypass).toBeFalsy();
+        });
+
+        it("will have passed values set", function() {
+            pitchShifter = new tuna.PitchShifter({
+                pan: 0.75,
+                bufferSize: 1024,
+                pitchRatio: 1.1,
+                overlapRatio: 0.6,
+                bypass: true
+            });
+            expect(pitchShifter.processor.bufferSize).toEqual(1024);
+            expect(pitchShifter.processor.pitchRatio).toEqual(1.1);
+            expect(pitchShifter.processor.overlapRatio).toEqual(0.6);
+            expect(pitchShifter.bypass).toBeTruthy();
+        });
+
+        it("will be activated", function() {
+            pitchShifter.activateCallback = jasmine.createSpy();
+            pitchShifter.bypass = true;
+            pitchShifter.bypass = false;
+            expect(pitchShifter.activateCallback).toHaveBeenCalled();
+        });
+
+    });
+
 });
