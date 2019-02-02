@@ -215,6 +215,18 @@
         return (Math.exp(n) - Math.exp(-n)) / (Math.exp(n) + Math.exp(-n));
     }
 
+    function hannWindow(length) {
+        const grainWindow = new Float32Array(length);
+        for (var i = 0; i < length; i++) {
+          grainWindow[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / (length - 1)));
+        }
+        return grainWindow;
+    }
+
+    function linearInterpolation(a, b, t) {
+        return a + (b - a) * t;
+    }
+
     function initValue(userVal, defaultVal) {
         return userVal === undefined ? defaultVal : userVal;
     }
@@ -2259,6 +2271,112 @@
                     }
                     callback(that._target, that._offset + that._oscillation * Math.sin(that._phase));
                 };
+            }
+        }
+    });
+
+    Tuna.prototype.PitchShifter = function(properties) {
+        if (!properties) {
+            properties = this.getDefaults();
+        }
+
+        this.input = userContext.createGain();
+        this.bufferSize = initValue(properties.bufferSize, this.defaults.bufferSize.value);
+
+        this.processor = userContext.createScriptProcessor(this.bufferSize, 1, 1);
+        this.processor.hannWindow = hannWindow(this.bufferSize);
+        this.processor.buffer = new Float32Array(this.bufferSize * 2);
+        this.processor.pitchRatio = initValue(properties.pitchRatio, this.defaults.pitchRatio.value);
+        this.processor.overlapRatio = initValue(properties.overlapRatio, this.defaults.overlapRatio.value);
+
+        this.output = userContext.createGain();
+        this.processor.connect(this.output);
+        this.activateNode = userContext.createGain();
+        this.activateNode.connect(this.processor);
+
+        this.processor.onaudioprocess = function(e) {
+            var input = e.inputBuffer.getChannelData(0);
+            var output = e.outputBuffer.getChannelData(0);
+
+            for (var i = 0; i < input.length; i++) {
+              // Apply the window to the input buffer
+              input[i] *= this.hannWindow[i];
+              // Shift half of the buffer
+              this.buffer[i] = this.buffer[i + this.bufferSize];
+              // Empty the buffer tail
+              this.buffer[i + this.bufferSize] = 0.0;
+            }
+            // Calculate the pitch shifted grain re-sampling and looping the input
+            var grainData = new Float32Array(this.bufferSize * 2);
+            for (var i = 0, j = 0.0; i < this.bufferSize; i++, j += this.pitchRatio) {
+              var index = Math.floor(j) % this.bufferSize;
+              var a = input[index];
+              var b = input[(index + 1) % this.bufferSize];
+              grainData[i] += linearInterpolation(a, b, j % 1.0) * this.hannWindow[i];
+            }
+            // Copy the grain multiple times overlapping it
+            for (var i = 0; i < this.bufferSize; i += Math.round(this.bufferSize * (1 - this.overlapRatio))) {
+              for (j = 0; j <= this.bufferSize; j++) {
+                this.buffer[i + j] += grainData[j];
+              }
+            }
+            // Output the first half of the buffer
+            for (i = 0; i < this.bufferSize; i++) {
+              output[i] = this.buffer[i];
+            }
+        };
+    };
+    Tuna.prototype.PitchShifter.prototype = Object.create(Super, {
+        name: {
+            value: "PitchShifter"
+        },
+        defaults: {
+            writable: true,
+            value: {
+                bufferSize: {
+                    value: 512,
+                    min: 256,
+                    max: 8192,
+                    automatable: false,
+                    type: INT
+                },
+                pitchRatio:{
+                    value: 1.0,
+                    min: 0.5,
+                    max: 2.0,
+                    automatable: false,
+                    type: FLOAT
+                },
+                overlapRatio: {
+                    value: 0.5,
+                    min: 0,
+                    max: 0.75,
+                    automatable: false,
+                    type: FLOAT
+                },
+                bypass: {
+                    value: false,
+                    automatable: false,
+                    type: BOOLEAN
+                },
+            }
+        },
+        pitchRatio: {
+            enumerable: true,
+            get: function() {
+                return this.processor.pitchRatio;
+            },
+            set: function(value) {
+                this.processor.pitchRatio = value;
+            }
+        },
+        overlapRatio: {
+            enumerable: true,
+            get: function() {
+                return this.processor.overlapRatio;
+            },
+            set: function(value) {
+                this.processor.overlapRatio = value;
             }
         }
     });
