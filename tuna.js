@@ -216,11 +216,11 @@
     }
 
     function hannWindow(length) {
-        const grainWindow = new Float32Array(length);
+        var buffer = new Float32Array(length);
         for (var i = 0; i < length; i++) {
-          grainWindow[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / (length - 1)));
+          buffer[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / (length - 1)));
         }
-        return grainWindow;
+        return buffer;
     }
 
     function linearInterpolation(a, b, t) {
