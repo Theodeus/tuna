@@ -23,6 +23,7 @@ Effect list:
     <li>Ping Pong Delay</li>
     <li>Panner (needs polyfilling, see Panner section [in the wiki] (https://github.com/Theodeus/tuna/wiki)</li>
     <li>Gain</li>
+    <li>Pitch Shifter</li>
 </ul>
 
 Usage
@@ -57,3 +58,5 @@ http://bapjs.org/ - Beat making toolkit
 https://github.com/jamespfarrell/json-to-web-audio - Make music from Json with json-to-web-audio
 
 http://errozero.co.uk/acid-machine/ - Acid Machine 2, which is exactly what it sounds like! Add up to two Tuna effects per instrument.
+
+https://github.com/richtier/alexa-browser-client/ - Integrate Alexa in your browser app.
