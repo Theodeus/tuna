@@ -2279,6 +2279,7 @@
         if (!properties) {
             properties = this.getDefaults();
         }
+        var input, output, i, grainData, index, a, b;
 
         this.input = userContext.createGain();
         this.bufferSize = initValue(properties.bufferSize, this.defaults.bufferSize.value);
@@ -2296,11 +2297,11 @@
 
         this.bypass = properties.bypass || this.defaults.bypass.value;
 
-        this.processor.onaudioprocess = function(e) {
-            var input = e.inputBuffer.getChannelData(0);
-            var output = e.outputBuffer.getChannelData(0);
 
-            for (var i = 0; i < input.length; i++) {
+        this.processor.onaudioprocess = function(e) {
+            input = e.inputBuffer.getChannelData(0);
+            output = e.outputBuffer.getChannelData(0);
+            for (i = 0; i < input.length; i++) {
               // Apply the window to the input buffer
               input[i] *= this.hannWindow[i];
               // Shift half of the buffer
@@ -2309,15 +2310,15 @@
               this.buffer[i + this.bufferSize] = 0.0;
             }
             // Calculate the pitch shifted grain re-sampling and looping the input
-            var grainData = new Float32Array(this.bufferSize * 2);
-            for (var i = 0, j = 0.0; i < this.bufferSize; i++, j += this.pitchRatio) {
-              var index = Math.floor(j) % this.bufferSize;
-              var a = input[index];
-              var b = input[(index + 1) % this.bufferSize];
+            grainData = new Float32Array(this.bufferSize * 2);
+            for (i = 0, j = 0.0; i < this.bufferSize; i++, j += this.pitchRatio) {
+              index = Math.floor(j) % this.bufferSize;
+              a = input[index];
+              b = input[(index + 1) % this.bufferSize];
               grainData[i] += linearInterpolation(a, b, j % 1.0) * this.hannWindow[i];
             }
             // Copy the grain multiple times overlapping it
-            for (var i = 0; i < this.bufferSize; i += Math.round(this.bufferSize * (1 - this.overlapRatio))) {
+            for (i = 0; i < this.bufferSize; i += Math.round(this.bufferSize * (1 - this.overlapRatio))) {
               for (j = 0; j <= this.bufferSize; j++) {
                 this.buffer[i + j] += grainData[j];
               }
