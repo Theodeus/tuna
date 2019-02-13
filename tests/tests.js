@@ -1,9 +1,19 @@
 describe("In Tuna", function() {
     var context, tuna;
 
-    beforeAll(function() {
-        context = new AudioContext();
-        tuna = new Tuna(context);
+    beforeAll(function(done) {
+        //start AudioContext and then tests on button press
+        document.getElementById("start").addEventListener("click", function() {
+            context = new AudioContext();
+            tuna = new Tuna(context);
+            setTimeout(function checkCurrentTime() {
+                if (context.currentTime > 0) {
+                    done();
+                } else {
+                    setTimeout(checkCurrentTime, 100);
+                }
+            }, 100);
+        });
     });
 
     describe("a Bitcrusher node", function() {
@@ -614,4 +624,6 @@ describe("In Tuna", function() {
         });
 
     });
+
 });
+
