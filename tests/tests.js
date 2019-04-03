@@ -1,9 +1,19 @@
 describe("In Tuna", function() {
     var context, tuna;
 
-    beforeAll(function() {
-        context = new AudioContext();
-        tuna = new Tuna(context);
+    beforeAll(function(done) {
+        //start AudioContext and then tests on button press
+        document.getElementById("start").addEventListener("click", function() {
+            context = new AudioContext();
+            tuna = new Tuna(context);
+            setTimeout(function checkCurrentTime() {
+                if (context.currentTime > 0) {
+                    done();
+                } else {
+                    setTimeout(checkCurrentTime, 100);
+                }
+            }, 100);
+        });
     });
 
     describe("a Bitcrusher node", function() {
@@ -615,41 +625,42 @@ describe("In Tuna", function() {
 
     });
 
-    describe("a PitchShifter node", function() {
-        var pitchShifter;
+    describe("a GranularPitchShifter node", function() {
+        var GranularPitchShifter;
 
         beforeEach(function() {
-            pitchShifter = new tuna.PitchShifter();
+            GranularPitchShifter = new tuna.GranularPitchShifter();
         });
 
         it("will have default values set", function() {
-            expect(pitchShifter.processor.bufferSize).toEqual(512);
-            expect(pitchShifter.processor.pitchRatio).toEqual(1.0);
-            expect(pitchShifter.processor.overlapRatio).toEqual(0.5);
-            expect(pitchShifter.bypass).toBeFalsy();
+            expect(GranularPitchShifter.processor.bufferSize).toEqual(512);
+            expect(GranularPitchShifter.processor.pitchRatio).toEqual(1.0);
+            expect(GranularPitchShifter.processor.overlapRatio).toEqual(0.5);
+            expect(GranularPitchShifter.bypass).toBeFalsy();
         });
 
         it("will have passed values set", function() {
-            pitchShifter = new tuna.PitchShifter({
+            GranularPitchShifter = new tuna.GranularPitchShifter({
                 pan: 0.75,
                 bufferSize: 1024,
                 pitchRatio: 1.1,
                 overlapRatio: 0.6,
                 bypass: true
             });
-            expect(pitchShifter.processor.bufferSize).toEqual(1024);
-            expect(pitchShifter.processor.pitchRatio).toEqual(1.1);
-            expect(pitchShifter.processor.overlapRatio).toEqual(0.6);
-            expect(pitchShifter.bypass).toBeTruthy();
+            expect(GranularPitchShifter.processor.bufferSize).toEqual(1024);
+            expect(GranularPitchShifter.processor.pitchRatio).toEqual(1.1);
+            expect(GranularPitchShifter.processor.overlapRatio).toEqual(0.6);
+            expect(GranularPitchShifter.bypass).toBeTruthy();
         });
 
         it("will be activated", function() {
-            pitchShifter.activateCallback = jasmine.createSpy();
-            pitchShifter.bypass = true;
-            pitchShifter.bypass = false;
-            expect(pitchShifter.activateCallback).toHaveBeenCalled();
+            GranularPitchShifter.activateCallback = jasmine.createSpy();
+            GranularPitchShifter.bypass = true;
+            GranularPitchShifter.bypass = false;
+            expect(GranularPitchShifter.activateCallback).toHaveBeenCalled();
         });
 
     });
 
 });
+
