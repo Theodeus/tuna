@@ -217,7 +217,8 @@
 
     function hannWindow(length) {
         var buffer = new Float32Array(length);
-        for (var i = 0; i < length; i++) {
+        var i;
+        for (i = 0; i < length; i++) {
           buffer[i] = 0.5 * (1 - Math.cos(2 * Math.PI * i / (length - 1)));
         }
         return buffer;
@@ -2275,7 +2276,7 @@
         }
     });
 
-    Tuna.prototype.PitchShifter = function(properties) {
+    Tuna.prototype.GranularPitchShifter = function(properties) {
         if (!properties) {
             properties = this.getDefaults();
         }
@@ -2329,9 +2330,9 @@
             }
         };
     };
-    Tuna.prototype.PitchShifter.prototype = Object.create(Super, {
+    Tuna.prototype.GranularPitchShifter.prototype = Object.create(Super, {
         name: {
-            value: "PitchShifter"
+            value: "GranularPitchShifter"
         },
         defaults: {
             writable: true,
