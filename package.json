@@ -30,9 +30,10 @@
   "homepage": "https://github.com/Theodeus/tuna#readme",
   "devDependencies": {
     "eslint": "^5.6.1",
+    "express": "^4.17.1",
     "uglify-js": "^3.4.9"
   },
   "dependencies": {
-    "npm": "^6.4.1"
+    "npm": "^6.10.2"
   }
 }
