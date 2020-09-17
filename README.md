@@ -36,6 +36,8 @@ Check the wiki: https://github.com/Theodeus/tuna/wiki/Getting-started
 
 Or a live example: http://codepen.io/Theodeus/pen/oxKjmy?editors=0010
 
+Or you can check all effects: https://github.com/Theodeus/tuna/tree/example/example
+
 In the wild
 ===
 This is a very incomplete list of places where Tuna.js is used.
