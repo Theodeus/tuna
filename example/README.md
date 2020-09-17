@@ -1,23 +1,21 @@
 # example
 
 ## Project setup
+
 ```
 yarn install
-```
-
-### Compiles and hot-reloads for development
-```
 yarn serve
 ```
 
-### Compiles and minifies for production
-```
-yarn build
-```
+## Deployment
 
-### Lints and fixes files
-```
-yarn lint
+- If you use a sub directory(ex: http://example.com/tuna/), you have to edit `vue.config` .
+
+```vue.config
+module.exports = {
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/SandBox/tuna/' : "/"
+}
 ```
 
 ### Customize configuration

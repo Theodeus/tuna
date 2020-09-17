@@ -83,7 +83,7 @@ export default {
         return;
       }
       var xhr = new XMLHttpRequest();
-      xhr.open("GET", "/" + this.audio);
+      xhr.open("GET", this.audio);
       xhr.responseType = "arraybuffer";
       xhr.onload = async (e) => {
         const buffer = await this.audioContext.decodeAudioData(
