@@ -1911,6 +1911,7 @@
             }
         },
         filterFreqTimeout: {
+            writable: true,
             value: 0
         },
         setFilterFreq: {
@@ -1975,7 +1976,7 @@
             },
             set: function(value) {
                 this._resonance = value;
-                this.filterPeaking.Q = this._resonance;
+                this.filterPeaking.Q.value = this._resonance;
             }
         },
         init: {
