@@ -1218,7 +1218,7 @@
             writable: true,
             value: {
                 drive: {
-                    value: 1,
+                    value: 0.197,
                     min: 0,
                     max: 1,
                     automatable: true,
@@ -1226,7 +1226,7 @@
                     scaled: true
                 },
                 outputGain: {
-                    value: 0,
+                    value: -9.154,
                     min: -46,
                     max: 0,
                     automatable: true,
@@ -1234,7 +1234,7 @@
                     scaled: true
                 },
                 curveAmount: {
-                    value: 0.725,
+                    value: 0.979,
                     min: 0,
                     max: 1,
                     automatable: false,
@@ -1262,7 +1262,7 @@
                 return this.inputDrive.gain;
             },
             set: function(value) {
-                this._drive = value;
+                this.inputDrive.gain.value = value;
             }
         },
         curveAmount: {
@@ -1311,7 +1311,7 @@
                     var i, x, y;
                     for (i = 0; i < n_samples; i++) {
                         x = i * 2 / n_samples - 1;
-                        y = ((0.5 * Math.pow((x + 1.4), 2)) - 1) * y >= 0 ? 5.8 : 1.2;
+                        y = ((0.5 * Math.pow((x + 1.4), 2)) - 1) * (y >= 0 ? 5.8 : 1.2);
                         ws_table[i] = tanh(y);
                     }
                 },
@@ -1328,9 +1328,13 @@
                     for (i = 0; i < n_samples; i++) {
                         x = i * 2 / n_samples - 1;
                         abx = Math.abs(x);
-                        if (abx < a) y = abx;
-                        else if (abx > a) y = a + (abx - a) / (1 + Math.pow((abx - a) / (1 - a), 2));
-                        else if (abx > 1) y = abx;
+                        if (abx < a) {
+                            y = abx;
+                        } else if (abx > a) {
+                            y = a + (abx - a) / (1 + Math.pow((abx - a) / (1 - a), 2));
+                        } else if (abx > 1) {
+                            y = abx;
+                        }
                         ws_table[i] = sign(x) * y * (1 / ((a + 1) / 2));
                     }
                 },
