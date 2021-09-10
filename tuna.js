@@ -1857,35 +1857,35 @@
                     type: BOOLEAN
                 },
                 baseFrequency: {
-                    value: 0.5,
+                    value: 0.153,
                     min: 0,
                     max: 1,
                     automatable: false,
                     type: FLOAT
                 },
                 excursionOctaves: {
-                    value: 2,
+                    value: 3.3,
                     min: 1,
                     max: 6,
                     automatable: false,
                     type: FLOAT
                 },
                 sweep: {
-                    value: 0.2,
+                    value: 0.35,
                     min: 0,
                     max: 1,
                     automatable: false,
                     type: FLOAT
                 },
                 resonance: {
-                    value: 10,
+                    value: 19,
                     min: 1,
                     max: 100,
                     automatable: false,
                     type: FLOAT
                 },
                 sensitivity: {
-                    value: 0.5,
+                    value: -0.5,
                     min: -1,
                     max: 1,
                     automatable: false,
@@ -2118,20 +2118,14 @@
                     channels = event.inputBuffer.numberOfChannels,
                     current, chan, rms, i;
                 chan = rms = i = 0;
-                if (channels > 1) { //need to mixdown
+
+                for(chan = 0; chan < channels; ++chan) {
                     for (i = 0; i < count; ++i) {
-                        for (; chan < channels; ++chan) {
-                            current = event.inputBuffer.getChannelData(chan)[i];
-                            rms += (current * current) / channels;
-                        }
-                    }
-                } else {
-                    for (i = 0; i < count; ++i) {
-                        current = event.inputBuffer.getChannelData(0)[i];
+                        current = event.inputBuffer.getChannelData(chan)[i];
                         rms += (current * current);
                     }
                 }
-                rms = Math.sqrt(rms);
+                rms = Math.sqrt(rms / channels);
 
                 if (this._envelope < rms) {
                     this._envelope *= this._attackC;
