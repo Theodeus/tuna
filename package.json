@@ -21,7 +21,6 @@
     "build:types": "tsc",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "uglify": "uglifyjs tuna.js -o tuna-min.js",
     "patch": "npm version patch && npm publish"
   },
   "repository": {
@@ -42,10 +41,7 @@
   },
   "homepage": "https://github.com/Theodeus/tuna#readme",
   "devDependencies": {
-    "eslint": "^5.6.1",
-    "express": "^4.17.1",
     "typescript": "^5.9.3",
-    "uglify-js": "^3.4.9",
     "vite": "^7.3.0"
   }
 }
