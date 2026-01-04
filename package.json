@@ -2,11 +2,24 @@
   "name": "tunajs",
   "version": "1.0.15",
   "description": "Audio effects library for the Web Audio API",
-  "main": "tuna.js",
+  "main": "./dist/tuna.umd.cjs",
+  "module": "./dist/tuna.js",
+  "types": "./dist/types/tuna.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/tuna.js",
+      "require": "./dist/tuna.umd.cjs"
+    }
+  },
   "directories": {
     "test": "tests"
   },
   "scripts": {
+    "dev": "vite",
+    "build": "vite build && npm run build:types",
+    "build:types": "tsc",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1",
     "uglify": "uglifyjs tuna.js -o tuna-min.js",
     "patch": "npm version patch && npm publish"
@@ -31,7 +44,8 @@
   "devDependencies": {
     "eslint": "^5.6.1",
     "express": "^4.17.1",
-    "uglify-js": "^3.4.9"
-  },
-  "dependencies": {}
+    "typescript": "^5.9.3",
+    "uglify-js": "^3.4.9",
+    "vite": "^7.3.0"
+  }
 }

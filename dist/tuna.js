@@ -1,0 +1,1563 @@
+var t, p, k = function(e, a) {
+  e.value = a;
+}, f = Object.create(null, {
+  activate: {
+    writable: !0,
+    value: function(e) {
+      e ? (this.input.disconnect(), this.input.connect(this.activateNode), this.activateCallback && this.activateCallback(e)) : (this.input.disconnect(), this.input.connect(this.output));
+    }
+  },
+  bypass: {
+    get: function() {
+      return this._bypass;
+    },
+    set: function(e) {
+      this._lastBypassValue !== e && (this._bypass = e, this.activate(!e), this._lastBypassValue = e);
+    }
+  },
+  connect: {
+    value: function(e) {
+      this.output.connect(e);
+    }
+  },
+  disconnect: {
+    value: function(e) {
+      this.output.disconnect(e);
+    }
+  },
+  connectInOrder: {
+    value: function(e) {
+      for (var a = e.length - 1; a--; ) {
+        if (!e[a].connect)
+          return console.error("AudioNode.connectInOrder: TypeError: Not an AudioNode.", e[a]);
+        e[a + 1].input ? e[a].connect(e[a + 1].input) : e[a].connect(e[a + 1]);
+      }
+    }
+  },
+  getDefaults: {
+    value: function() {
+      var e = {};
+      for (var a in this.defaults)
+        e[a] = this.defaults[a].value;
+      return e;
+    }
+  },
+  automate: {
+    value: function(e, a, n, i) {
+      var s = i ? ~~(i / 1e3) : t.currentTime, l = n ? ~~(n / 1e3) : 0, h = this.defaults[e], c = this[e], d;
+      c ? h.automatable ? (n ? (d = "linearRampToValueAtTime", c.cancelScheduledValues(s), c.setValueAtTime(c.value, s)) : d = "setValueAtTime", c[d](a, l + s)) : c = a : console.error("Invalid Property for " + this.name);
+    }
+  }
+}), u = "float", m = "boolean", q = "string", g = "int";
+function r(e) {
+  if (!(this instanceof r))
+    return new r(e);
+  var a = typeof window > "u" ? {} : window;
+  if (a.AudioContext || (a.AudioContext = a.webkitAudioContext), e || (console.log("tuna.js: Missing audio context! Creating a new context for you."), e = a.AudioContext && new a.AudioContext()), !e)
+    throw new Error("Tuna cannot initialize because this environment does not support web audio.");
+  F(e), t = e, p = this;
+}
+function F(e) {
+  if (e.__connectified__ === !0) return;
+  var a = e.createGain(), n = Object.getPrototypeOf(Object.getPrototypeOf(a)), i = n.connect;
+  n.connect = s, e.__connectified__ = !0;
+  function s() {
+    var l = arguments[0];
+    return arguments[0] = f.isPrototypeOf ? f.isPrototypeOf(l) ? l.input : l : l.input || l, i.apply(this, arguments), l;
+  }
+}
+function _(e) {
+  return Math.max(0, Math.round(100 * Math.pow(2, e / 6)) / 100);
+}
+function M(e, a) {
+  var n, i, s = 0, l = 0, h = 0, c = 0;
+  return n = e.toExponential().match(/^.\.?(.*)e(.+)$/), s = parseInt(n[2], 10) - (n[1] + "").length, n = a.toExponential().match(/^.\.?(.*)e(.+)$/), l = parseInt(n[2], 10) - (n[1] + "").length, l > s && (s = l), i = e % a, s < -100 || s > 20 ? (h = Math.round(Math.log(i) / Math.log(10)), c = Math.pow(10, h), (i / c).toFixed(h - s) * c) : parseFloat(i.toFixed(-s));
+}
+function R(e) {
+  return e === 0 ? 1 : Math.abs(e) / e;
+}
+function N(e) {
+  return (Math.exp(e) - Math.exp(-e)) / (Math.exp(e) + Math.exp(-e));
+}
+function o(e, a) {
+  return e === void 0 ? a : e;
+}
+r.prototype.Bitcrusher = function(e) {
+  e || (e = this.getDefaults()), this.bufferSize = e.bufferSize || this.defaults.bufferSize.value, this.input = t.createGain(), this.activateNode = t.createGain(), this.processor = t.createScriptProcessor(this.bufferSize, 1, 1), this.output = t.createGain(), this.activateNode.connect(this.processor), this.processor.connect(this.output);
+  var a = 0, n = 0, i, s, l, h, c;
+  this.processor.onaudioprocess = function(d) {
+    for (i = d.inputBuffer.getChannelData(0), s = d.outputBuffer.getChannelData(0), l = Math.pow(1 / 2, this.bits), c = i.length, h = 0; h < c; h++)
+      a += this.normfreq, a >= 1 && (a -= 1, n = l * Math.floor(i[h] / l + 0.5)), s[h] = n;
+  }, this.bits = e.bits || this.defaults.bits.value, this.normfreq = o(e.normfreq, this.defaults.normfreq.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Bitcrusher.prototype = Object.create(f, {
+  name: {
+    value: "Bitcrusher"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      bits: {
+        value: 4,
+        min: 1,
+        max: 16,
+        automatable: !1,
+        type: g
+      },
+      bufferSize: {
+        value: 4096,
+        min: 256,
+        max: 16384,
+        automatable: !1,
+        type: g
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      },
+      normfreq: {
+        value: 0.1,
+        min: 1e-4,
+        max: 1,
+        automatable: !1,
+        type: u
+      }
+    }
+  },
+  bits: {
+    enumerable: !0,
+    get: function() {
+      return this.processor.bits;
+    },
+    set: function(e) {
+      this.processor.bits = e;
+    }
+  },
+  normfreq: {
+    enumerable: !0,
+    get: function() {
+      return this.processor.normfreq;
+    },
+    set: function(e) {
+      this.processor.normfreq = e;
+    }
+  }
+});
+r.prototype.Cabinet = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.convolver = this.newConvolver(e.impulsePath || "../impulses/impulse_guitar.wav"), this.makeupNode = t.createGain(), this.output = t.createGain(), this.activateNode.connect(this.convolver.input), this.convolver.output.connect(this.makeupNode), this.makeupNode.connect(this.output), this.makeupNode.gain.value = o(e.makeupGain, this.defaults.makeupGain.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Cabinet.prototype = Object.create(f, {
+  name: {
+    value: "Cabinet"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      makeupGain: {
+        value: 1,
+        min: 0,
+        max: 20,
+        automatable: !0,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  makeupGain: {
+    enumerable: !0,
+    get: function() {
+      return this.makeupNode.gain;
+    },
+    set: function(e) {
+      this.makeupNode.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  newConvolver: {
+    value: function(e) {
+      return new p.Convolver({
+        impulse: e,
+        dryLevel: 0,
+        wetLevel: 1
+      });
+    }
+  }
+});
+r.prototype.Chorus = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.attenuator = this.activateNode = t.createGain(), this.splitter = t.createChannelSplitter(2), this.delayL = t.createDelay(), this.delayR = t.createDelay(), this.feedbackGainNodeLR = t.createGain(), this.feedbackGainNodeRL = t.createGain(), this.merger = t.createChannelMerger(2), this.output = t.createGain(), this.lfoL = new p.LFO({
+    target: this.delayL.delayTime,
+    callback: k
+  }), this.lfoR = new p.LFO({
+    target: this.delayR.delayTime,
+    callback: k
+  }), this.input.connect(this.attenuator), this.attenuator.connect(this.output), this.attenuator.connect(this.splitter), this.splitter.connect(this.delayL, 0), this.splitter.connect(this.delayR, 1), this.delayL.connect(this.feedbackGainNodeLR), this.delayR.connect(this.feedbackGainNodeRL), this.feedbackGainNodeLR.connect(this.delayR), this.feedbackGainNodeRL.connect(this.delayL), this.delayL.connect(this.merger, 0, 0), this.delayR.connect(this.merger, 0, 1), this.merger.connect(this.output), this.feedback = o(e.feedback, this.defaults.feedback.value), this.rate = o(e.rate, this.defaults.rate.value), this.delay = o(e.delay, this.defaults.delay.value), this.depth = o(e.depth, this.defaults.depth.value), this.lfoR.phase = Math.PI / 2, this.attenuator.gain.value = 0.6934, this.lfoL.activate(!0), this.lfoR.activate(!0), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Chorus.prototype = Object.create(f, {
+  name: {
+    value: "Chorus"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      feedback: {
+        value: 0.4,
+        min: 0,
+        max: 0.95,
+        automatable: !1,
+        type: u
+      },
+      delay: {
+        value: 45e-4,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      depth: {
+        value: 0.7,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      rate: {
+        value: 1.5,
+        min: 0,
+        max: 8,
+        automatable: !1,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  delay: {
+    enumerable: !0,
+    get: function() {
+      return this._delay;
+    },
+    set: function(e) {
+      this._delay = 2e-4 * (Math.pow(10, e) * 2), this.lfoL.offset = this._delay, this.lfoR.offset = this._delay, this._depth = this._depth;
+    }
+  },
+  depth: {
+    enumerable: !0,
+    get: function() {
+      return this._depth;
+    },
+    set: function(e) {
+      this._depth = e, this.lfoL.oscillation = this._depth * this._delay, this.lfoR.oscillation = this._depth * this._delay;
+    }
+  },
+  feedback: {
+    enumerable: !0,
+    get: function() {
+      return this._feedback;
+    },
+    set: function(e) {
+      this._feedback = e, this.feedbackGainNodeLR.gain.setTargetAtTime(this._feedback, t.currentTime, 0.01), this.feedbackGainNodeRL.gain.setTargetAtTime(this._feedback, t.currentTime, 0.01);
+    }
+  },
+  rate: {
+    enumerable: !0,
+    get: function() {
+      return this._rate;
+    },
+    set: function(e) {
+      this._rate = e, this.lfoL.frequency = this._rate, this.lfoR.frequency = this._rate;
+    }
+  }
+});
+r.prototype.Compressor = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.compNode = this.activateNode = t.createDynamicsCompressor(), this.makeupNode = t.createGain(), this.output = t.createGain(), this.compNode.connect(this.makeupNode), this.makeupNode.connect(this.output), this.automakeup = o(e.automakeup, this.defaults.automakeup.value), this.automakeup ? this.makeupNode.gain.value = _(this.computeMakeup()) : this.makeupNode.gain.value = _(o(e.makeupGain, this.defaults.makeupGain.value)), this.threshold = o(e.threshold, this.defaults.threshold.value), this.release = o(e.release, this.defaults.release.value), this.attack = o(e.attack, this.defaults.attack.value), this.ratio = e.ratio || this.defaults.ratio.value, this.knee = o(e.knee, this.defaults.knee.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Compressor.prototype = Object.create(f, {
+  name: {
+    value: "Compressor"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      threshold: {
+        value: -20,
+        min: -60,
+        max: 0,
+        automatable: !0,
+        type: u
+      },
+      release: {
+        value: 250,
+        min: 10,
+        max: 2e3,
+        automatable: !0,
+        type: u
+      },
+      makeupGain: {
+        value: 1,
+        min: 1,
+        max: 100,
+        automatable: !0,
+        type: u
+      },
+      attack: {
+        value: 1,
+        min: 0,
+        max: 1e3,
+        automatable: !0,
+        type: u
+      },
+      ratio: {
+        value: 4,
+        min: 1,
+        max: 50,
+        automatable: !0,
+        type: u
+      },
+      knee: {
+        value: 5,
+        min: 0,
+        max: 40,
+        automatable: !0,
+        type: u
+      },
+      automakeup: {
+        value: !1,
+        automatable: !1,
+        type: m
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  computeMakeup: {
+    value: function() {
+      var e = 4, a = this.compNode;
+      return -(a.threshold.value - a.threshold.value / a.ratio.value) / e;
+    }
+  },
+  automakeup: {
+    enumerable: !0,
+    get: function() {
+      return this._automakeup;
+    },
+    set: function(e) {
+      this._automakeup = e, this._automakeup && (this.makeupGain = this.computeMakeup());
+    }
+  },
+  threshold: {
+    enumerable: !0,
+    get: function() {
+      return this.compNode.threshold;
+    },
+    set: function(e) {
+      this.compNode.threshold.value = e, this._automakeup && (this.makeupGain = this.computeMakeup());
+    }
+  },
+  ratio: {
+    enumerable: !0,
+    get: function() {
+      return this.compNode.ratio;
+    },
+    set: function(e) {
+      this.compNode.ratio.value = e, this._automakeup && (this.makeupGain = this.computeMakeup());
+    }
+  },
+  knee: {
+    enumerable: !0,
+    get: function() {
+      return this.compNode.knee;
+    },
+    set: function(e) {
+      this.compNode.knee.value = e, this._automakeup && (this.makeupGain = this.computeMakeup());
+    }
+  },
+  attack: {
+    enumerable: !0,
+    get: function() {
+      return this.compNode.attack;
+    },
+    set: function(e) {
+      this.compNode.attack.value = e / 1e3;
+    }
+  },
+  release: {
+    enumerable: !0,
+    get: function() {
+      return this.compNode.release;
+    },
+    set: function(e) {
+      this.compNode.release.value = e / 1e3;
+    }
+  },
+  makeupGain: {
+    enumerable: !0,
+    get: function() {
+      return this.makeupNode.gain;
+    },
+    set: function(e) {
+      this.makeupNode.gain.setTargetAtTime(_(e), t.currentTime, 0.01);
+    }
+  }
+});
+r.prototype.Convolver = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.convolver = t.createConvolver(), this.dry = t.createGain(), this.filterLow = t.createBiquadFilter(), this.filterHigh = t.createBiquadFilter(), this.wet = t.createGain(), this.output = t.createGain(), this.activateNode.connect(this.filterLow), this.activateNode.connect(this.dry), this.filterLow.connect(this.filterHigh), this.filterHigh.connect(this.convolver), this.convolver.connect(this.wet), this.wet.connect(this.output), this.dry.connect(this.output), this.dry.gain.value = o(e.dryLevel, this.defaults.dryLevel.value), this.wet.gain.value = o(e.wetLevel, this.defaults.wetLevel.value), this.filterHigh.frequency.value = e.highCut || this.defaults.highCut.value, this.filterLow.frequency.value = e.lowCut || this.defaults.lowCut.value, this.output.gain.value = o(e.level, this.defaults.level.value), this.filterHigh.type = "lowpass", this.filterLow.type = "highpass", this.buffer = e.impulse || "../impulses/ir_rev_short.wav", this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Convolver.prototype = Object.create(f, {
+  name: {
+    value: "Convolver"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      highCut: {
+        value: 22050,
+        min: 20,
+        max: 22050,
+        automatable: !0,
+        type: u
+      },
+      lowCut: {
+        value: 20,
+        min: 20,
+        max: 22050,
+        automatable: !0,
+        type: u
+      },
+      dryLevel: {
+        value: 1,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u
+      },
+      wetLevel: {
+        value: 1,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u
+      },
+      level: {
+        value: 1,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  lowCut: {
+    get: function() {
+      return this.filterLow.frequency;
+    },
+    set: function(e) {
+      this.filterLow.frequency.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  highCut: {
+    get: function() {
+      return this.filterHigh.frequency;
+    },
+    set: function(e) {
+      this.filterHigh.frequency.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  level: {
+    get: function() {
+      return this.output.gain;
+    },
+    set: function(e) {
+      this.output.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  dryLevel: {
+    get: function() {
+      return this.dry.gain;
+    },
+    set: function(e) {
+      this.dry.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  wetLevel: {
+    get: function() {
+      return this.wet.gain;
+    },
+    set: function(e) {
+      this.wet.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  buffer: {
+    enumerable: !1,
+    get: function() {
+      return this.convolver.buffer;
+    },
+    set: function(e) {
+      var a = this.convolver, n = new XMLHttpRequest();
+      if (!e) {
+        console.log("Tuna.Convolver.setBuffer: Missing impulse path!");
+        return;
+      }
+      n.open("GET", e, !0), n.responseType = "arraybuffer", n.onreadystatechange = function() {
+        n.readyState === 4 && (n.status < 300 && n.status > 199 || n.status === 302) && t.decodeAudioData(n.response, function(i) {
+          a.buffer = i;
+        }, function(i) {
+          i && console.log("Tuna.Convolver.setBuffer: Error decoding data" + i);
+        });
+      }, n.send(null);
+    }
+  }
+});
+r.prototype.Delay = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.dry = t.createGain(), this.wet = t.createGain(), this.filter = t.createBiquadFilter(), this.delay = t.createDelay(10), this.feedbackNode = t.createGain(), this.output = t.createGain(), this.activateNode.connect(this.delay), this.activateNode.connect(this.dry), this.delay.connect(this.filter), this.filter.connect(this.feedbackNode), this.feedbackNode.connect(this.delay), this.feedbackNode.connect(this.wet), this.wet.connect(this.output), this.dry.connect(this.output), this.delayTime = e.delayTime || this.defaults.delayTime.value, this.feedbackNode.gain.value = o(e.feedback, this.defaults.feedback.value), this.wet.gain.value = o(e.wetLevel, this.defaults.wetLevel.value), this.dry.gain.value = o(e.dryLevel, this.defaults.dryLevel.value), this.filter.frequency.value = e.cutoff || this.defaults.cutoff.value, this.filter.type = "lowpass", this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Delay.prototype = Object.create(f, {
+  name: {
+    value: "Delay"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      delayTime: {
+        value: 100,
+        min: 20,
+        max: 1e3,
+        automatable: !1,
+        type: u
+      },
+      feedback: {
+        value: 0.45,
+        min: 0,
+        max: 0.9,
+        automatable: !0,
+        type: u
+      },
+      cutoff: {
+        value: 2e4,
+        min: 20,
+        max: 2e4,
+        automatable: !0,
+        type: u
+      },
+      wetLevel: {
+        value: 0.5,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u
+      },
+      dryLevel: {
+        value: 1,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  delayTime: {
+    enumerable: !0,
+    get: function() {
+      return this.delay.delayTime;
+    },
+    set: function(e) {
+      this.delay.delayTime.value = e / 1e3;
+    }
+  },
+  wetLevel: {
+    enumerable: !0,
+    get: function() {
+      return this.wet.gain;
+    },
+    set: function(e) {
+      this.wet.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  dryLevel: {
+    enumerable: !0,
+    get: function() {
+      return this.dry.gain;
+    },
+    set: function(e) {
+      this.dry.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  feedback: {
+    enumerable: !0,
+    get: function() {
+      return this.feedbackNode.gain;
+    },
+    set: function(e) {
+      this.feedbackNode.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  cutoff: {
+    enumerable: !0,
+    get: function() {
+      return this.filter.frequency;
+    },
+    set: function(e) {
+      this.filter.frequency.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  }
+});
+r.prototype.Filter = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.filter = t.createBiquadFilter(), this.output = t.createGain(), this.activateNode.connect(this.filter), this.filter.connect(this.output), this.filter.frequency.value = e.frequency || this.defaults.frequency.value, this.Q = e.resonance || this.defaults.Q.value, this.filterType = o(e.filterType, this.defaults.filterType.value), this.filter.gain.value = o(e.gain, this.defaults.gain.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Filter.prototype = Object.create(f, {
+  name: {
+    value: "Filter"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      frequency: {
+        value: 800,
+        min: 20,
+        max: 22050,
+        automatable: !0,
+        type: u
+      },
+      Q: {
+        value: 1,
+        min: 1e-3,
+        max: 100,
+        automatable: !0,
+        type: u
+      },
+      gain: {
+        value: 0,
+        min: -40,
+        max: 40,
+        automatable: !0,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      },
+      filterType: {
+        value: "lowpass",
+        automatable: !1,
+        type: q
+      }
+    }
+  },
+  filterType: {
+    enumerable: !0,
+    get: function() {
+      return this.filter.type;
+    },
+    set: function(e) {
+      this.filter.type = e;
+    }
+  },
+  Q: {
+    enumerable: !0,
+    get: function() {
+      return this.filter.Q;
+    },
+    set: function(e) {
+      this.filter.Q.value = e;
+    }
+  },
+  gain: {
+    enumerable: !0,
+    get: function() {
+      return this.filter.gain;
+    },
+    set: function(e) {
+      this.filter.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  frequency: {
+    enumerable: !0,
+    get: function() {
+      return this.filter.frequency;
+    },
+    set: function(e) {
+      this.filter.frequency.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  }
+});
+r.prototype.Gain = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.gainNode = t.createGain(), this.output = t.createGain(), this.activateNode.connect(this.gainNode), this.gainNode.connect(this.output), this.gainNode.gain.value = o(e.gain, this.defaults.gain.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Gain.prototype = Object.create(f, {
+  name: {
+    value: "Gain"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      },
+      gain: {
+        value: 1,
+        automatable: !0,
+        type: u
+      }
+    }
+  },
+  gain: {
+    enumerable: !0,
+    get: function() {
+      return this.gainNode.gain;
+    },
+    set: function(e) {
+      this.gainNode.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  }
+});
+r.prototype.MoogFilter = function(e) {
+  e || (e = this.getDefaults()), this.bufferSize = e.bufferSize || this.defaults.bufferSize.value, this.input = t.createGain(), this.activateNode = t.createGain(), this.processor = t.createScriptProcessor(this.bufferSize, 1, 1), this.output = t.createGain(), this.activateNode.connect(this.processor), this.processor.connect(this.output);
+  var a, n, i, s, l, h, c, d;
+  a = n = i = s = l = h = c = d = 0;
+  var b, T, v, w, y, L, G;
+  this.processor.onaudioprocess = function(x) {
+    for (b = x.inputBuffer.getChannelData(0), T = x.outputBuffer.getChannelData(0), v = this.cutoff * 1.16, G = 0.35013 * (v * v) * (v * v), w = this.resonance * (1 - 0.15 * v * v), L = b.length, y = 0; y < L; y++)
+      b[y] -= d * w, b[y] *= G, l = b[y] + 0.3 * a + (1 - v) * l, a = b[y], h = l + 0.3 * n + (1 - v) * h, n = l, c = h + 0.3 * i + (1 - v) * c, i = h, d = c + 0.3 * s + (1 - v) * d, s = c, T[y] = d;
+  }, this.cutoff = o(e.cutoff, this.defaults.cutoff.value), this.resonance = o(e.resonance, this.defaults.resonance.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.MoogFilter.prototype = Object.create(f, {
+  name: {
+    value: "MoogFilter"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      bufferSize: {
+        value: 4096,
+        min: 256,
+        max: 16384,
+        automatable: !1,
+        type: g
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      },
+      cutoff: {
+        value: 0.065,
+        min: 1e-4,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      resonance: {
+        value: 3.5,
+        min: 0,
+        max: 4,
+        automatable: !1,
+        type: u
+      }
+    }
+  },
+  cutoff: {
+    enumerable: !0,
+    get: function() {
+      return this.processor.cutoff;
+    },
+    set: function(e) {
+      this.processor.cutoff = e;
+    }
+  },
+  resonance: {
+    enumerable: !0,
+    get: function() {
+      return this.processor.resonance;
+    },
+    set: function(e) {
+      this.processor.resonance = e;
+    }
+  }
+});
+r.prototype.Overdrive = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.inputDrive = t.createGain(), this.waveshaper = t.createWaveShaper(), this.outputDrive = t.createGain(), this.output = t.createGain(), this.activateNode.connect(this.inputDrive), this.inputDrive.connect(this.waveshaper), this.waveshaper.connect(this.outputDrive), this.outputDrive.connect(this.output), this.ws_table = new Float32Array(this.k_nSamples), this.drive = o(e.drive, this.defaults.drive.value), this.outputGain = o(e.outputGain, this.defaults.outputGain.value), this.curveAmount = o(e.curveAmount, this.defaults.curveAmount.value), this.algorithmIndex = o(e.algorithmIndex, this.defaults.algorithmIndex.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Overdrive.prototype = Object.create(f, {
+  name: {
+    value: "Overdrive"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      drive: {
+        value: 0.197,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u,
+        scaled: !0
+      },
+      outputGain: {
+        value: -9.154,
+        min: -46,
+        max: 0,
+        automatable: !0,
+        type: u,
+        scaled: !0
+      },
+      curveAmount: {
+        value: 0.979,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      algorithmIndex: {
+        value: 0,
+        min: 0,
+        max: 5,
+        automatable: !1,
+        type: g
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  k_nSamples: {
+    value: 8192
+  },
+  drive: {
+    get: function() {
+      return this.inputDrive.gain;
+    },
+    set: function(e) {
+      this.inputDrive.gain.value = e;
+    }
+  },
+  curveAmount: {
+    get: function() {
+      return this._curveAmount;
+    },
+    set: function(e) {
+      this._curveAmount = e, this._algorithmIndex === void 0 && (this._algorithmIndex = 0), this.waveshaperAlgorithms[this._algorithmIndex](this._curveAmount, this.k_nSamples, this.ws_table), this.waveshaper.curve = this.ws_table;
+    }
+  },
+  outputGain: {
+    get: function() {
+      return this.outputDrive.gain;
+    },
+    set: function(e) {
+      this._outputGain = _(e), this.outputDrive.gain.setValueAtTime(this._outputGain, t.currentTime, 0.01);
+    }
+  },
+  algorithmIndex: {
+    get: function() {
+      return this._algorithmIndex;
+    },
+    set: function(e) {
+      this._algorithmIndex = e, this.curveAmount = this._curveAmount;
+    }
+  },
+  waveshaperAlgorithms: {
+    value: [
+      function(e, a, n) {
+        e = Math.min(e, 0.9999);
+        var i = 2 * e / (1 - e), s, l;
+        for (s = 0; s < a; s++)
+          l = s * 2 / a - 1, n[s] = (1 + i) * l / (1 + i * Math.abs(l));
+      },
+      function(e, a, n) {
+        var i, s, l;
+        for (i = 0; i < a; i++)
+          s = i * 2 / a - 1, l = (0.5 * Math.pow(s + 1.4, 2) - 1) * (l >= 0 ? 5.8 : 1.2), n[i] = N(l);
+      },
+      function(e, a, n) {
+        var i, s, l, h = 1 - e;
+        for (i = 0; i < a; i++)
+          s = i * 2 / a - 1, l = s < 0 ? -Math.pow(Math.abs(s), h + 0.04) : Math.pow(s, h), n[i] = N(l * 2);
+      },
+      function(e, a, n) {
+        var i, s, l, h, c = 1 - e > 0.99 ? 0.99 : 1 - e;
+        for (i = 0; i < a; i++)
+          s = i * 2 / a - 1, h = Math.abs(s), h < c ? l = h : h > c ? l = c + (h - c) / (1 + Math.pow((h - c) / (1 - c), 2)) : h > 1 && (l = h), n[i] = R(s) * l * (1 / ((c + 1) / 2));
+      },
+      function(e, a, n) {
+        var i, s;
+        for (i = 0; i < a; i++)
+          s = i * 2 / a - 1, s < -0.08905 ? n[i] = -3 / 4 * (1 - Math.pow(1 - (Math.abs(s) - 0.032857), 12) + 1 / 3 * (Math.abs(s) - 0.032847)) + 0.01 : s >= -0.08905 && s < 0.320018 ? n[i] = -6.153 * (s * s) + 3.9375 * s : n[i] = 0.630035;
+      },
+      function(e, a, n) {
+        var i = 2 + Math.round(e * 14), s = Math.round(Math.pow(2, i - 1)), l, h;
+        for (l = 0; l < a; l++)
+          h = l * 2 / a - 1, n[l] = Math.round(h * s) / s;
+      }
+    ]
+  }
+});
+r.prototype.Panner = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.panner = t.createStereoPanner(), this.output = t.createGain(), this.activateNode.connect(this.panner), this.panner.connect(this.output), this.pan = o(e.pan, this.defaults.pan.value), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Panner.prototype = Object.create(f, {
+  name: {
+    value: "Panner"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      },
+      pan: {
+        value: 0,
+        min: -1,
+        max: 1,
+        automatable: !0,
+        type: u
+      }
+    }
+  },
+  pan: {
+    enumerable: !0,
+    get: function() {
+      return this.panner.pan;
+    },
+    set: function(e) {
+      this.panner.pan.value = e;
+    }
+  }
+});
+r.prototype.Phaser = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.splitter = this.activateNode = t.createChannelSplitter(2), this.filtersL = [], this.filtersR = [], this.feedbackGainNodeL = t.createGain(), this.feedbackGainNodeR = t.createGain(), this.merger = t.createChannelMerger(2), this.filteredSignal = t.createGain(), this.output = t.createGain(), this.lfoL = new p.LFO({
+    target: this.filtersL,
+    callback: this.callback
+  }), this.lfoR = new p.LFO({
+    target: this.filtersR,
+    callback: this.callback
+  });
+  for (var a = this.stage; a--; )
+    this.filtersL[a] = t.createBiquadFilter(), this.filtersR[a] = t.createBiquadFilter(), this.filtersL[a].type = "allpass", this.filtersR[a].type = "allpass";
+  this.input.connect(this.splitter), this.input.connect(this.output), this.splitter.connect(this.filtersL[0], 0, 0), this.splitter.connect(this.filtersR[0], 1, 0), this.connectInOrder(this.filtersL), this.connectInOrder(this.filtersR), this.filtersL[this.stage - 1].connect(this.feedbackGainNodeL), this.filtersL[this.stage - 1].connect(this.merger, 0, 0), this.filtersR[this.stage - 1].connect(this.feedbackGainNodeR), this.filtersR[this.stage - 1].connect(this.merger, 0, 1), this.feedbackGainNodeL.connect(this.filtersL[0]), this.feedbackGainNodeR.connect(this.filtersR[0]), this.merger.connect(this.output), this.rate = o(e.rate, this.defaults.rate.value), this.baseModulationFrequency = e.baseModulationFrequency || this.defaults.baseModulationFrequency.value, this.depth = o(e.depth, this.defaults.depth.value), this.feedback = o(e.feedback, this.defaults.feedback.value), this.stereoPhase = o(e.stereoPhase, this.defaults.stereoPhase.value), this.lfoL.activate(!0), this.lfoR.activate(!0), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Phaser.prototype = Object.create(f, {
+  name: {
+    value: "Phaser"
+  },
+  stage: {
+    value: 4
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      rate: {
+        value: 0.1,
+        min: 0,
+        max: 8,
+        automatable: !1,
+        type: u
+      },
+      depth: {
+        value: 0.6,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      feedback: {
+        value: 0.7,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      stereoPhase: {
+        value: 40,
+        min: 0,
+        max: 180,
+        automatable: !1,
+        type: u
+      },
+      baseModulationFrequency: {
+        value: 700,
+        min: 500,
+        max: 1500,
+        automatable: !1,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  callback: {
+    value: function(e, a) {
+      for (var n = 0; n < 4; n++)
+        e[n].frequency.value = a;
+    }
+  },
+  depth: {
+    get: function() {
+      return this._depth;
+    },
+    set: function(e) {
+      this._depth = e, this.lfoL.oscillation = this._baseModulationFrequency * this._depth, this.lfoR.oscillation = this._baseModulationFrequency * this._depth;
+    }
+  },
+  rate: {
+    get: function() {
+      return this._rate;
+    },
+    set: function(e) {
+      this._rate = e, this.lfoL.frequency = this._rate, this.lfoR.frequency = this._rate;
+    }
+  },
+  baseModulationFrequency: {
+    enumerable: !0,
+    get: function() {
+      return this._baseModulationFrequency;
+    },
+    set: function(e) {
+      this._baseModulationFrequency = e, this.lfoL.offset = this._baseModulationFrequency, this.lfoR.offset = this._baseModulationFrequency, this.depth = this._depth;
+    }
+  },
+  feedback: {
+    get: function() {
+      return this._feedback;
+    },
+    set: function(e) {
+      this._feedback = e, this.feedbackGainNodeL.gain.setTargetAtTime(this._feedback, t.currentTime, 0.01), this.feedbackGainNodeR.gain.setTargetAtTime(this._feedback, t.currentTime, 0.01);
+    }
+  },
+  stereoPhase: {
+    get: function() {
+      return this._stereoPhase;
+    },
+    set: function(e) {
+      this._stereoPhase = e;
+      var a = this.lfoL._phase + this._stereoPhase * Math.PI / 180;
+      a = M(a, 2 * Math.PI), this.lfoR._phase = a;
+    }
+  }
+});
+r.prototype.PingPongDelay = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.wet = t.createGain(), this.stereoToMonoMix = t.createGain(), this.feedbackLevel = t.createGain(), this.output = t.createGain(), this.delayLeft = t.createDelay(10), this.delayRight = t.createDelay(10), this.activateNode = t.createGain(), this.splitter = t.createChannelSplitter(2), this.merger = t.createChannelMerger(2), this.activateNode.connect(this.splitter), this.splitter.connect(this.stereoToMonoMix, 0, 0), this.splitter.connect(this.stereoToMonoMix, 1, 0), this.stereoToMonoMix.gain.value = 0.5, this.stereoToMonoMix.connect(this.wet), this.wet.connect(this.delayLeft), this.feedbackLevel.connect(this.wet), this.delayLeft.connect(this.delayRight), this.delayRight.connect(this.feedbackLevel), this.delayLeft.connect(this.merger, 0, 0), this.delayRight.connect(this.merger, 0, 1), this.merger.connect(this.output), this.activateNode.connect(this.output), this.delayTimeLeft = e.delayTimeLeft !== void 0 ? e.delayTimeLeft : this.defaults.delayTimeLeft.value, this.delayTimeRight = e.delayTimeRight !== void 0 ? e.delayTimeRight : this.defaults.delayTimeRight.value, this.feedbackLevel.gain.value = e.feedback !== void 0 ? e.feedback : this.defaults.feedback.value, this.wet.gain.value = e.wetLevel !== void 0 ? e.wetLevel : this.defaults.wetLevel.value, this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.PingPongDelay.prototype = Object.create(f, {
+  name: {
+    value: "PingPongDelay"
+  },
+  delayTimeLeft: {
+    enumerable: !0,
+    get: function() {
+      return this._delayTimeLeft;
+    },
+    set: function(e) {
+      this._delayTimeLeft = e, this.delayLeft.delayTime.value = e / 1e3;
+    }
+  },
+  delayTimeRight: {
+    enumerable: !0,
+    get: function() {
+      return this._delayTimeRight;
+    },
+    set: function(e) {
+      this._delayTimeRight = e, this.delayRight.delayTime.value = e / 1e3;
+    }
+  },
+  wetLevel: {
+    enumerable: !0,
+    get: function() {
+      return this.wet.gain;
+    },
+    set: function(e) {
+      this.wet.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  feedback: {
+    enumerable: !0,
+    get: function() {
+      return this.feedbackLevel.gain;
+    },
+    set: function(e) {
+      this.feedbackLevel.gain.setTargetAtTime(e, t.currentTime, 0.01);
+    }
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      delayTimeLeft: {
+        value: 200,
+        min: 1,
+        max: 1e4,
+        automatable: !1,
+        type: g
+      },
+      delayTimeRight: {
+        value: 400,
+        min: 1,
+        max: 1e4,
+        automatable: !1,
+        type: g
+      },
+      feedback: {
+        value: 0.3,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u
+      },
+      wetLevel: {
+        value: 0.5,
+        min: 0,
+        max: 1,
+        automatable: !0,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  }
+});
+r.prototype.Tremolo = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.splitter = this.activateNode = t.createChannelSplitter(2), this.amplitudeL = t.createGain(), this.amplitudeR = t.createGain(), this.merger = t.createChannelMerger(2), this.output = t.createGain(), this.lfoL = new p.LFO({
+    target: this.amplitudeL.gain,
+    callback: k
+  }), this.lfoR = new p.LFO({
+    target: this.amplitudeR.gain,
+    callback: k
+  }), this.input.connect(this.splitter), this.splitter.connect(this.amplitudeL, 0), this.splitter.connect(this.amplitudeR, 1), this.amplitudeL.connect(this.merger, 0, 0), this.amplitudeR.connect(this.merger, 0, 1), this.merger.connect(this.output), this.rate = e.rate || this.defaults.rate.value, this.intensity = o(e.intensity, this.defaults.intensity.value), this.stereoPhase = o(e.stereoPhase, this.defaults.stereoPhase.value), this.lfoL.offset = 1 - this.intensity / 2, this.lfoR.offset = 1 - this.intensity / 2, this.lfoL.phase = this.stereoPhase * Math.PI / 180, this.lfoL.activate(!0), this.lfoR.activate(!0), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.Tremolo.prototype = Object.create(f, {
+  name: {
+    value: "Tremolo"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      intensity: {
+        value: 0.3,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      stereoPhase: {
+        value: 0,
+        min: 0,
+        max: 180,
+        automatable: !1,
+        type: u
+      },
+      rate: {
+        value: 5,
+        min: 0.1,
+        max: 11,
+        automatable: !1,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  intensity: {
+    enumerable: !0,
+    get: function() {
+      return this._intensity;
+    },
+    set: function(e) {
+      this._intensity = e, this.lfoL.offset = 1 - this._intensity / 2, this.lfoR.offset = 1 - this._intensity / 2, this.lfoL.oscillation = this._intensity, this.lfoR.oscillation = this._intensity;
+    }
+  },
+  rate: {
+    enumerable: !0,
+    get: function() {
+      return this._rate;
+    },
+    set: function(e) {
+      this._rate = e, this.lfoL.frequency = this._rate, this.lfoR.frequency = this._rate;
+    }
+  },
+  stereoPhase: {
+    enumerable: !0,
+    get: function() {
+      return this._stereoPhase;
+    },
+    set: function(e) {
+      this._stereoPhase = e;
+      var a = this.lfoL._phase + this._stereoPhase * Math.PI / 180;
+      a = M(a, 2 * Math.PI), this.lfoR.phase = a;
+    }
+  }
+});
+r.prototype.WahWah = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.activateNode = t.createGain(), this.envelopeFollower = new p.EnvelopeFollower({
+    target: this,
+    callback: function(a, n) {
+      a.sweep = n;
+    }
+  }), this.filterBp = t.createBiquadFilter(), this.filterPeaking = t.createBiquadFilter(), this.output = t.createGain(), this.activateNode.connect(this.filterBp), this.filterBp.connect(this.filterPeaking), this.filterPeaking.connect(this.output), this.init(), this.automode = o(e.automode, this.defaults.automode.value), this.resonance = e.resonance || this.defaults.resonance.value, this.sensitivity = o(e.sensitivity, this.defaults.sensitivity.value), this.baseFrequency = o(e.baseFrequency, this.defaults.baseFrequency.value), this.excursionOctaves = e.excursionOctaves || this.defaults.excursionOctaves.value, this.sweep = o(e.sweep, this.defaults.sweep.value), this.activateNode.gain.value = 2, this.envelopeFollower.activate(!0), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.WahWah.prototype = Object.create(f, {
+  name: {
+    value: "WahWah"
+  },
+  defaults: {
+    writable: !0,
+    value: {
+      automode: {
+        value: !0,
+        automatable: !1,
+        type: m
+      },
+      baseFrequency: {
+        value: 0.153,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      excursionOctaves: {
+        value: 3.3,
+        min: 1,
+        max: 6,
+        automatable: !1,
+        type: u
+      },
+      sweep: {
+        value: 0.35,
+        min: 0,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      resonance: {
+        value: 19,
+        min: 1,
+        max: 100,
+        automatable: !1,
+        type: u
+      },
+      sensitivity: {
+        value: -0.5,
+        min: -1,
+        max: 1,
+        automatable: !1,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  automode: {
+    get: function() {
+      return this._automode;
+    },
+    set: function(e) {
+      this._automode = e, e ? (this.activateNode.connect(this.envelopeFollower.input), this.envelopeFollower.activate(!0)) : (this.envelopeFollower.activate(!1), this.activateNode.disconnect(), this.activateNode.connect(this.filterBp));
+    }
+  },
+  filterFreqTimeout: {
+    writable: !0,
+    value: 0
+  },
+  setFilterFreq: {
+    value: function() {
+      try {
+        this.filterBp.frequency.value = Math.min(22050, this._baseFrequency + this._excursionFrequency * this._sweep), this.filterPeaking.frequency.value = Math.min(22050, this._baseFrequency + this._excursionFrequency * this._sweep);
+      } catch {
+        clearTimeout(this.filterFreqTimeout), this.filterFreqTimeout = setTimeout((function() {
+          this.setFilterFreq();
+        }).bind(this), 0);
+      }
+    }
+  },
+  sweep: {
+    enumerable: !0,
+    get: function() {
+      return this._sweep;
+    },
+    set: function(e) {
+      this._sweep = Math.pow(e > 1 ? 1 : e < 0 ? 0 : e, this._sensitivity), this.setFilterFreq();
+    }
+  },
+  baseFrequency: {
+    enumerable: !0,
+    get: function() {
+      return this._baseFrequency;
+    },
+    set: function(e) {
+      this._baseFrequency = 50 * Math.pow(10, e * 2), this._excursionFrequency = Math.min(t.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves)), this.setFilterFreq();
+    }
+  },
+  excursionOctaves: {
+    enumerable: !0,
+    get: function() {
+      return this._excursionOctaves;
+    },
+    set: function(e) {
+      this._excursionOctaves = e, this._excursionFrequency = Math.min(t.sampleRate / 2, this.baseFrequency * Math.pow(2, this._excursionOctaves)), this.setFilterFreq();
+    }
+  },
+  sensitivity: {
+    enumerable: !0,
+    get: function() {
+      return this._sensitivity;
+    },
+    set: function(e) {
+      this._sensitivity = Math.pow(10, e);
+    }
+  },
+  resonance: {
+    enumerable: !0,
+    get: function() {
+      return this._resonance;
+    },
+    set: function(e) {
+      this._resonance = e, this.filterPeaking.Q.value = this._resonance;
+    }
+  },
+  init: {
+    value: function() {
+      this.output.gain.value = 1, this.filterPeaking.type = "peaking", this.filterBp.type = "bandpass", this.filterPeaking.frequency.value = 100, this.filterPeaking.gain.value = 20, this.filterPeaking.Q.value = 5, this.filterBp.frequency.value = 100, this.filterBp.Q.value = 1;
+    }
+  }
+});
+r.prototype.EnvelopeFollower = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.jsNode = this.output = t.createScriptProcessor(this.buffersize, 1, 1), this.input.connect(this.output), this.attackTime = o(e.attackTime, this.defaults.attackTime.value), this.releaseTime = o(e.releaseTime, this.defaults.releaseTime.value), this._envelope = 0, this.target = e.target || {}, this.callback = e.callback || function() {
+  }, this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.EnvelopeFollower.prototype = Object.create(f, {
+  name: {
+    value: "EnvelopeFollower"
+  },
+  defaults: {
+    value: {
+      attackTime: {
+        value: 3e-3,
+        min: 0,
+        max: 0.5,
+        automatable: !1,
+        type: u
+      },
+      releaseTime: {
+        value: 0.5,
+        min: 0,
+        max: 0.5,
+        automatable: !1,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  buffersize: {
+    value: 256
+  },
+  envelope: {
+    value: 0
+  },
+  sampleRate: {
+    value: 44100
+  },
+  attackTime: {
+    enumerable: !0,
+    get: function() {
+      return this._attackTime;
+    },
+    set: function(e) {
+      this._attackTime = e, this._attackC = Math.exp(-1 / this._attackTime * this.sampleRate / this.buffersize);
+    }
+  },
+  releaseTime: {
+    enumerable: !0,
+    get: function() {
+      return this._releaseTime;
+    },
+    set: function(e) {
+      this._releaseTime = e, this._releaseC = Math.exp(-1 / this._releaseTime * this.sampleRate / this.buffersize);
+    }
+  },
+  callback: {
+    get: function() {
+      return this._callback;
+    },
+    set: function(e) {
+      typeof e == "function" ? this._callback = e : console.error("tuna.js: " + this.name + ": Callback must be a function!");
+    }
+  },
+  target: {
+    get: function() {
+      return this._target;
+    },
+    set: function(e) {
+      this._target = e;
+    }
+  },
+  activate: {
+    value: function(e) {
+      this.activated = e, e ? (this.jsNode.connect(t.destination), this.jsNode.onaudioprocess = this.returnCompute(this)) : (this.jsNode.disconnect(), this.jsNode.onaudioprocess = null), this.activateCallback && this.activateCallback(e);
+    }
+  },
+  returnCompute: {
+    value: function(e) {
+      return function(a) {
+        e.compute(a);
+      };
+    }
+  },
+  compute: {
+    value: function(e) {
+      var a = e.inputBuffer.getChannelData(0).length, n = e.inputBuffer.numberOfChannels, i, s, l, h;
+      for (s = l = h = 0, s = 0; s < n; ++s)
+        for (h = 0; h < a; ++h)
+          i = e.inputBuffer.getChannelData(s)[h], l += i * i;
+      l = Math.sqrt(l / n), this._envelope < l ? (this._envelope *= this._attackC, this._envelope += (1 - this._attackC) * l) : (this._envelope *= this._releaseC, this._envelope += (1 - this._releaseC) * l), this._callback(this._target, this._envelope);
+    }
+  }
+});
+r.prototype.LFO = function(e) {
+  e || (e = this.getDefaults()), this.input = t.createGain(), this.output = t.createScriptProcessor(256, 1, 1), this.activateNode = t.destination, this.frequency = o(e.frequency, this.defaults.frequency.value), this.offset = o(e.offset, this.defaults.offset.value), this.oscillation = o(e.oscillation, this.defaults.oscillation.value), this.phase = o(e.phase, this.defaults.phase.value), this.target = e.target || {}, this.output.onaudioprocess = this.callback(e.callback || function() {
+  }), this.bypass = e.bypass || this.defaults.bypass.value;
+};
+r.prototype.LFO.prototype = Object.create(f, {
+  name: {
+    value: "LFO"
+  },
+  bufferSize: {
+    value: 256
+  },
+  sampleRate: {
+    value: 44100
+  },
+  defaults: {
+    value: {
+      frequency: {
+        value: 1,
+        min: 0,
+        max: 20,
+        automatable: !1,
+        type: u
+      },
+      offset: {
+        value: 0.85,
+        min: 0,
+        max: 22049,
+        automatable: !1,
+        type: u
+      },
+      oscillation: {
+        value: 0.3,
+        min: -22050,
+        max: 22050,
+        automatable: !1,
+        type: u
+      },
+      phase: {
+        value: 0,
+        min: 0,
+        max: 2 * Math.PI,
+        automatable: !1,
+        type: u
+      },
+      bypass: {
+        value: !1,
+        automatable: !1,
+        type: m
+      }
+    }
+  },
+  frequency: {
+    get: function() {
+      return this._frequency;
+    },
+    set: function(e) {
+      this._frequency = e, this._phaseInc = 2 * Math.PI * this._frequency * this.bufferSize / this.sampleRate;
+    }
+  },
+  offset: {
+    get: function() {
+      return this._offset;
+    },
+    set: function(e) {
+      this._offset = e;
+    }
+  },
+  oscillation: {
+    get: function() {
+      return this._oscillation;
+    },
+    set: function(e) {
+      this._oscillation = e;
+    }
+  },
+  phase: {
+    get: function() {
+      return this._phase;
+    },
+    set: function(e) {
+      this._phase = e;
+    }
+  },
+  target: {
+    get: function() {
+      return this._target;
+    },
+    set: function(e) {
+      this._target = e;
+    }
+  },
+  activate: {
+    value: function(e) {
+      e ? (this.output.connect(t.destination), this.activateCallback && this.activateCallback(e)) : this.output.disconnect();
+    }
+  },
+  callback: {
+    value: function(e) {
+      var a = this;
+      return function() {
+        a._phase += a._phaseInc, a._phase > 2 * Math.PI && (a._phase = 0), e(a._target, a._offset + a._oscillation * Math.sin(a._phase));
+      };
+    }
+  }
+});
+r.toString = r.prototype.toString = function() {
+  return "Please visit https://github.com/Theodeus/tuna/wiki for instructions on how to use Tuna.js";
+};
+export {
+  r as default
+};

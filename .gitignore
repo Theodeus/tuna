@@ -1,7 +1,7 @@
 tests/bower_components
 .DS_Store
 node_modules/
-index.html
+
 song.mp3
 drums.wav
 .idea/

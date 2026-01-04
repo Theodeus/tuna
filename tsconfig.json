@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "dist/types",
+        "rootDir": ".",
+        "moduleResolution": "node",
+        "target": "esnext"
+    },
+    "include": [
+        "tuna.js"
+    ]
+}

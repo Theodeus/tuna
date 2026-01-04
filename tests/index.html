@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuna.js Test Bed</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+
+        .val-display {
+            display: inline-block;
+            width: 60px;
+            text-align: right;
+            font-family: monospace;
+        }
+
+        input[type="range"] {
+            vertical-align: middle;
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tuna.js Test Bed</h1>
+
+    <div>
+        <button id="play-btn">Play</button>
+        <span id="status" style="margin-left: 10px; color: #666;">Ready</span>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label for="effect-select">Select Effect:</label>
+            <select id="effect-select">
+                <!-- Populated via JS -->
+            </select>
+        </div>
+        <hr>
+        <div id="dynamic-controls">
+            <!-- Controls generated here -->
+        </div>
+    </div>
+
+    <script type="module">
+        import Tuna from '../dist/tuna.js';
+
+        // --- Setup Audio ---
+        const playBtn = document.getElementById('play-btn');
+        const status = document.getElementById('status');
+        const effectSelect = document.getElementById('effect-select');
+        const dynamicControls = document.getElementById('dynamic-controls');
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const tuna = new Tuna(audioContext);
+
+        let source = null;
+        let activeEffect = null;
+        let audioBuffer = null;
+        const audioFile = './temple_run.wav';
+
+        // --- Available Effects ---
+        const effectNames = [
+            "Bitcrusher",
+            "Cabinet",
+            "Chorus",
+            "Compressor",
+            "Convolver",
+            "Delay",
+            "Filter",
+            "Gain",
+            "MoogFilter",
+            "Overdrive",
+            "Panner",
+            "Phaser",
+            "PingPongDelay",
+            "Tremolo",
+            "WahWah"
+        ];
+
+        // Populate Dropdown
+        effectNames.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            effectSelect.appendChild(opt);
+        });
+
+        // --- Audio Loading & Playback ---
+        async function loadAudio() {
+            if (audioBuffer) return audioBuffer;
+            try {
+                status.innerText = 'Loading audio...';
+                const response = await fetch(audioFile);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const arrayBuffer = await response.arrayBuffer();
+                audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                status.innerText = 'Audio loaded. Ready.';
+                return audioBuffer;
+            } catch (e) {
+                console.error(e);
+                status.innerText = 'Error loading audio: ' + e.message;
+            }
+        }
+
+        async function startAudio() {
+            if (audioContext.state === 'suspended') await audioContext.resume();
+
+            const buffer = await loadAudio();
+            if (!buffer) return;
+
+            if (source) {
+                source.stop();
+                source.disconnect();
+            }
+
+            source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.loop = true;
+
+            connectGraph();
+            source.start();
+            status.innerText = 'Playing...';
+        }
+
+        function connectGraph() {
+            if (!source) return;
+            source.disconnect();
+            if (activeEffect) {
+                activeEffect.disconnect();
+                source.connect(activeEffect);
+                activeEffect.connect(audioContext.destination);
+            } else {
+                source.connect(audioContext.destination);
+            }
+        }
+
+        // --- Logic to Change Effect ---
+        function setEffect(name) {
+            // Cleanup old
+            if (activeEffect) {
+                activeEffect.disconnect();
+                activeEffect = null;
+            }
+
+            try {
+                if (tuna[name]) {
+                    activeEffect = new tuna[name]();
+                    console.log(`Created ${name}:`, activeEffect);
+
+                    // Reconnect
+                    if (source) connectGraph();
+
+                    // Generate UI
+                    generateControls(activeEffect);
+                } else {
+                    console.error(`Effect ${name} not found in Tuna instance.`);
+                }
+            } catch (e) {
+                console.error(`Error creating ${name}:`, e);
+                dynamicControls.innerHTML = `<p style="color:red">Error creating effect: ${e.message}</p>`;
+            }
+        }
+
+        // --- Generate UI Controls ---
+        function generateControls(effect) {
+            dynamicControls.innerHTML = '';
+
+            if (!effect.defaults) {
+                dynamicControls.innerHTML = '<p>No defaults found for this effect.</p>';
+                return;
+            }
+
+            const defaults = effect.defaults;
+
+            Object.keys(defaults).forEach(key => {
+                const def = defaults[key];
+                const currentVal = effect[key] !== undefined ? effect[key] : def.value;
+
+                const group = document.createElement('div');
+                group.className = 'control-group';
+
+                const label = document.createElement('label');
+                label.textContent = key;
+                label.htmlFor = `ctrl-${key}`;
+                group.appendChild(label);
+
+                if (def.type === 'boolean' || typeof def.value === 'boolean') {
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.id = `ctrl-${key}`;
+                    input.checked = !!(effect[key]);
+                    input.addEventListener('change', (e) => {
+                        effect[key] = e.target.checked;
+                        console.log(`Set ${key} to`, e.target.checked);
+                    });
+                    group.appendChild(input);
+
+                } else if (def.type === 'string' || typeof def.value === 'string') {
+                    if (key === 'filterType') {
+                        const select = document.createElement('select');
+                        select.id = `ctrl-${key}`;
+                        const types = ["lowpass", "highpass", "bandpass", "lowshelf", "highshelf", "peaking", "notch", "allpass"];
+
+                        types.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t;
+                            opt.textContent = t;
+                            select.appendChild(opt);
+                        });
+
+                        select.value = effect[key];
+
+                        select.addEventListener('change', (e) => {
+                            effect[key] = e.target.value;
+                            console.log(`Set ${key} to`, e.target.value);
+                        });
+                        group.appendChild(select);
+                    } else {
+                        // Fallback for other strings
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.id = `ctrl-${key}`;
+                        input.value = effect[key];
+                        input.addEventListener('change', (e) => {
+                            effect[key] = e.target.value;
+                        });
+                        group.appendChild(input);
+                    }
+                } else {
+                    // Number (Float/Int)
+                    const input = document.createElement('input');
+                    input.type = 'range';
+                    input.id = `ctrl-${key}`;
+
+                    // Determine min/max
+                    const min = def.min !== undefined ? def.min : 0;
+                    const max = def.max !== undefined ? def.max : (def.value * 2 || 1);
+                    const step = def.type === 'int' ? 1 : (max - min) / 100;
+
+                    input.min = min;
+                    input.max = max;
+                    input.step = step;
+
+                    let val = effect[key];
+                    if (val && typeof val === 'object' && 'value' in val) {
+                        val = val.value;
+                    }
+                    input.value = val;
+
+                    const display = document.createElement('span');
+                    display.className = 'val-display';
+                    display.innerText = Number(val).toFixed(2);
+
+                    input.addEventListener('input', (e) => {
+                        const v = parseFloat(e.target.value);
+                        effect[key] = v;
+                        display.innerText = v.toFixed(2);
+                    });
+
+                    group.appendChild(input);
+                    group.appendChild(display);
+                }
+
+                dynamicControls.appendChild(group);
+            });
+        }
+
+        // --- Init ---
+        playBtn.addEventListener('click', startAudio);
+
+        effectSelect.addEventListener('change', (e) => {
+            setEffect(e.target.value);
+        });
+
+        // Initialize with first effect
+        setEffect(effectNames[0]);
+
+    </script>
+</body>
+
+</html>
